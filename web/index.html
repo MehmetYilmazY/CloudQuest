@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CloudQuest — Cloud Engineering RPG</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- ================= LOADING SCREEN ================= -->
+  <div class="overlay loader" id="loader">
+    <div class="grid-bg"></div>
+    <div class="loader-inner">
+      <div class="glitch" data-text="CLOUDQUEST">CLOUDQUEST</div>
+      <div class="loader-tag">// CLOUD ENGINEERING RPG · NEURAL TERMINAL v4.8</div>
+      <pre class="boot-log" id="boot-log"></pre>
+      <div class="loader-bar"><div class="loader-fill" id="loader-fill"></div></div>
+      <div class="loader-pct" id="loader-pct">0%</div>
+    </div>
+  </div>
+
+  <!-- ================= AUTH SCREEN ================= -->
+  <div class="overlay auth hidden" id="auth">
+    <div class="grid-bg"></div>
+    <div class="auth-card">
+      <div class="auth-logo">☁ CLOUDQUEST</div>
+      <div class="auth-sub">Cloud Engineer olma yolculuğuna giriş yap</div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" type="button">Giriş</button>
+        <button class="auth-tab" id="tab-register" type="button">Kayıt Ol</button>
+      </div>
+
+      <!-- LOGIN -->
+      <form class="auth-form" id="form-login">
+        <label>E-posta</label>
+        <input type="email" id="login-email" autocomplete="username" placeholder="engineer@cloud.dev" />
+        <label>Şifre</label>
+        <input type="password" id="login-pass" autocomplete="current-password" placeholder="••••••••" />
+        <div class="auth-err" id="login-err"></div>
+        <button type="submit" class="btn-neon">⚡ Giriş Yap</button>
+      </form>
+
+      <!-- REGISTER -->
+      <form class="auth-form hidden" id="form-register">
+        <label>Görünen ad</label>
+        <input type="text" id="reg-name" maxlength="24" placeholder="engineer" />
+        <label>E-posta</label>
+        <input type="email" id="reg-email" autocomplete="username" placeholder="engineer@cloud.dev" />
+        <label>Şifre <span class="hint-inline">(en az 6 karakter)</span></label>
+        <input type="password" id="reg-pass" autocomplete="new-password" placeholder="••••••••" />
+        <label>Avatar seç</label>
+        <div class="avatar-picker" id="reg-avatars"></div>
+        <div class="auth-err" id="reg-err"></div>
+        <button type="submit" class="btn-neon">🚀 Hesap Oluştur</button>
+      </form>
+
+      <div class="auth-note">ℹ️ Yerel profil (auth <em>simülasyonu</em>) — veriler yalnızca bu tarayıcıda. Gerçek güvenlik için sunucu gerekir.</div>
+    </div>
+  </div>
+
+  <!-- ================= PROFILE PAGE ================= -->
+  <div class="overlay profile-page hidden" id="profile-page">
+    <div class="grid-bg"></div>
+    <div class="profile-card">
+      <button class="profile-close" id="profile-close" type="button" aria-label="kapat">✕</button>
+
+      <div class="profile-head">
+        <div class="profile-avatar-wrap">
+          <div class="profile-avatar" id="profile-avatar"></div>
+          <button class="avatar-edit-btn" id="avatar-edit-btn" type="button">🎭 Değiştir</button>
+        </div>
+        <div class="profile-id">
+          <div class="profile-name" id="profile-name">engineer</div>
+          <div class="profile-rank" id="profile-rank">Intern ☁️</div>
+          <div class="profile-email" id="profile-email">—</div>
+        </div>
+      </div>
+
+      <div class="profile-stats" id="profile-stats"></div>
+
+      <div class="profile-section">
+        <div class="profile-label">Cloud Engineer hazırlığı</div>
+        <div class="ready-bar"><div class="ready-fill" id="ready-fill"></div></div>
+        <div class="ready-text" id="ready-text">%0</div>
+      </div>
+
+      <div class="profile-section">
+        <div class="profile-label">🏅 Rozetler</div>
+        <div class="badge-grid" id="badge-grid"></div>
+      </div>
+
+      <div class="profile-section">
+        <div class="profile-label">🏆 Tamamlanan modüller</div>
+        <div class="modules-row" id="modules-row"></div>
+      </div>
+
+      <div class="profile-section">
+        <div class="profile-label">🎯 Şu anki modül — <span id="cur-module-name">Fundamentals</span> <span class="hint-inline" id="cur-module-pct">%0</span></div>
+        <div class="module-mini-bar"><div class="module-mini-fill" id="cur-module-fill"></div></div>
+        <div class="trainings" id="trainings"></div>
+      </div>
+
+      <div class="profile-actions">
+        <button class="btn-ghost" id="btn-logout" type="button">⎋ Çıkış Yap</button>
+        <button class="btn-neon" id="btn-close-2" type="button">Terminale Dön</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= HOME / HUB ================= -->
+  <div class="overlay home hidden" id="home">
+    <div class="grid-bg"></div>
+    <div class="home-inner">
+      <header class="home-top">
+        <div class="home-logo">☁️ CLOUDQUEST</div>
+        <div class="home-user">
+          <div class="home-avatar" id="home-avatar"></div>
+          <div class="home-user-meta">
+            <div class="home-uname" id="home-uname">engineer</div>
+            <div class="home-urank" id="home-urank">Intern ☁️</div>
+          </div>
+          <button class="btn-ghost" id="home-logout" type="button">⎋ Çıkış</button>
+        </div>
+      </header>
+
+      <section class="home-hero">
+        <h1 class="home-title">Bugün ne öğreniyoruz, <span id="home-hero-name">engineer</span>?</h1>
+        <p class="home-sub">Bir görev hattı seç ve canlı terminale dal. Her quest seni bir adım daha job-ready yapar.</p>
+      </section>
+
+      <section class="home-section" id="sec-story">
+        <div class="home-section-label">🎯 ANA KAMPANYA</div>
+        <div class="story-card" id="story-card">
+          <div class="story-main">
+            <div class="story-title">Cloud Engineer: Story Mode</div>
+            <div class="story-desc">8 bölüm · Linux'tan Security &amp; Cost'a — mentör Aria eşliğinde job-ready yolculuk.</div>
+            <div class="story-chips" id="story-chips"></div>
+          </div>
+          <div class="story-side">
+            <div class="story-ring">
+              <svg viewBox="0 0 100 100" width="96" height="96">
+                <circle cx="50" cy="50" r="42" fill="none" stroke="#17263d" stroke-width="8"/>
+                <circle id="story-ring-fill" cx="50" cy="50" r="42" fill="none" stroke="#22d3ee" stroke-width="8"
+                        stroke-linecap="round" transform="rotate(-90 50 50)"
+                        stroke-dasharray="264" stroke-dashoffset="264"/>
+              </svg>
+              <div class="story-ring-pct" id="story-ring-pct">%0</div>
+            </div>
+            <button class="btn-neon" id="story-continue" type="button">▶ Devam Et</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="home-section" id="sec-labs">
+        <div class="home-section-label">🔮 ADVANCED LABS <span class="hint-inline">— seç &amp; keşfet</span></div>
+        <div class="lab-grid" id="lab-grid"></div>
+      </section>
+    </div>
+  </div>
+
+  <!-- ================= AVATAR MODAL ================= -->
+  <div class="overlay avatar-modal hidden" id="avatar-modal">
+    <div class="grid-bg"></div>
+    <div class="avatar-modal-card">
+      <button class="profile-close" id="avatar-modal-close" type="button" aria-label="kapat">✕</button>
+      <div class="modal-title">🎭 Avatar Seç</div>
+      <div class="modal-sub">Karakterini seç — anında uygulanır.</div>
+      <div class="avatar-picker" id="modal-avatars"></div>
+      <button class="btn-neon" id="avatar-modal-done" type="button">Tamam</button>
+    </div>
+  </div>
+
+  <!-- ================= APP ================= -->
+  <div class="app hidden" id="app">
+    <aside class="hud">
+      <div class="hud-logo">☁️ CloudQuest</div>
+      <div class="hud-sub">Cloud Engineer olma yolculuğu</div>
+
+      <div class="hud-card">
+        <div class="hud-avatar" id="hud-avatar"></div>
+        <div class="hud-name" id="hud-name">engineer</div>
+        <div class="hud-rank" id="hud-rank">Intern ☁️</div>
+
+        <div class="hud-row"><span>Level</span><strong id="hud-level">1</strong></div>
+        <div class="xp-bar"><div class="xp-fill" id="hud-xp-fill"></div></div>
+        <div class="xp-text" id="hud-xp-text">0 / 120 XP</div>
+
+        <div class="hud-row"><span>Credits</span><strong id="hud-credits">100 💠</strong></div>
+        <div class="hud-row"><span>Quests</span><strong id="hud-quests">0 / 0</strong></div>
+
+        <button class="btn-profile" id="btn-profile" type="button">👤 PROFİL</button>
+      </div>
+
+      <div class="hud-block">
+        <div class="hud-label">🏅 Rozetler</div>
+        <div class="hud-badges" id="hud-badges">—</div>
+      </div>
+
+      <div class="hud-block hud-help">
+        <div class="hud-label">Hızlı komutlar</div>
+        <ul>
+          <li><code>quests</code> — görev listesi</li>
+          <li><code>quest c1q1</code> — göreve başla</li>
+          <li><code>map</code> — ilerleme haritası</li>
+          <li><code>profile</code> — profil sayfan</li>
+          <li><code>help</code> — tüm komutlar</li>
+        </ul>
+        <div class="hud-tip">İpucu: quest içinde <kbd>Tab</kbd> = doğru komutu otomatik yazar.</div>
+      </div>
+
+      <div class="hud-foot">
+        <span id="hud-account">—</span> · <a href="#" id="hud-home">ana sayfa</a> · <a href="#" id="hud-logout">çıkış</a>
+      </div>
+    </aside>
+
+    <main class="terminal" id="terminal">
+      <div class="term-bar">
+        <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+        <span class="term-title">cloudquest — live terminal</span>
+      </div>
+      <div class="screen" id="screen"></div>
+      <div class="input-line">
+        <span class="prompt" id="prompt">engineer@cloudquest:~$</span>
+        <input id="cmd" type="text" autocomplete="off" autocorrect="off"
+               autocapitalize="off" spellcheck="false" aria-label="komut girişi" />
+      </div>
+    </main>
+  </div>
+
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <script src="js/lib/anime.min.js"></script>
+  <script src="js/lib/sweetalert2.all.min.js"></script>
+  <script src="js/content.generated.js"></script>
+  <script src="js/parser.js"></script>
+  <script src="js/avatars.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>

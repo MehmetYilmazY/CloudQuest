@@ -1,0 +1,11 @@
+# Yerel oyun kaydı (PowerShell sürümü)
+data/save.json
+
+# OS / editör
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+
+# Bağımlılık/çıktı (varsa)
+node_modules/
