@@ -129,6 +129,16 @@ body {
 .auth-form input:focus { border-color: var(--neon); box-shadow: 0 0 0 3px rgba(34,211,238,.15); }
 .auth-err { color: var(--red); font-size: 12.5px; min-height: 18px; margin-top: 10px; }
 
+.forgot-link { display: block; text-align: center; margin-top: 12px; font-size: 12px; color: var(--muted); text-decoration: none; }
+.forgot-link:hover { color: var(--neon); text-decoration: underline; }
+
+.auth-setup { margin-top: 8px; font-size: 13px; color: var(--text); line-height: 1.6; }
+.auth-setup p { margin: 8px 0; }
+.auth-setup ol { margin: 8px 0 8px 18px; color: var(--muted); }
+.auth-setup li { margin: 4px 0; }
+.auth-setup code { color: var(--green); background: #0a1220; padding: 1px 5px; border-radius: 4px; border: 1px solid var(--border); }
+.auth-setup .setup-extra { font-size: 11.5px; color: var(--muted); }
+
 .btn-neon {
   width: 100%; margin-top: 8px; padding: 12px; cursor: pointer;
   background: linear-gradient(90deg, var(--neon), var(--magenta));

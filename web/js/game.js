@@ -584,9 +584,12 @@
       confirmText: "Çıkış yap", cancelText: "Kal"
     }).then(function (ok) {
       if (!ok) return;
-      save(); Auth.logout();
-      cqToast("success", "Çıkış yapıldı");
-      setTimeout(function () { location.reload(); }, 650);
+      save();
+      // Bekleyen yazmalar buluta gitsin, sonra oturumu kapat.
+      Auth.logout().then(function () {
+        cqToast("success", "Çıkış yapıldı");
+        setTimeout(function () { location.reload(); }, 650);
+      });
     });
   }
 
@@ -642,8 +645,11 @@
     $("form-login").addEventListener("submit", function (e) {
       e.preventDefault();
       $("login-err").textContent = "";
+      var btn = $("form-login").querySelector("button[type=submit]");
       var email = $("login-email").value, pass = $("login-pass").value;
+      busy(btn, true, "Giriş yapılıyor…");
       Auth.login(email, pass).then(function (r) {
+        busy(btn, false);
         if (!r.ok) { $("login-err").textContent = r.error; return; }
         enterAppFromAuth();
       });
@@ -652,14 +658,40 @@
     $("form-register").addEventListener("submit", function (e) {
       e.preventDefault();
       $("reg-err").textContent = "";
+      var btn = $("form-register").querySelector("button[type=submit]");
       var name = $("reg-name").value.trim() || "engineer";
       var email = $("reg-email").value, pass = $("reg-pass").value;
       var profile = newProfile(name, regAvatar);
+      busy(btn, true, "Hesap oluşturuluyor…");
       Auth.register({ email: email, password: pass, profile: profile }).then(function (r) {
-        if (!r.ok) { $("reg-err").textContent = r.error; return; }
-        enterAppFromAuth();
+        busy(btn, false);
+        if (r.ok) { enterAppFromAuth(); return; }
+        if (r.needsConfirmation) {         // e-posta doğrulaması bekleniyor
+          $("reg-err").textContent = "";
+          cqInfo("📬 E-postanı doğrula", r.error);
+          switchAuthTab("login");
+          $("login-email").value = email;
+          return;
+        }
+        $("reg-err").textContent = r.error;
       });
     });
+
+    // Şifremi unuttum
+    $("forgot-link").addEventListener("click", function (e) {
+      e.preventDefault();
+      var email = $("login-email").value;
+      Auth.resetPassword(email).then(function (r) {
+        if (!r.ok) { $("login-err").textContent = r.error; return; }
+        $("login-err").textContent = "";
+        cqInfo("📬 Sıfırlama linki gönderildi", email + " adresine şifre sıfırlama linki yolladık.");
+      });
+    });
+  }
+  function busy(btn, on, label) {
+    if (!btn) return;
+    if (on) { btn.dataset.orig = btn.textContent; btn.textContent = label || "…"; btn.disabled = true; }
+    else { btn.textContent = btn.dataset.orig || btn.textContent; btn.disabled = false; }
   }
   function switchAuthTab(which) {
     var login = which === "login";
@@ -815,6 +847,12 @@
     s.fire({ toast: true, position: "bottom", timer: 2600, timerProgressBar: true,
              backdrop: false, showConfirmButton: false, icon: icon, title: title });
   }
+  function cqInfo(title, html) {
+    var s = cqSwal();
+    if (!s) { alert(title + "\n\n" + String(html).replace(/<[^>]+>/g, "")); return Promise.resolve(); }
+    return s.fire({ icon: "info", title: title, html: html, backdrop: "rgba(3, 6, 12, 0.72)",
+                    confirmButtonText: "Tamam" });
+  }
   function cqConfirm(opts) {
     var s = cqSwal();
     if (!s) {
@@ -877,10 +915,41 @@
      ======================================================================= */
   function init() {
     setupAuthScreen();
+    // Sunucu oturumunu geri yükle (loader dönerken paralel çalışır).
+    var ready = Auth.init();
     runLoader(function () {
-      if (Auth.currentEmail()) bootSession();   // oturum açıksa doğrudan gir
-      else showAuth();
+      ready.then(function (r) {
+        if (!r.ok && r.reason === "not-configured") { showSetupNeeded(); return; }
+        if (!r.ok && r.reason === "sdk-missing")    { showSetupNeeded("Supabase SDK yüklenemedi (js/lib/supabase.min.js)."); return; }
+        if (Auth.currentEmail()) bootSession();     // oturum açıksa doğrudan gir
+        else {
+          showAuth();
+          if (!r.ok && r.reason === "network") {
+            $("login-err").textContent = "Sunucuya ulaşılamadı. İnternet bağlantını kontrol et.";
+          }
+        }
+      });
     });
+  }
+
+  // config.js doldurulmamışsa oyunu açmak yerine net bir kurulum ekranı göster.
+  function showSetupNeeded(extra) {
+    $("loader").classList.add("hidden");
+    $("auth").classList.remove("hidden");
+    $("form-login").classList.add("hidden");
+    $("form-register").classList.add("hidden");
+    document.querySelector(".auth-tabs").classList.add("hidden");
+    var box = document.createElement("div");
+    box.className = "auth-setup";
+    box.innerHTML =
+      "<p><b>Sunucu yapılandırılmamış.</b></p>" +
+      "<p>Gerçek hesaplar için Supabase bağlantısı gerekiyor:</p>" +
+      "<ol><li><code>web/js/config.js</code> dosyasını aç</li>" +
+      "<li>Supabase panelindeki <b>Project URL</b> ve <b>anon key</b> değerlerini yapıştır</li>" +
+      "<li>Sayfayı yenile</li></ol>" +
+      (extra ? "<p class='setup-extra'>" + esc(extra) + "</p>" : "") +
+      "<p class='setup-extra'>Ayrıntı: <code>docs/SETUP-SUPABASE.md</code></p>";
+    document.querySelector(".auth-card").appendChild(box);
   }
 
   init();

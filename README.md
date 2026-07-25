@@ -32,11 +32,11 @@ level/XP mekanikleri olan bir RPG. Tam yeni başlayanlar için tasarlandı.
   `home` komutu veya HUD'daki "ana sayfa" linkiyle geri dönersin. Story kartında ilerleme
   halkası (%) ve bölüm rozetleri gösterilir. *(anime.js `web/js/lib/anime.min.js` olarak
   yerel vendor'landı — çevrimdışı çalışır.)*
-- **Profil / "hesap" (auth SİMÜLASYONU)** — e-posta + şifre ile kayıt/giriş, her
-  profilin kendi ilerlemesi. ⚠️ **Bu gerçek güvenlik değildir**: tüm kod tarayıcıda
-  açıkta çalışır, veri `localStorage`'da durur. SHA-256 + salt yalnızca düz-metin
-  şifreyi saklamamak içindir (hijyen), koruma değil. Gerçek auth = sunucu + DB;
-  API yüzeyi ileride `fetch` tabanlı bir backend'e taşınacak şekilde soyutlandı.
+- **Gerçek kullanıcı hesabı (Supabase)** — e-posta + şifre ile kayıt/giriş, e-posta
+  doğrulama ve şifre sıfırlama. Kimlik doğrulama **sunucuda** yapılır; ilerleme
+  Postgres'te saklanır ve **cihazlar arasında senkronlanır**. Güvenlik **Row Level
+  Security** ile: her kullanıcı yalnızca kendi satırına erişir. Oynamak için giriş
+  gerekir. ⚙️ Kurulum (~5 dk, ücretsiz, kart yok): [`docs/SETUP-SUPABASE.md`](docs/SETUP-SUPABASE.md)
 - **6 tech-anime avatar** — Netrunner, Ronin, Techno, Oracle, Pilot, Ghost (kod ile
   çizilmiş SVG). Kayıtta ve profil sayfasından değiştirilebilir.
 - **Profil sayfası** — avatar, rank, level/XP, credits, rozetler, **tamamlanan
@@ -68,12 +68,17 @@ placeholder; `status:"active"` + `quests[]` dolu olan **oynanabilir**. Aktif ola
 Lab dokümanları: [Network Ops](docs/CURRICULUM-LAB-NETWORK-OPS.md) · [Scripting](docs/CURRICULUM-LAB-SCRIPTING.md).
 Lab'lar XP/rozet verir ama "hazırlık %" (story) sayacını etkilemez.
 
-> ⚠️ **Auth notu:** Web'deki kayıt/giriş bir **auth simülasyonudur**, gerçek güvenlik
-> değildir (tüm kod tarayıcıda açıkta; veri `localStorage`'da). Gerçek auth = sunucu + DB.
+**Hesap katmanı:** [`web/js/auth.js`](web/js/auth.js) Supabase Auth + `profiles` tablosunu
+sarar. Profil, oturum açılışında bir kez belleğe alınır (okumalar senkron kalsın diye),
+yazmalar debounce'lanıp buluta gider; ağ koparsa yerel yedeğe düşer ve bir sonraki
+açılışta yukarı itilir. Şema + RLS: [`supabase/schema.sql`](supabase/schema.sql).
+`web/js/config.js` içindeki **anon key gizli değildir** (tasarım gereği); koruma RLS'tedir.
+`service_role` anahtarı repoda **yoktur ve olmamalıdır**.
 
 Dosya yapısı: `data/curriculum.json` (SSOT) · `build.ps1` · `cloudquest.ps1` (terminal) ·
-`web/index.html` · `web/css/style.css` · `web/js/{content.generated,parser,avatars,auth,game}.js` ·
-`web/js/lib/{anime.min,sweetalert2.all.min}.js` (vendor, çevrimdışı).
+`supabase/schema.sql` · `web/index.html` · `web/css/style.css` ·
+`web/js/{config,content.generated,parser,avatars,auth,game}.js` ·
+`web/js/lib/{anime.min,sweetalert2.all.min,supabase.min}.js` (vendor, çevrimdışı).
 
 Dialog/onay/toast'lar **SweetAlert2** ile (reset & çıkış onayı, "yakında" bildirimleri) —
 cyberpunk temalı, yerel vendor'lı (CDN'siz).
