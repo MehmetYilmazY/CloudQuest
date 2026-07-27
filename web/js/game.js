@@ -625,6 +625,21 @@
   }
   function closeAvatarModal() { $("avatar-modal").classList.add("hidden"); }
 
+  /* ---- Paylaşılabilir başarı kartı ---- */
+  function openShareModal() {
+    var box = $("share-preview");
+    box.innerHTML = "<div class='share-loading'>Kart hazırlanıyor…</div>";
+    $("share-modal").classList.remove("hidden");
+    ShareCard.build(player).then(function (cv) {
+      box.innerHTML = "";
+      cv.classList.add("share-canvas");
+      box.appendChild(cv);
+    }).catch(function (e) {
+      box.innerHTML = "<div class='share-loading'>Kart oluşturulamadı: " + esc(e.message || e) + "</div>";
+    });
+  }
+  function closeShareModal() { $("share-modal").classList.add("hidden"); }
+
   function doLogout() {
     cqConfirm({
       icon: "question", title: "Çıkış yapılsın mı?",
@@ -788,6 +803,18 @@
     $("avatar-modal-close").onclick = closeAvatarModal;
     $("avatar-modal-done").onclick = closeAvatarModal;
     $("avatar-modal").addEventListener("click", function (e) { if (e.target === $("avatar-modal")) closeAvatarModal(); });
+    // paylaşım kartı
+    $("btn-share").onclick = openShareModal;
+    $("share-close").onclick = closeShareModal;
+    $("share-modal").addEventListener("click", function (e) { if (e.target === $("share-modal")) closeShareModal(); });
+    $("share-download").onclick = function () {
+      ShareCard.download(player).then(function () { cqToast("success", "Kart indirildi"); });
+    };
+    $("share-copy").onclick = function () {
+      ShareCard.copy(player).then(function (ok) {
+        cqToast(ok ? "success" : "info", ok ? "Panoya kopyalandı" : "Tarayıcın desteklemiyor — PNG indir");
+      }).catch(function () { cqToast("info", "Kopyalanamadı — PNG indir"); });
+    };
     // home
     $("home-logout").onclick = doLogout;
     $("story-continue").onclick = function (e) { e.stopPropagation(); goToTerminal(); };

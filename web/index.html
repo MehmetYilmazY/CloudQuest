@@ -106,6 +106,7 @@
 
       <div class="profile-actions">
         <button class="btn-ghost" id="btn-logout" type="button">⎋ Çıkış Yap</button>
+        <button class="btn-ghost" id="btn-share" type="button">🎴 Kartı Paylaş</button>
         <button class="btn-neon" id="btn-close-2" type="button">Terminale Dön</button>
       </div>
     </div>
@@ -159,6 +160,21 @@
         <div class="home-section-label">🔮 ADVANCED LABS <span class="hint-inline">— seç &amp; keşfet</span></div>
         <div class="lab-grid" id="lab-grid"></div>
       </section>
+    </div>
+  </div>
+
+  <!-- ================= SHARE CARD MODAL ================= -->
+  <div class="overlay share-modal hidden" id="share-modal">
+    <div class="grid-bg"></div>
+    <div class="share-card-box">
+      <button class="profile-close" id="share-close" type="button" aria-label="kapat">✕</button>
+      <div class="modal-title">🎴 Başarı Kartın</div>
+      <div class="modal-sub">İndirip LinkedIn'de paylaşabilirsin.</div>
+      <div class="share-preview" id="share-preview"></div>
+      <div class="share-actions">
+        <button class="btn-ghost" id="share-copy" type="button">📋 Panoya Kopyala</button>
+        <button class="btn-neon" id="share-download" type="button">⬇ PNG İndir</button>
+      </div>
     </div>
   </div>
 
@@ -240,6 +256,7 @@
   <script src="js/content.generated.js"></script>
   <script src="js/parser.js"></script>
   <script src="js/avatars.js"></script>
+  <script src="js/sharecard.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/game.js"></script>
 </body>
