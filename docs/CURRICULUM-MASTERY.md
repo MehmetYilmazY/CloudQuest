@@ -8,9 +8,9 @@ Mastery modülü **3 eğitim (quest)** içerir; oyunun kapanış perdesidir.
 
 | Eğitim | id | Well-Architected konusu | Komutlar |
 |--------|----|-------------------------|----------|
-| Kapıları Kilitle | `c8q1` | IAM least privilege, secrets, audit | `iam list-attached-user-policies` · `iam detach-user-policy` · `secretsmanager create-secret` · `cloudtrail create-trail` |
-| Veriyi Koru | `c8q2` | Data protection (public/encryption/scan) | `s3api put-public-access-block` · `s3api put-bucket-encryption` · `trivy image` |
-| Faturayı Dizginle | `c8q3` | Cost Optimization | `ce get-cost-and-usage` · `budgets create-budget` · `ec2 create-tags` · `ec2 stop-instances` |
+| Erişim Kalkanı | `c8q1` | IAM least privilege, secrets, audit | `iam list-attached-user-policies` · `iam detach-user-policy` · `secretsmanager create-secret` · `cloudtrail create-trail` |
+| Şifreleme Katmanı | `c8q2` | Data protection (public/encryption/scan) | `s3api put-public-access-block` · `s3api put-bucket-encryption` · `trivy image` |
+| Bütçe Kilidi | `c8q3` | Cost Optimization | `ce get-cost-and-usage` · `budgets create-budget` · `ec2 create-tags` · `ec2 stop-instances` |
 
 **Vurgular:** least privilege (fazla yetkiyi sök), sırları kasada tut, her hareketi
 denetle (CloudTrail), veriyi kapat+şifrele, kodu tara (Trivy/Checkov), maliyeti

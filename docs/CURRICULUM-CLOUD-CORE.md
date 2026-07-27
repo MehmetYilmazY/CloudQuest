@@ -12,11 +12,11 @@ CloudWatch/ECS/EKS bilinçli olarak **dışarıda** — onlar Ch5 (Containers) v
 
 | Eğitim | id | Roadmap konusu | Komutlar (AWS CLI) |
 |--------|----|----------------|--------------------|
-| Kimlik & Erişim | `c3q1` | IAM: users, policies, roles, least privilege | `aws configure` · `iam create-user` · `iam attach-user-policy` · `iam create-role` |
-| Ağı Kur | `c3q2` | VPC: CIDR, subnet, internet gateway, security group | `ec2 create-vpc` · `create-subnet` · `create-internet-gateway` · `create-security-group` |
-| Sanal Sunucu | `c3q3` | EC2: key pair, instance type, Elastic IP | `ec2 create-key-pair` · `run-instances` · `describe-instances` · `allocate-address` |
-| Depoya Koy | `c3q4` | S3: bucket/object, versioning, storage class | `s3 mb` · `s3 cp` · `s3api put-bucket-versioning` |
-| Yönetilen Veritabanı | `c3q5` | RDS: managed DB, durum, maliyet (stop) | `rds create-db-instance` · `describe-db-instances` · `stop-db-instance` |
+| Kimlik Matrisi | `c3q1` | IAM: users, policies, roles, least privilege | `aws configure` · `iam create-user` · `iam attach-user-policy` · `iam create-role` |
+| Sanal Omurga | `c3q2` | VPC: CIDR, subnet, internet gateway, security group | `ec2 create-vpc` · `create-subnet` · `create-internet-gateway` · `create-security-group` |
+| Makine Uyanışı | `c3q3` | EC2: key pair, instance type, Elastic IP | `ec2 create-key-pair` · `run-instances` · `describe-instances` · `allocate-address` |
+| Nesne Kasası | `c3q4` | S3: bucket/object, versioning, storage class | `s3 mb` · `s3 cp` · `s3api put-bucket-versioning` |
+| Veri Çekirdeği | `c3q5` | RDS: managed DB, durum, maliyet (stop) | `rds create-db-instance` · `describe-db-instances` · `stop-db-instance` |
 
 **Vurgular:** least privilege (IAM), public/private ayrımı (VPC), Free Tier & maliyet
 refleksi (t3.micro, `rds stop-db-instance`), dayanıklılık (S3 versioning).

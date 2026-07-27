@@ -10,10 +10,10 @@ Automation modülü **4 eğitim (quest)** içerir: 2 CI/CD + 2 Observability.
 
 | Eğitim | id | Roadmap konusu | Komutlar |
 |--------|----|----------------|----------|
-| Otomatik Hat | `c6q1` | CI: build → test → trigger | `mkdir .github/workflows` · `npm run build` · `npm test` · `git push` |
-| Kapıdan Geçiş | `c6q2` | CD: secrets, dispatch, deploy | `gh secret set` · `gh workflow run` · `gh run watch` · `kubectl apply` |
-| Görünmezi Gör | `c7q1` | 3 sütun: log, metrik, sağlık | `tail -f`/`kubectl logs` · `kubectl top` · `curl /health` |
-| Alarm & İzlek | `c7q2` | Metrics/Alerts/Dashboard/Trace | `curl` PromQL · `promtool check rules` · `kubectl port-forward` (Grafana) · `curl` Jaeger |
+| Otonom Hat | `c6q1` | CI: build → test → trigger | `mkdir .github/workflows` · `npm run build` · `npm test` · `git push` |
+| Deploy Kapısı | `c6q2` | CD: secrets, dispatch, deploy | `gh secret set` · `gh workflow run` · `gh run watch` · `kubectl apply` |
+| Görünmez Katman | `c7q1` | 3 sütun: log, metrik, sağlık | `tail -f`/`kubectl logs` · `kubectl top` · `curl /health` |
+| Sinyal Ağı | `c7q2` | Metrics/Alerts/Dashboard/Trace | `curl` PromQL · `promtool check rules` · `kubectl port-forward` (Grafana) · `curl` Jaeger |
 
 **Vurgular:** hızlı geri bildirim (build önce), sırları koda yazmama (repo secrets),
 izlenebilir deploy, gözlemlenebilirliğin 3 sütunu, proaktif alarm (kullanıcıdan önce

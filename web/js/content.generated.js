@@ -136,7 +136,7 @@ const CQ_DATA = {
   },
   "quests": [
     {
-      "id": "c1q1", "chapter": 1, "title": "İlk Gün", "requires": [], "xp": 60, "credits": 15, "badge": "🐧 First Login",
+      "id": "c1q1", "chapter": 1, "title": "Cold Boot", "requires": [], "xp": 60, "credits": 15, "badge": "🐧 First Login",
       "brief": [
         "[Aria]: Tamam, ilk görev. Bu prod sunucusunda yön bulmayı öğrenelim —",
         "panik yok, sana ne yazacağını tek tek söyleyeceğim."
@@ -162,7 +162,7 @@ const CQ_DATA = {
       "complete": ["[Aria]: Terminalde yön bulmayı öğrendin. Şimdi şu dağınık dosyaları toparlayalım."]
     },
     {
-      "id": "c1q2", "chapter": 1, "title": "Dosya Düzeni", "requires": ["c1q1"], "xp": 70, "credits": 15, "badge": "🗂️ File Wrangler",
+      "id": "c1q2", "chapter": 1, "title": "Dosya Matrisi", "requires": ["c1q1"], "xp": 70, "credits": 15, "badge": "🗂️ File Wrangler",
       "brief": [
         "[Aria]: Deploy için düzenli bir klasör lazım. Dosya sistemini yönetmeyi öğrenelim:",
         "oluştur, kopyala, taşı, sil. Bunlar bir engineer'ın günlük ekmeği."
@@ -188,7 +188,7 @@ const CQ_DATA = {
       "complete": ["[Aria]: Dosya sistemine hükmediyorsun. Sırada: patlayan deploy'un sebebini loglarda avlamak."]
     },
     {
-      "id": "c1q3", "chapter": 1, "title": "Log Avı", "requires": ["c1q2"], "xp": 85, "credits": 15, "badge": "🔎 Log Hunter",
+      "id": "c1q3", "chapter": 1, "title": "İz Sürücü", "requires": ["c1q2"], "xp": 85, "credits": 15, "badge": "🔎 Log Hunter",
       "brief": [
         "[Aria]: Deploy sürekli patlıyor ve sebep loglarda saklı.",
         "Binlerce satırın içinden doğru ipucunu çekip çıkarmayı öğrenelim: metin işleme."
@@ -215,7 +215,7 @@ const CQ_DATA = {
       "complete": ["[Aria]: Metni işleyip kök nedene indin. Bir engineer'ın en sık yaptığı iş budur."]
     },
     {
-      "id": "c1q4", "chapter": 1, "title": "Kayıp İzin", "requires": ["c1q3"], "xp": 85, "credits": 15, "badge": "🔐 chmod Master",
+      "id": "c1q4", "chapter": 1, "title": "Access Denied", "requires": ["c1q3"], "xp": 85, "credits": 15, "badge": "🔐 chmod Master",
       "brief": [
         "[Aria]: Suçlu belli: deploy.sh çalıştırılamıyor — 'permission denied'.",
         "Linux izinlerini öğrenme vakti: okuma / yazma / çalıştırma (rwx)."
@@ -237,7 +237,7 @@ const CQ_DATA = {
       "complete": ["[Aria]: İzinler cloud'da güvenliğin temelidir. İyi iş."]
     },
     {
-      "id": "c1q5", "chapter": 1, "title": "Kaçak Süreç", "requires": ["c1q4"], "xp": 90, "credits": 15, "badge": "🩺 Process Hunter",
+      "id": "c1q5", "chapter": 1, "title": "Hayalet Süreç", "requires": ["c1q4"], "xp": 90, "credits": 15, "badge": "🩺 Process Hunter",
       "brief": [
         "[Aria]: Deploy sonrası sunucu CPU'yu %100 yemiş. Bir süreç kaçak yapıyor.",
         "Sunucunun durumunu oku, suçluyu bul ve durdur."
@@ -259,7 +259,7 @@ const CQ_DATA = {
       "complete": ["[Aria]: Bir sistemi teşhis edebilmek seni gerçek engineer yapar."]
     },
     {
-      "id": "c1q6", "chapter": 1, "title": "Kurulum Günü", "requires": ["c1q5"], "xp": 95, "credits": 20, "badge": "🛠️ Sysadmin Initiate",
+      "id": "c1q6", "chapter": 1, "title": "Daemon Uyanışı", "requires": ["c1q5"], "xp": 95, "credits": 20, "badge": "🛠️ Sysadmin Initiate",
       "brief": [
         "[Aria]: Sunucuda izleme aracı ve web servisi eksik.",
         "Paket kur, servisi başlat, ortam değişkenini ayarla — bir sunucuyu ayağa kaldırmanın temeli."
@@ -285,7 +285,7 @@ const CQ_DATA = {
       "complete": ["[Aria]: Paket, servis ve ortam — Linux temellerini bitirdin. Sırada ağ ve Git."]
     },
     {
-      "id": "c2q1", "chapter": 2, "title": "Sinyal Yok", "requires": ["c1q6"], "xp": 95, "credits": 20, "badge": "🕵️ Network Detective",
+      "id": "c2q1", "chapter": 2, "title": "Kayıp Paket", "requires": ["c1q6"], "xp": 95, "credits": 20, "badge": "🕵️ Network Detective",
       "brief": [
         "[Aria]: Uygulama api.internal'e bağlanamıyor.",
         "Ağ sorununu katman katman teşhis edelim: erişim → isim çözümü → servis."
@@ -307,7 +307,7 @@ const CQ_DATA = {
       "complete": ["[Aria]: Ağ sorunlarını katman katman kovalamak bir süpergüçtür."]
     },
     {
-      "id": "c2q2", "chapter": 2, "title": "Katman Katman", "requires": ["c2q1"], "xp": 110, "credits": 20, "badge": "🧭 Net Navigator",
+      "id": "c2q2", "chapter": 2, "title": "Katman 7", "requires": ["c2q1"], "xp": 110, "credits": 20, "badge": "🧭 Net Navigator",
       "brief": [
         "[Aria]: Bağlantı hâlâ tuhaf. Paketin yolunu izleyelim, portları görelim,",
         "sonra sunucuya uzaktan bağlanıp dosya gönderelim. (TCP/IP, routing, SSH)"
@@ -333,7 +333,7 @@ const CQ_DATA = {
       "complete": ["[Aria]: Ağı katman katman çözüp uzak sunucuya hükmettin. Şimdi kodu versiyonlayalım."]
     },
     {
-      "id": "c2q3", "chapter": 2, "title": "İlk Commit", "requires": ["c2q2"], "xp": 110, "credits": 20, "badge": "🌿 Git Initiate",
+      "id": "c2q3", "chapter": 2, "title": "Dal Ayrımı", "requires": ["c2q2"], "xp": 110, "credits": 20, "badge": "🌿 Git Initiate",
       "brief": [
         "[Aria]: Değişikliklerini takımla paylaşman lazım. Git zamanı.",
         "Klasik akış: klonla → branch aç → değiştir → commit → push → PR."
@@ -359,7 +359,7 @@ const CQ_DATA = {
       "complete": ["[Aria]: Artık takımla güvenle çalışabilirsin. Versiyon kontrolü = zaman makinesi."]
     },
     {
-      "id": "c2q4", "chapter": 2, "title": "Zaman Makinesi", "requires": ["c2q3"], "xp": 110, "credits": 20, "badge": "🕰️ Git Historian",
+      "id": "c2q4", "chapter": 2, "title": "Chronos", "requires": ["c2q3"], "xp": 110, "credits": 20, "badge": "🕰️ Git Historian",
       "brief": [
         "[Aria]: Kod paylaşmak yetmez; geçmişi okumak, güncel kalmak ve birleştirmek de gerekir.",
         "Git'in 'zaman makinesi' tarafını öğrenelim — Fundamentals'ın finali."
@@ -389,7 +389,7 @@ const CQ_DATA = {
       "complete": ["[Aria]: Versiyon kontrolünü de kavradın. Terminal, ağ ve Git — temelin artık sağlam."]
     },
     {
-      "id": "c3q1", "chapter": 3, "title": "Kimlik & Erişim", "requires": ["c2q4"], "xp": 150, "credits": 30, "badge": "🔑 IAM Keeper",
+      "id": "c3q1", "chapter": 3, "title": "Kimlik Matrisi", "requires": ["c2q4"], "xp": 150, "credits": 30, "badge": "🔑 IAM Keeper",
       "brief": [
         "[Aria]: Gerçek buluta giriyoruz! Ama önce kimlik. Bulutun kuralı: önce KİM, sonra NE.",
         "AWS'te her şey IAM ile başlar — kullanıcı, politika, rol. Az yetki = az risk."
@@ -415,7 +415,7 @@ const CQ_DATA = {
       "complete": ["[Aria]: Kimlik ve erişimi kurdun — bulut güvenliğinin temeli. Şimdi ağı örelim."]
     },
     {
-      "id": "c3q2", "chapter": 3, "title": "Ağı Kur", "requires": ["c3q1"], "xp": 150, "credits": 30, "badge": "🏗️ Network Builder",
+      "id": "c3q2", "chapter": 3, "title": "Sanal Omurga", "requires": ["c3q1"], "xp": 150, "credits": 30, "badge": "🏗️ Network Builder",
       "brief": [
         "[Aria]: Sunucuların yaşayacağı özel ağı kuralım: VPC.",
         "CIDR ile IP aralığı, subnet ile bölme, gateway ile internet, security group ile duvar."
@@ -441,7 +441,7 @@ const CQ_DATA = {
       "complete": ["[Aria]: Kendi bulut ağını sıfırdan kurdun. VPC, cloud mühendisliğinin belkemiğidir."]
     },
     {
-      "id": "c3q3", "chapter": 3, "title": "Sanal Sunucu", "requires": ["c3q2"], "xp": 160, "credits": 35, "badge": "🖥️ EC2 Operator",
+      "id": "c3q3", "chapter": 3, "title": "Makine Uyanışı", "requires": ["c3q2"], "xp": 160, "credits": 35, "badge": "🖥️ EC2 Operator",
       "brief": [
         "[Aria]: Ağ hazır; şimdi içine bir sunucu koyalım: EC2.",
         "Anahtar çifti, instance tipi, çalıştır, sonra sabit adres için Elastic IP."
@@ -467,7 +467,7 @@ const CQ_DATA = {
       "complete": ["[Aria]: İlk sunucunu ağın içinde ayağa kaldırdın. Compute senin elinde."]
     },
     {
-      "id": "c3q4", "chapter": 3, "title": "Depoya Koy", "requires": ["c3q3"], "xp": 160, "credits": 30, "badge": "🪣 S3 Handler",
+      "id": "c3q4", "chapter": 3, "title": "Nesne Kasası", "requires": ["c3q3"], "xp": 160, "credits": 30, "badge": "🪣 S3 Handler",
       "brief": [
         "[Aria]: Uygulamanın dosyalarını dayanıklı depoya koyalım: S3.",
         "Bucket oluştur, yükle, sonra kazara silmelere karşı versioning aç."
@@ -489,7 +489,7 @@ const CQ_DATA = {
       "complete": ["[Aria]: Object storage'ı çözdün: ölçeklenir, ucuz, dayanıklı."]
     },
     {
-      "id": "c3q5", "chapter": 3, "title": "Yönetilen Veritabanı", "requires": ["c3q4"], "xp": 170, "credits": 35, "badge": "🗄️ RDS Admin",
+      "id": "c3q5", "chapter": 3, "title": "Veri Çekirdeği", "requires": ["c3q4"], "xp": 170, "credits": 35, "badge": "🗄️ RDS Admin",
       "brief": [
         "[Aria]: Uygulamanın verisi lazım. Veritabanını kendin yönetme — AWS yönetsin: RDS.",
         "Kur, durumu izle, kullanılmadığında durdur (maliyet!). Free Tier: db.t3.micro."
@@ -511,7 +511,7 @@ const CQ_DATA = {
       "complete": ["[Aria]: IAM, VPC, EC2, S3, RDS — bir uygulamayı AWS'te uçtan uca kurabilirsin artık."]
     },
     {
-      "id": "c4q1", "chapter": 4, "title": "İlk Altyapı", "requires": ["c3q5"], "xp": 170, "credits": 35, "badge": "📜 IaC Believer",
+      "id": "c4q1", "chapter": 4, "title": "Genesis", "requires": ["c3q5"], "xp": 170, "credits": 35, "badge": "📜 IaC Believer",
       "brief": [
         "[Aria]: Elle tıklamak hataya açık ve tekrar edilemez. Altyapıyı KODLA — Terraform.",
         "Temel döngü: başlat → biçimlendir → doğrula → önizle → uygula. Aynı sonuç, her seferinde."
@@ -541,7 +541,7 @@ const CQ_DATA = {
       "complete": ["[Aria]: IaC döngüsünü kurdun. Artık altyapı = kod = güvenilirlik."]
     },
     {
-      "id": "c4q2", "chapter": 4, "title": "Değişkenler & Çıktılar", "requires": ["c4q1"], "xp": 170, "credits": 35, "badge": "✍️ HCL Scripter",
+      "id": "c4q2", "chapter": 4, "title": "Parametrik Sistem", "requires": ["c4q1"], "xp": 170, "credits": 35, "badge": "✍️ HCL Scripter",
       "brief": [
         "[Aria]: Sabit değerler kötüdür. Kodu değişkenlerle esnet, sonuçları output ile paylaş."
       ],
@@ -566,7 +566,7 @@ const CQ_DATA = {
       "complete": ["[Aria]: Değişken ve çıktılarla kodun yeniden kullanılabilir hale geldi."]
     },
     {
-      "id": "c4q3", "chapter": 4, "title": "State Yönetimi", "requires": ["c4q2"], "xp": 170, "credits": 35, "badge": "🗺️ State Keeper",
+      "id": "c4q3", "chapter": 4, "title": "Durum Haritası", "requires": ["c4q2"], "xp": 170, "credits": 35, "badge": "🗺️ State Keeper",
       "brief": [
         "[Aria]: Terraform gerçekliği 'state' dosyasında tutar. Onu okumayı ve düzeltmeyi öğren."
       ],
@@ -591,7 +591,7 @@ const CQ_DATA = {
       "complete": ["[Aria]: State'i okuyup düzeltebilmek, gerçek dünyada seni kurtaran beceridir."]
     },
     {
-      "id": "c4q4", "chapter": 4, "title": "Modüller & Temizlik", "requires": ["c4q3"], "xp": 180, "credits": 40, "badge": "🏛️ IaC Architect",
+      "id": "c4q4", "chapter": 4, "title": "Modüler Mimari", "requires": ["c4q3"], "xp": 180, "credits": 40, "badge": "🏛️ IaC Architect",
       "brief": [
         "[Aria]: Tekrarı modüllerle önle, ortamları workspace ile ayır, sonra düzgün temizle."
       ],
@@ -616,7 +616,7 @@ const CQ_DATA = {
       "complete": ["[Aria]: Modül, workspace ve temiz yaşam döngüsü — altyapıyı artık profesyonelce kodluyorsun."]
     },
     {
-      "id": "c5q1", "chapter": 5, "title": "Kutula ve Dağıt", "requires": ["c4q4"], "xp": 180, "credits": 40, "badge": "🐳 Container Captain",
+      "id": "c5q1", "chapter": 5, "title": "Konteyner Doğuşu", "requires": ["c4q4"], "xp": 180, "credits": 40, "badge": "🐳 Container Captain",
       "brief": [
         "[Aria]: 'Benim makinemde çalışıyordu' devri bitti. Docker ile paketle.",
         "Uygulama + bağımlılıkları tek image'de. Her yerde aynı çalışır."
@@ -642,7 +642,7 @@ const CQ_DATA = {
       "complete": ["[Aria]: Docker'ın temelini kurdun. Şimdi veriyi kalıcı kıl ve imajı paylaş."]
     },
     {
-      "id": "c5q2", "chapter": 5, "title": "Kalıcılık & Registry", "requires": ["c5q1"], "xp": 180, "credits": 40, "badge": "🚢 Image Shipper",
+      "id": "c5q2", "chapter": 5, "title": "Kalıcı Bellek", "requires": ["c5q1"], "xp": 180, "credits": 40, "badge": "🚢 Image Shipper",
       "brief": [
         "[Aria]: İmajı çalıştırmak yetmez; içine gir, veriyi kalıcı yap, sonra registry'ye gönder.",
         "Başkaları imajını 'pull' ile çeksin — takım böyle çalışır."
@@ -668,7 +668,7 @@ const CQ_DATA = {
       "complete": ["[Aria]: Veri kalıcılığı ve registry ile Docker'da profesyonelleştin. Şimdi orkestra: Kubernetes."]
     },
     {
-      "id": "c5q3", "chapter": 5, "title": "Orkestra", "requires": ["c5q2"], "xp": 190, "credits": 40, "badge": "☸️ kubectl Pilot",
+      "id": "c5q3", "chapter": 5, "title": "Orkestrasyon", "requires": ["c5q2"], "xp": 190, "credits": 40, "badge": "☸️ kubectl Pilot",
       "brief": [
         "[Aria]: Tek container yeterli değil. Kubernetes ile ölçekle ve dayanıklı kıl.",
         "kubectl = Kubernetes'in komut satırı. Pod, deployment, service kavramları."
@@ -694,7 +694,7 @@ const CQ_DATA = {
       "complete": ["[Aria]: Deployment ve Service ile uygulamanı cluster'da yayınladın."]
     },
     {
-      "id": "c5q4", "chapter": 5, "title": "İşlet & Ölçekle", "requires": ["c5q3"], "xp": 200, "credits": 45, "badge": "🎛️ K8s Operator",
+      "id": "c5q4", "chapter": 5, "title": "Ölçek Motoru", "requires": ["c5q3"], "xp": 200, "credits": 45, "badge": "🎛️ K8s Operator",
       "brief": [
         "[Aria]: Yayınlamak başlangıç. Şimdi ölçekle, yapılandır, sürüm yönet ve hata ayıkla."
       ],
@@ -719,7 +719,7 @@ const CQ_DATA = {
       "complete": ["[Aria]: Ölçek, config, sürüm ve debug — Kubernetes'i işletebiliyorsun artık."]
     },
     {
-      "id": "c6q1", "chapter": 6, "title": "Otomatik Hat", "requires": ["c5q4"], "xp": 200, "credits": 45, "badge": "🚀 Pipeline Builder",
+      "id": "c6q1", "chapter": 6, "title": "Otonom Hat", "requires": ["c5q4"], "xp": 200, "credits": 45, "badge": "🚀 Pipeline Builder",
       "brief": [
         "[Aria]: Her push'ta elle test/deploy yapmak sürdürülemez.",
         "GitHub Actions ile pipeline kur: build → test → deploy, tamamen otomatik."
@@ -745,7 +745,7 @@ const CQ_DATA = {
       "complete": ["[Aria]: Artık kodun kendi kendini derleyip test ediyor. Şimdi güvenli otomatik dağıtım (CD)."]
     },
     {
-      "id": "c6q2", "chapter": 6, "title": "Kapıdan Geçiş", "requires": ["c6q1"], "xp": 200, "credits": 45, "badge": "🚦 Release Conductor",
+      "id": "c6q2", "chapter": 6, "title": "Deploy Kapısı", "requires": ["c6q1"], "xp": 200, "credits": 45, "badge": "🚦 Release Conductor",
       "brief": [
         "[Aria]: Test yeşil ama iş bitmedi. Şimdi güvenli, otomatik DAĞITIM: sırlar, tetikleme, izleme, deploy.",
         "Bir daha 'elle prod'a atmak' yok."
@@ -771,7 +771,7 @@ const CQ_DATA = {
       "complete": ["[Aria]: Artık her onaylı değişiklik güvenle, otomatik ve izlenebilir şekilde canlıya gidiyor."]
     },
     {
-      "id": "c7q1", "chapter": 7, "title": "Görünmezi Gör", "requires": ["c6q2"], "xp": 210, "credits": 50, "badge": "👁️ Observer",
+      "id": "c7q1", "chapter": 7, "title": "Görünmez Katman", "requires": ["c6q2"], "xp": 210, "credits": 50, "badge": "👁️ Observer",
       "brief": [
         "[Aria]: Gece 3'te alarm çaldı. 'Yavaşlık' şikayeti var ama nerede?",
         "Gözlemlenebilirliğin 3 sütunu: loglar, metrikler, izler (traces)."
@@ -793,7 +793,7 @@ const CQ_DATA = {
       "complete": ["[Aria]: Ölçemediğini yönetemezsin. Ama tek tek bakmak yetmez — sistem sana haber vermeli."]
     },
     {
-      "id": "c7q2", "chapter": 7, "title": "Alarm & İzlek", "requires": ["c7q1"], "xp": 220, "credits": 50, "badge": "🔔 Signal Master",
+      "id": "c7q2", "chapter": 7, "title": "Sinyal Ağı", "requires": ["c7q1"], "xp": 220, "credits": 50, "badge": "🔔 Signal Master",
       "brief": [
         "[Aria]: Log tek tek bakmak değil. Metrikleri sorgula, alarm kur, dağıtık izleri gör, dashboard'a bak.",
         "Amaç: sorunu kullanıcıdan ÖNCE yakalamak."
@@ -819,7 +819,7 @@ const CQ_DATA = {
       "complete": ["[Aria]: Metrik, alarm, dashboard ve iz — artık sistemin sinir sistemini görüyorsun."]
     },
     {
-      "id": "c8q1", "chapter": 8, "title": "Kapıları Kilitle", "requires": ["c7q2"], "xp": 230, "credits": 55, "badge": "🛡️ Cloud Guardian",
+      "id": "c8q1", "chapter": 8, "title": "Erişim Kalkanı", "requires": ["c7q2"], "xp": 230, "credits": 55, "badge": "🛡️ Cloud Guardian",
       "brief": [
         "[Aria]: Son perde: güvenlik ve maliyet — bir engineer'ı senior yapan iki şey.",
         "Önce erişim ve sırlar. Az yetki, kilitli sır, izlenebilir hesap."
@@ -847,7 +847,7 @@ const CQ_DATA = {
       "complete": ["[Aria]: Erişim ve sırlar güvende. Ama veri hâlâ açıkta olabilir — onu koruyalım."]
     },
     {
-      "id": "c8q2", "chapter": 8, "title": "Veriyi Koru", "requires": ["c8q1"], "xp": 240, "credits": 55, "badge": "🔒 Data Protector",
+      "id": "c8q2", "chapter": 8, "title": "Şifreleme Katmanı", "requires": ["c8q1"], "xp": 240, "credits": 55, "badge": "🔒 Data Protector",
       "brief": [
         "[Aria]: En sık ihlal: yanlışlıkla herkese açık bir bucket. Veriyi kapat, şifrele, kodunu tara."
       ],
@@ -868,7 +868,7 @@ const CQ_DATA = {
       "complete": ["[Aria]: Veri kilitli ve şifreli, kod taranmış. Geriye tek şey kaldı: fatura."]
     },
     {
-      "id": "c8q3", "chapter": 8, "title": "Faturayı Dizginle", "requires": ["c8q2"], "xp": 260, "credits": 65, "badge": "💰 Cost Sentinel",
+      "id": "c8q3", "chapter": 8, "title": "Bütçe Kilidi", "requires": ["c8q2"], "xp": 260, "credits": 65, "badge": "💰 Cost Sentinel",
       "brief": [
         "[Aria]: Büyüme güzel, sürpriz fatura değil. Maliyeti gör, sınırla, etiketle, israfı kes.",
         "Bunu yaparsan artık çaylak değilsin — Meridian'ın mimarısın."
@@ -904,7 +904,7 @@ const CQ_DATA = {
       "topics": ["port tarama", "DNS & routing", "paket yakalama", "firewall/route debug"],
       "quests": [
         {
-          "id": "netq1", "title": "Port Avı", "requires": [], "xp": 120, "credits": 25, "badge": "🔌 Port Hunter",
+          "id": "netq1", "title": "Port Haritası", "requires": [], "xp": 120, "credits": 25, "badge": "🔌 Port Hunter",
           "brief": [
             "[Aria]: Ağ dojosuna hoş geldin. Gerçek arızalar, gerçek komutlar.",
             "Bir servise erişilemiyor. Önce hangi portlar açık, kim dinliyor — onu bul."
@@ -930,7 +930,7 @@ const CQ_DATA = {
           "complete": ["[Aria]: Portları haritaladın. Sorun 443'ün hiç dinlenmemesi — not al, devam."]
         },
         {
-          "id": "netq2", "title": "İsim & Yol", "requires": ["netq1"], "xp": 130, "credits": 30, "badge": "📡 Route Tracer",
+          "id": "netq2", "title": "DNS Labirenti", "requires": ["netq1"], "xp": 130, "credits": 30, "badge": "📡 Route Tracer",
           "brief": [
             "[Aria]: Bazen sorun makinede değil, adres çözümünde ya da yolda olur.",
             "DNS zincirini ve paketin gittiği rotayı çöz."
@@ -956,7 +956,7 @@ const CQ_DATA = {
           "complete": ["[Aria]: İsim çözümü ve rotayı çözdün. Ağın haritası artık kafanda."]
         },
         {
-          "id": "netq3", "title": "Paket Yakala", "requires": ["netq2"], "xp": 140, "credits": 35, "badge": "🕸️ Packet Catcher",
+          "id": "netq3", "title": "Paket Avcısı", "requires": ["netq2"], "xp": 140, "credits": 35, "badge": "🕸️ Packet Catcher",
           "brief": [
             "[Aria]: Loglar sustuğunda telin üstündeki gerçeğe bakarız: paketler.",
             "Trafiği yakala, TLS el sıkışmasını incele."
@@ -982,7 +982,7 @@ const CQ_DATA = {
           "complete": ["[Aria]: Paket seviyesine indin. Bu beceri seni 'sihirbaz' yapan şeydir."]
         },
         {
-          "id": "netq4", "title": "Güvenlik Duvarı", "requires": ["netq3"], "xp": 150, "credits": 35, "badge": "🚧 Firewall Tamer",
+          "id": "netq4", "title": "Duvar Ardında", "requires": ["netq3"], "xp": 150, "credits": 35, "badge": "🚧 Firewall Tamer",
           "brief": [
             "[Aria]: Son teşhis: trafiği bir duvar mı kesiyor? Kuralları oku, test et, düzelt, doğrula."
           ],
@@ -1013,7 +1013,7 @@ const CQ_DATA = {
       "topics": ["argüman & exit code", "değişken/döngü/koşul", "log parsing", "cron"],
       "quests": [
         {
-          "id": "scrq1", "title": "İlk Script", "requires": [], "xp": 120, "credits": 25, "badge": "🐚 Shell Novice",
+          "id": "scrq1", "title": "Script Çekirdeği", "requires": [], "xp": 120, "credits": 25, "badge": "🐚 Shell Novice",
           "brief": [
             "[Aria]: Aynı işi iki kez elle yaptıysan, üçüncüsünü yazmalısın. İlk script'in: yedekleme.",
             "Çalıştır, argüman ver, çıkış kodunu oku, hata ayıkla."
@@ -1039,7 +1039,7 @@ const CQ_DATA = {
           "complete": ["[Aria]: İlk script'in çalışıyor. Argüman ve exit code — otomasyonun tuğlaları."]
         },
         {
-          "id": "scrq2", "title": "Mantık", "requires": ["scrq1"], "xp": 130, "credits": 30, "badge": "🌀 Flow Scripter",
+          "id": "scrq2", "title": "Mantık Devresi", "requires": ["scrq1"], "xp": 130, "credits": 30, "badge": "🌀 Flow Scripter",
           "brief": [
             "[Aria]: Script'i akıllı yapan şey: değişken, döngü, koşul. Tekrarı makineye yıkalım."
           ],
@@ -1064,7 +1064,7 @@ const CQ_DATA = {
           "complete": ["[Aria]: Değişken, döngü, koşul — artık script'in düşünebiliyor."]
         },
         {
-          "id": "scrq3", "title": "Metni İşle", "requires": ["scrq2"], "xp": 140, "credits": 35, "badge": "🧵 Text Weaver",
+          "id": "scrq3", "title": "Metin Madenciliği", "requires": ["scrq2"], "xp": 140, "credits": 35, "badge": "🧵 Text Weaver",
           "brief": [
             "[Aria]: Loglar altın madeni ama ham. grep/awk/sed üçlüsüyle işleyip anlam çıkar."
           ],
@@ -1089,7 +1089,7 @@ const CQ_DATA = {
           "complete": ["[Aria]: grep-awk-sed üçlüsü — bir engineer'ın İsviçre çakısı. Ustalaştın."]
         },
         {
-          "id": "scrq4", "title": "Otomasyon", "requires": ["scrq3"], "xp": 150, "credits": 35, "badge": "⏰ Cron Master",
+          "id": "scrq4", "title": "Zamanlayıcı", "requires": ["scrq3"], "xp": 150, "credits": 35, "badge": "⏰ Cron Master",
           "brief": [
             "[Aria]: Son adım: script'i sen uyurken çalıştır. cron + sağlam script yazımı."
           ],
@@ -1120,7 +1120,7 @@ const CQ_DATA = {
       "topics": ["Dockerfile optimizasyonu", "volume/network", "registry", "compose"],
       "quests": [
         {
-          "id": "dkq1", "title": "İmaj Mühendisliği", "requires": [], "xp": 130, "credits": 30, "badge": "🐋 Image Smith",
+          "id": "dkq1", "title": "İmaj Fabrikası", "requires": [], "xp": 130, "credits": 30, "badge": "🐋 Image Smith",
           "brief": [
             "[Aria]: Temel build'i biliyorsun. Şimdi imajı KÜÇÜK ve HIZLI yapmayı öğren — katmanlar ve multi-stage."
           ],
@@ -1145,7 +1145,7 @@ const CQ_DATA = {
           "complete": ["[Aria]: 412MB'tan 74MB'a. Katmanları ve multi-stage'i çözdün — imaj artık zarif."]
         },
         {
-          "id": "dkq2", "title": "Depo & Ağ", "requires": ["dkq1"], "xp": 140, "credits": 35, "badge": "🔗 Volume Keeper",
+          "id": "dkq2", "title": "Kalıcı Bağlantı", "requires": ["dkq1"], "xp": 140, "credits": 35, "badge": "🔗 Volume Keeper",
           "brief": [
             "[Aria]: Container'lar geçici. Kalıcı veri = volume; container'lar arası konuşma = network."
           ],
@@ -1170,7 +1170,7 @@ const CQ_DATA = {
           "complete": ["[Aria]: Kalıcılık ve ağ — container'ları gerçek bir sistem gibi bağladın."]
         },
         {
-          "id": "dkq3", "title": "Registry & Inspect", "requires": ["dkq2"], "xp": 140, "credits": 35, "badge": "📦 Registry Runner",
+          "id": "dkq3", "title": "Registry Ağı", "requires": ["dkq2"], "xp": 140, "credits": 35, "badge": "📦 Registry Runner",
           "brief": [
             "[Aria]: İmaj paylaşılmazsa işe yaramaz. Registry'ye gönder, sonra derinlemesine incele."
           ],
@@ -1195,7 +1195,7 @@ const CQ_DATA = {
           "complete": ["[Aria]: Paylaş ve incele — bir imajı baştan sona yönetebiliyorsun."]
         },
         {
-          "id": "dkq4", "title": "Compose & Temizlik", "requires": ["dkq3"], "xp": 150, "credits": 35, "badge": "🧹 Compose Commander",
+          "id": "dkq4", "title": "Stack Komutası", "requires": ["dkq3"], "xp": 150, "credits": 35, "badge": "🧹 Compose Commander",
           "brief": [
             "[Aria]: Çok servisli stack'i tek dosyayla yönet, ölçekle, hata ayıkla — ve arkanı temiz bırak."
           ],
@@ -1226,7 +1226,7 @@ const CQ_DATA = {
       "topics": ["module tasarımı", "remote/locked state", "drift", "CI apply"],
       "quests": [
         {
-          "id": "tfq1", "title": "Modüller", "requires": [], "xp": 140, "credits": 35, "badge": "🧩 Module Architect",
+          "id": "tfq1", "title": "Modül Şeması", "requires": [], "xp": 140, "credits": 35, "badge": "🧩 Module Architect",
           "brief": [
             "[Aria]: Kopyala-yapıştır HCL değil, yeniden kullanılabilir modüller. Pro işi budur."
           ],
@@ -1251,7 +1251,7 @@ const CQ_DATA = {
           "complete": ["[Aria]: Modüller = az tekrar, çok tutarlılık. Altyapın artık lego gibi."]
         },
         {
-          "id": "tfq2", "title": "Remote State & Kilit", "requires": ["tfq1"], "xp": 150, "credits": 35, "badge": "🗃️ State Broker",
+          "id": "tfq2", "title": "Uzak Durum Kilidi", "requires": ["tfq1"], "xp": 150, "credits": 35, "badge": "🗃️ State Broker",
           "brief": [
             "[Aria]: State laptopunda durmaz. Takımca paylaşılan, kilitli bir remote state şart — yoksa çakışır."
           ],
@@ -1276,7 +1276,7 @@ const CQ_DATA = {
           "complete": ["[Aria]: Remote state ve kilit — takımla güvenle çalışmanın temeli."]
         },
         {
-          "id": "tfq3", "title": "Drift & Hedefli", "requires": ["tfq2"], "xp": 150, "credits": 35, "badge": "🌊 Drift Catcher",
+          "id": "tfq3", "title": "Drift Tespiti", "requires": ["tfq2"], "xp": 150, "credits": 35, "badge": "🌊 Drift Catcher",
           "brief": [
             "[Aria]: Birileri konsoldan elle değişiklik yaptı — 'drift'. Yakala, uzlaştır, gerektiğinde nokta atışı müdahale et."
           ],
@@ -1301,7 +1301,7 @@ const CQ_DATA = {
           "complete": ["[Aria]: Drift'i görüp uzlaştırdın. 'Kod ne diyorsa o' disiplinini koruyorsun."]
         },
         {
-          "id": "tfq4", "title": "CI-Güvenli Apply", "requires": ["tfq3"], "xp": 160, "credits": 40, "badge": "🤖 Plan Automator",
+          "id": "tfq4", "title": "Otonom Apply", "requires": ["tfq3"], "xp": 160, "credits": 40, "badge": "🤖 Plan Automator",
           "brief": [
             "[Aria]: Pipeline'da 'apply' rulet olmamalı. Planı kaydet, aynısını uygula, kapıları koy."
           ],

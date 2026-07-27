@@ -9,10 +9,10 @@ Containers modülü **4 eğitim (quest)** içerir: 2 Docker + 2 Kubernetes.
 
 | Eğitim | id | Roadmap konusu | Komutlar |
 |--------|----|----------------|----------|
-| Kutula ve Dağıt | `c5q1` | Build & Run & Compose | `docker build` · `run` · `ps` · `compose up` |
-| Kalıcılık & Registry | `c5q2` | Volumes, exec, Registry (push) | `docker exec` · `volume create` · `tag` · `push` |
-| Orkestra | `c5q3` | Pods, Deployments, Services | `kubectl get nodes` · `create deployment` · `get pods` · `expose` |
-| İşlet & Ölçekle | `c5q4` | Scale, Config, Rollout, Debug | `kubectl scale` · `create configmap` · `rollout undo` · `logs` |
+| Konteyner Doğuşu | `c5q1` | Build & Run & Compose | `docker build` · `run` · `ps` · `compose up` |
+| Kalıcı Bellek | `c5q2` | Volumes, exec, Registry (push) | `docker exec` · `volume create` · `tag` · `push` |
+| Orkestrasyon | `c5q3` | Pods, Deployments, Services | `kubectl get nodes` · `create deployment` · `get pods` · `expose` |
+| Ölçek Motoru | `c5q4` | Scale, Config, Rollout, Debug | `kubectl scale` · `create configmap` · `rollout undo` · `logs` |
 
 **Vurgular:** "her yerde aynı çalışır" (imaj), ephemeral fs vs volume (kalıcılık),
 registry ile paylaşım (push/pull), Service ile sabit erişim + load balancing,

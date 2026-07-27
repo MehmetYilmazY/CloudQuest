@@ -8,10 +8,10 @@ Kaynak: roadmap.sh (Linux — Shell Programming / Text Processing) + genel Bash 
 
 | Quest | id | Konu | Komutlar |
 |-------|----|------|----------|
-| İlk Script | `scrq1` | exec, argüman ($1), exit code ($?), debug | `chmod +x` · `./script arg` · `echo $?` · `bash -x` |
-| Mantık | `scrq2` | değişken, döngü, koşul | `echo "$var"` · `for..in` · `if [ ]` · `while read` |
-| Metni İşle | `scrq3` | log parsing | `grep` · `awk '{print $1}'` · `sed 's///'` · `sort\|uniq -c` |
-| Otomasyon | `scrq4` | zamanlama & sağlamlık | `crontab -l/-e` · `bash -n` · `set -euo pipefail` |
+| Script Çekirdeği | `scrq1` | exec, argüman ($1), exit code ($?), debug | `chmod +x` · `./script arg` · `echo $?` · `bash -x` |
+| Mantık Devresi | `scrq2` | değişken, döngü, koşul | `echo "$var"` · `for..in` · `if [ ]` · `while read` |
+| Metin Madenciliği | `scrq3` | log parsing | `grep` · `awk '{print $1}'` · `sed 's///'` · `sort\|uniq -c` |
+| Zamanlayıcı | `scrq4` | zamanlama & sağlamlık | `crontab -l/-e` · `bash -n` · `set -euo pipefail` |
 
 Rozetler: 🐚 Shell Novice · 🌀 Flow Scripter · 🧵 Text Weaver · ⏰ Cron Master.
 

@@ -9,10 +9,10 @@ yakalama, firewall/route debug. **4 quest**, bir arıza baştan sona teşhis edi
 
 | Quest | id | Konu | Komutlar |
 |-------|----|------|----------|
-| Port Avı | `netq1` | Port tarama & dinleyenler | `nmap` · `ss/netstat` · `lsof/fuser` · `nc` |
-| İsim & Yol | `netq2` | DNS zinciri & routing | `dig +trace` · `dig -x` · `ip route` · `mtr` |
-| Paket Yakala | `netq3` | Paket & TLS inceleme | `tcpdump` · `curl -v` · `openssl s_client` · `tshark` |
-| Güvenlik Duvarı | `netq4` | Firewall & doğrulama | `iptables/nft/ufw` · `nc` · `ufw allow` · `curl -I` |
+| Port Haritası | `netq1` | Port tarama & dinleyenler | `nmap` · `ss/netstat` · `lsof/fuser` · `nc` |
+| DNS Labirenti | `netq2` | DNS zinciri & routing | `dig +trace` · `dig -x` · `ip route` · `mtr` |
+| Paket Avcısı | `netq3` | Paket & TLS inceleme | `tcpdump` · `curl -v` · `openssl s_client` · `tshark` |
+| Duvar Ardında | `netq4` | Firewall & doğrulama | `iptables/nft/ufw` · `nc` · `ufw allow` · `curl -I` |
 
 Rozetler: 🔌 Port Hunter · 📡 Route Tracer · 🕸️ Packet Catcher · 🚧 Firewall Tamer.
 
