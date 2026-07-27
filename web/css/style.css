@@ -62,12 +62,15 @@ body::before {
 
 /* konfeti */
 #fx-layer { position: fixed; inset: 0; pointer-events: none; z-index: 9998; overflow: hidden; }
-.fx-particle { position: absolute; width: 8px; height: 8px; border-radius: 2px; opacity: 0;
-  animation: fx-burst 1.15s cubic-bezier(.15,.7,.3,1) forwards; }
+.fx-particle { position: absolute; width: var(--s, 16px); height: var(--s, 16px); border-radius: 3px;
+  opacity: 0; margin-left: calc(var(--s, 16px) / -2); margin-top: calc(var(--s, 16px) / -2);
+  box-shadow: 0 0 12px currentColor;
+  animation: fx-burst 1.35s cubic-bezier(.15,.7,.3,1) forwards; }
 @keyframes fx-burst {
-  0%   { opacity: 1; transform: translate(0,0) scale(1) rotate(0deg); }
+  0%   { opacity: 1; transform: translate(0,0) scale(.3) rotate(0deg); }
+  15%  { transform: translate(calc(var(--dx) * .3), calc(var(--dy) * .3)) scale(1.15) rotate(60deg); }
   70%  { opacity: 1; }
-  100% { opacity: 0; transform: translate(var(--dx), calc(var(--dy) + 120px)) scale(.4) rotate(320deg); }
+  100% { opacity: 0; transform: translate(var(--dx), calc(var(--dy) + 160px)) scale(.5) rotate(400deg); }
 }
 
 /* ekran geçiş perdesi */

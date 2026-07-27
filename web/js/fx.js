@@ -47,13 +47,17 @@ var FX = (function () {
       var p = document.createElement("i");
       p.className = "fx-particle";
       var ang = (Math.PI * 2 * i) / n + (Math.random() - 0.5) * 0.5;
-      var dist = 90 + Math.random() * 130;
+      var dist = 130 + Math.random() * 190;
+      var size = 12 + Math.random() * 12;              // 12–24px, değişken
       p.style.left = x + "px";
       p.style.top = y + "px";
       p.style.background = colors[i % colors.length];
+      p.style.setProperty("--s", size + "px");
       p.style.setProperty("--dx", Math.cos(ang) * dist + "px");
-      p.style.setProperty("--dy", (Math.sin(ang) * dist - 40) + "px");
-      p.style.animationDelay = (Math.random() * 60) + "ms";
+      p.style.setProperty("--dy", (Math.sin(ang) * dist - 60) + "px");
+      // bazıları kare, bazıları yuvarlak — daha canlı görünür
+      if (i % 3 === 0) p.style.borderRadius = "50%";
+      p.style.animationDelay = (Math.random() * 70) + "ms";
       layer.appendChild(p);
       (function (node) { setTimeout(function () { node.remove(); }, 1400); })(p);
     }
