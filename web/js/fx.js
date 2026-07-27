@@ -139,12 +139,118 @@ var FX = (function () {
     setTimeout(function () { b.remove(); }, 2100);
   }
 
+  /* ---------- arka plan zerrecikleri (canvas) ----------
+     Tek canvas, tek rAF döngüsü. Sekme gizliyken durur (pil dostu),
+     reduced-motion'da hiç başlamaz. İçeriğin arkasında, tıklamayı engellemez. */
+  var _pt = null;
+  function particles(opts) {
+    if (reduce || _pt) return;
+    opts = opts || {};
+    var cv = document.createElement("canvas");
+    cv.id = "fx-particles";
+    document.body.appendChild(cv);
+    var ctx = cv.getContext("2d", { alpha: true });
+    var W = 0, H = 0, dpr = 1, pts = [], raf = null, running = false;
+    var mouse = { x: -9999, y: -9999 };
+    var COLORS = ["34,211,238", "192,132,252", "74,222,128"];
+    var LINK = opts.link || 132;
+
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = cv.clientWidth; H = cv.clientHeight;
+      cv.width = Math.floor(W * dpr); cv.height = Math.floor(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      // yoğunluk ekran alanına göre, üst sınırla (mobilde daha az)
+      var target = Math.min(opts.max || 78, Math.round((W * H) / 17000));
+      while (pts.length < target) pts.push(spawn());
+      if (pts.length > target) pts.length = target;
+    }
+    function spawn() {
+      return {
+        x: Math.random() * W, y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.22,
+        vy: -(0.06 + Math.random() * 0.20),          // hafif yukarı sürüklenme
+        r: 0.9 + Math.random() * 2.0,
+        a: 0.45 + Math.random() * 0.5,
+        c: COLORS[(Math.random() * COLORS.length) | 0],
+        tw: Math.random() * Math.PI * 2               // parıldama fazı
+      };
+    }
+    function frame() {
+      if (!running) return;
+      ctx.clearRect(0, 0, W, H);
+
+      for (var i = 0; i < pts.length; i++) {
+        var p = pts[i];
+        p.x += p.vx; p.y += p.vy; p.tw += 0.02;
+
+        // imleçten hafif kaçınma (etkileşim hissi)
+        var dx = p.x - mouse.x, dy = p.y - mouse.y, d2 = dx * dx + dy * dy;
+        if (d2 < 14000 && d2 > 0.01) {
+          var f = (14000 - d2) / 14000 * 0.6, d = Math.sqrt(d2);
+          p.x += (dx / d) * f; p.y += (dy / d) * f;
+        }
+
+        // sarmalama
+        if (p.y < -10) { p.y = H + 10; p.x = Math.random() * W; }
+        if (p.x < -10) p.x = W + 10; else if (p.x > W + 10) p.x = -10;
+
+        var alpha = p.a * (0.72 + 0.28 * Math.sin(p.tw));
+        // yumuşak hâle (glow) — shadowBlur'dan ucuz
+        var g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 4);
+        g.addColorStop(0, "rgba(" + p.c + "," + alpha.toFixed(3) + ")");
+        g.addColorStop(1, "rgba(" + p.c + ",0)");
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 4, 0, 6.283); ctx.fill();
+        // çekirdek
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283);
+        ctx.fillStyle = "rgba(" + p.c + "," + Math.min(1, alpha + 0.25).toFixed(3) + ")";
+        ctx.fill();
+      }
+
+      // yakın komşuları bağla (takımyıldız etkisi)
+      for (var a = 0; a < pts.length; a++) {
+        for (var b = a + 1; b < pts.length; b++) {
+          var ax = pts[a].x - pts[b].x, ay = pts[a].y - pts[b].y;
+          var dist = Math.sqrt(ax * ax + ay * ay);
+          if (dist > LINK) continue;
+          ctx.beginPath();
+          ctx.moveTo(pts[a].x, pts[a].y);
+          ctx.lineTo(pts[b].x, pts[b].y);
+          ctx.strokeStyle = "rgba(56,189,248," + (0.22 * (1 - dist / LINK)).toFixed(3) + ")";
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+      raf = requestAnimationFrame(frame);
+    }
+    function start() { if (running) return; running = true; raf = requestAnimationFrame(frame); }
+    function stop() { running = false; if (raf) cancelAnimationFrame(raf); raf = null; }
+
+    window.addEventListener("resize", resize, { passive: true });
+    window.addEventListener("mousemove", function (e) { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
+    window.addEventListener("mouseout", function () { mouse.x = mouse.y = -9999; }, { passive: true });
+    document.addEventListener("visibilitychange", function () { document.hidden ? stop() : start(); });
+
+    resize(); start();
+    _pt = { start: start, stop: stop, resize: resize, canvas: cv };
+    return _pt;
+  }
+
   function autoWire(root) {
     (root || document).querySelectorAll(".lab-card, .story-card, .g-card, .g-block").forEach(function (c) { tilt(c); });
   }
 
   return {
     reduce: reduce, typewrite: typewrite, burst: burst, burstFrom: burstFrom, burstCenter: burstCenter,
-    countUp: countUp, tilt: tilt, magnetic: magnetic, screenSwap: screenSwap, levelUp: levelUp, autoWire: autoWire
+    countUp: countUp, tilt: tilt, magnetic: magnetic, screenSwap: screenSwap, levelUp: levelUp,
+    autoWire: autoWire, particles: particles
   };
+})();
+
+/* Zerrecikler sayfa hazır olur olmaz başlasın (loader dahil her ekranın arkasında). */
+(function () {
+  function go() { if (typeof FX !== "undefined") FX.particles(); }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go);
+  else go();
 })();

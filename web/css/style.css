@@ -53,6 +53,9 @@ body::before {
   100% { transform: translate3d(-2%, 2%, 0) scale(1.02); }
 }
 
+/* arka plan zerrecikleri — her şeyin arkasında, tıklamayı engellemez */
+#fx-particles { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+
 /* daktilo */
 .fx-tw { opacity: 0; animation: fx-tw-in .01s linear forwards; }
 @keyframes fx-tw-in { to { opacity: 1; } }
@@ -138,7 +141,10 @@ body::before {
 .overlay {
   position: fixed; inset: 0; z-index: 100;
   display: flex; align-items: center; justify-content: center;
-  background: rgba(3, 6, 12, 0.92);
+  /* Yarı saydam: arkadaki zerrecikler görünsün. Metin zaten kartların kendi
+     opak zeminlerinde durduğu için okunurluk etkilenmez. (blur YOK — hem
+     zerrecikleri yutuyordu hem de bedava değil.) */
+  background: rgba(3, 6, 12, 0.62);
   overflow-y: auto; padding: 24px;
 }
 .overlay.fade-out { opacity: 0; transition: opacity .48s ease; }
