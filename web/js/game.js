@@ -170,6 +170,7 @@
       ["quest <id>", "bir questi başlat (örn: quest c1q1)"],
       ["map", "bölüm / ilerleme haritası"],
       ["home", "ana sayfaya (hub) dön"],
+      ["guide", "başlangıç rehberi (6 dk, rozetli)"],
       ["labs", "gelecek modüller (yakında)"],
       ["lab <id>", "bir modülün detayı (örn: lab net)"],
       ["status  (me)", "karakter panelin"],
@@ -465,6 +466,7 @@
         if (arg) startQuest(arg.toLowerCase()); else print("   Kullanım: quest <id>   (bkz: quests)", "hintline"); break;
       case "map": showMap(); break;
       case "home": case "anasayfa": backToHome(); break;
+      case "guide": case "rehber": openGuide(); break;
       case "labs": case "modules": showLabs(); break;
       case "lab": case "module":
         if (arg) showLab(arg); else print("   Kullanım: lab <id>   (bkz: labs)", "hintline"); break;
@@ -624,6 +626,34 @@
     $("avatar-modal").classList.remove("hidden");
   }
   function closeAvatarModal() { $("avatar-modal").classList.add("hidden"); }
+
+  /* ---- Başlangıç rehberi (scroll-driven) ---- */
+  function openGuide() {
+    var box = $("guide");
+    // Önce görünür yap: IntersectionObserver ölçülebilir bir kök ister,
+    // display:none iken kurulursa ilk bölümün kesişimini kaçırır.
+    box.classList.remove("hidden");
+    document.body.classList.add("guide-open");
+    Guide.mount(box, {
+      onComplete: function (badge) {
+        if (player.badges.indexOf(badge) === -1) {
+          player.badges.push(badge);
+          player.xp += 40;
+          save(); updateHud();
+          cqToast("success", "Rozet kazandın: " + badge + "  (+40 XP)");
+        }
+      }
+    });
+    box.querySelector("#guide-close").onclick = closeGuide;
+    var cta = box.querySelector("#guide-finish");
+    if (cta) cta.onclick = closeGuide;
+  }
+  function closeGuide() {
+    $("guide").classList.add("hidden");
+    document.body.classList.remove("guide-open");
+    Guide.unmount();
+    renderHome();       // rozet/XP değişmiş olabilir
+  }
 
   /* ---- Paylaşılabilir başarı kartı ---- */
   function openShareModal() {
@@ -816,6 +846,7 @@
       }).catch(function () { cqToast("info", "Kopyalanamadı — PNG indir"); });
     };
     // home
+    $("guide-banner").onclick = openGuide;
     $("home-logout").onclick = doLogout;
     $("story-continue").onclick = function (e) { e.stopPropagation(); goToTerminal(); };
     $("story-card").onclick = function () { goToTerminal(); };

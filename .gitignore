@@ -9,3 +9,6 @@ Thumbs.db
 
 # Bağımlılık/çıktı (varsa)
 node_modules/
+
+# ui-ux-pro-max skill (yerel arac, 2.8MB)
+.claude/
