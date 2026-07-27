@@ -279,6 +279,80 @@ body::before {
 .avatar-edit-btn:hover { background: rgba(192,132,252,.22); box-shadow: 0 0 16px rgba(192,132,252,.3); }
 
 /* =========================================================================
+   UYUM TESTİ — ayrı sayfa (quiz.html)
+   ========================================================================= */
+body.quiz-body { min-height: 100vh; }
+.q-progress { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: rgba(255,255,255,.06); z-index: 20; }
+.q-progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--neon), var(--magenta));
+  box-shadow: 0 0 12px rgba(34,211,238,.6); transition: width .4s cubic-bezier(.22,.61,.36,1); }
+.q-header { position: relative; z-index: 10; display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; padding: 16px 24px; border-bottom: 1px solid var(--border); background: rgba(7,12,22,.6); }
+.q-title-bar { color: #fff; font-size: 16px; font-weight: 700; text-align: center; }
+.q-title-bar .q-sub { display: block; font-size: 11.5px; color: var(--muted); font-weight: 400; margin-top: 2px; }
+.q-counter { color: var(--muted); font-size: 12px; letter-spacing: 2px; font-variant-numeric: tabular-nums; }
+.q-main { position: relative; z-index: 5; display: grid; place-items: center; padding: 26px 18px 40px; min-height: calc(100vh - 120px); }
+
+/* Kompakt kart: tek ekrana rahat sığsın, kaydırma gerekmesin */
+.q-card, .q-result { width: min(520px, 100%); background: linear-gradient(180deg, var(--panel), var(--panel-2));
+  border: 1px solid var(--border); border-radius: 16px; padding: 24px 22px;
+  box-shadow: 0 0 0 1px rgba(34,211,238,.07), 0 24px 60px rgba(0,0,0,.5);
+  animation: q-in .34s cubic-bezier(.22,.61,.36,1) both; }
+@keyframes q-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.q-kicker { font-size: 10px; letter-spacing: 3px; color: var(--neon); margin-bottom: 10px; }
+.q-card h2 { color: #fff; font-size: clamp(16px, 2.1vw, 19px); line-height: 1.4; margin-bottom: 18px; }
+.q-opts { display: flex; flex-direction: column; gap: 8px; }
+.q-opt { display: flex; align-items: flex-start; gap: 10px; text-align: left; cursor: pointer;
+  font-family: var(--mono); font-size: 13px; line-height: 1.45; color: var(--text);
+  background: #060d18; border: 1px solid var(--border); border-radius: 10px; padding: 11px 14px;
+  transition: transform .15s, border-color .2s, background .2s; }
+.q-opt span { flex: none; width: 14px; height: 14px; margin-top: 2px; border-radius: 50%;
+  border: 2px solid var(--border); transition: border-color .2s, background .2s, box-shadow .2s; }
+.q-opt:hover { transform: translateY(-1px); border-color: rgba(34,211,238,.45); background: #08111f; }
+.q-opt:hover span { border-color: var(--neon); }
+.q-opt.picked { border-color: var(--neon); background: rgba(34,211,238,.10); }
+.q-opt.picked span { background: var(--neon); border-color: var(--neon); box-shadow: 0 0 12px rgba(34,211,238,.6); }
+.q-back { margin-top: 20px; background: none; border: none; color: var(--muted); cursor: pointer;
+  font-family: var(--mono); font-size: 12.5px; }
+.q-back:hover { color: var(--neon); }
+
+/* sonuç */
+.q-score { text-align: center; margin-bottom: 8px; }
+.q-score-num { font-size: clamp(38px, 7vw, 54px); font-weight: 800; line-height: 1;
+  background: linear-gradient(90deg, var(--neon), var(--magenta));
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.q-score span { display: block; color: var(--muted); font-size: 12px; letter-spacing: 3px; margin-top: 4px; }
+.q-result h2 { color: #fff; font-size: clamp(17px, 2.4vw, 21px); text-align: center; margin: 14px 0 10px; line-height: 1.35; }
+.q-result p { color: var(--muted); font-size: 13px; line-height: 1.65; text-align: center; }
+.q-result p b { color: var(--text); }
+.q-weak .q-score-num { background: linear-gradient(90deg, var(--orange), var(--red));
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.q-mixed .q-score-num { background: linear-gradient(90deg, var(--yellow), var(--neon));
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+
+.q-bars { margin: 28px 0 6px; display: flex; flex-direction: column; gap: 13px; }
+.q-bar-top { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+.q-bar-top b { color: var(--text); font-variant-numeric: tabular-nums; }
+.q-bar-track { height: 8px; background: #050b14; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.q-bar-track i { display: block; height: 100%; border-radius: 6px; animation: q-grow .8s cubic-bezier(.22,.61,.36,1) both; }
+.q-bar-track i.hi  { background: linear-gradient(90deg, var(--green), var(--neon)); }
+.q-bar-track i.mid { background: linear-gradient(90deg, var(--yellow), var(--orange)); }
+.q-bar-track i.lo  { background: linear-gradient(90deg, var(--red), var(--orange)); }
+@keyframes q-grow { from { width: 0 !important; } }
+
+.q-alts { margin-top: 24px; padding: 16px 18px; border-radius: 12px;
+  background: rgba(192,132,252,.07); border: 1px solid rgba(192,132,252,.28); }
+.q-alts b { color: var(--magenta); font-size: 13.5px; }
+.q-alts ul { margin: 10px 0 0 18px; color: var(--muted); font-size: 13.5px; line-height: 1.75; }
+.q-alts li b { color: var(--text); }
+.q-disclaimer { margin-top: 22px; font-size: 12.5px; color: var(--muted); text-align: center; line-height: 1.65; }
+.q-disclaimer b { color: var(--neon); }
+.q-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
+.q-actions .btn-neon { width: auto; margin: 0; text-decoration: none; display: inline-block; padding: 12px 24px; }
+.q-actions .btn-ghost { margin: 0; }
+
+@media (max-width: 640px) { .q-card, .q-result { padding: 26px 20px; } }
+
+/* =========================================================================
    TERMINAL 101 — ayrı sayfa (tutorial.html)
    ========================================================================= */
 body.tut-body { overflow: hidden; height: 100vh; }
@@ -516,6 +590,22 @@ body.guide-open { overflow: hidden; }
   color: var(--muted); text-decoration: none; padding-top: 16px; border-top: 1px solid var(--border); }
 .auth-tut-link:hover { color: var(--green); }
 .auth-tut-link b { color: var(--text); }
+.auth-quiz-link { border-top: none; padding-top: 6px; margin-top: 4px; }
+.auth-quiz-link:hover { color: var(--magenta); }
+
+/* Ana sayfada kompakt test çipi — tam genişlik afiş değil, tek satırlık pill */
+.quiz-chip { display: inline-flex; align-items: center; gap: 9px; margin-top: 12px; text-decoration: none;
+  font-family: var(--mono); padding: 9px 16px; border-radius: 22px;
+  background: linear-gradient(135deg, rgba(192,132,252,.10), rgba(244,114,182,.05)), var(--panel);
+  border: 1px solid rgba(192,132,252,.30);
+  transition: transform .15s, border-color .2s, box-shadow .2s; }
+.quiz-chip:hover { transform: translateY(-1px); border-color: rgba(192,132,252,.65);
+  box-shadow: 0 0 22px rgba(192,132,252,.18); }
+.qc-icon { font-size: 16px; }
+.quiz-chip b { color: var(--text); font-size: 13px; font-weight: 600; }
+.quiz-chip em { font-style: normal; color: var(--muted); font-size: 11.5px; }
+.qc-go { color: var(--magenta); font-size: 14px; }
+@media (max-width: 520px) { .quiz-chip em { display: none; } }
 
 @media (max-width: 640px) {
   .g-section { padding: 80px 18px; }
