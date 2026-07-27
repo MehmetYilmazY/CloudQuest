@@ -6,7 +6,7 @@
 > Hedef: tam yeni başlayanı, cloud'a girmeden önce terminal + ağ + Git temellerinde sağlamlaştırmak.
 
 Fundamentals modülü **10 eğitim (quest)** içerir. Her eğitim gerçek bir iş senaryosuna bağlıdır ve
-mentör Aria eşliğinde ilerler. Konu → eğitim eşlemesi:
+mentör Nova eşliğinde ilerler. Konu → eğitim eşlemesi:
 
 ## Ch1 — Terminal & Linux (6 eğitim)
 

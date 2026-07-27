@@ -11,7 +11,7 @@ level/XP mekanikleri olan bir RPG. Tam yeni başlayanlar için tasarlandı.
 | 🌐 **Web app** | Tarayıcı (kurulum yok) | `web/index.html` dosyasına çift tıkla |
 | 🖥️ **Terminal (PowerShell)** | Windows PowerShell 5.1+ | `powershell -ExecutionPolicy Bypass -File .\cloudquest.ps1` |
 
-> İkisi de aynı içeriği paylaşır: aynı bölümler, aynı questler, aynı mentör (Aria).
+> İkisi de aynı içeriği paylaşır: aynı bölümler, aynı questler, aynı mentör (Nova).
 > İlerlemen web'de tarayıcıya (localStorage), terminalde `data/save.json`'a kaydedilir.
 
 ## Web app'i açmak
@@ -22,7 +22,7 @@ level/XP mekanikleri olan bir RPG. Tam yeni başlayanlar için tasarlandı.
 
 ### Görsel & hesap özellikleri
 - **Hikâye modu ("Meridian" startup dramı)** — gerçekçi bir startup'a ilk gün girer,
-  çaylaklıktan Platform Lead'e yükselirsin. Mentör Aria + CTO Deniz eşliğinde her modül
+  çaylaklıktan Platform Lead'e yükselirsin. Mentör Nova + CEO Deniz eşliğinde her modül
   bir **PERDE**: prolog + perde açılış/kapanış sinematikleri olay örgüsünü ilerletir
   (launch, yatırım, ölçek krizi, gece 3 on-call'ları, güvenlik/maliyet denetimi).
   Öğrenme merkezde kalır; beat'ler bir kez gösterilir (`player.story`'de izlenir).
@@ -88,7 +88,7 @@ cyberpunk temalı, yerel vendor'lı (CDN'siz).
 1. Kayıt ol (ad + e-posta + şifre + avatar) ya da giriş yap.
 2. Ana sayfada **Story** ya da bir **Lab** seç → terminale gir.
 3. `quests` → görev listesini gör.
-3. `quest c1q1` → ilk göreve başla. Mentör Aria sana ne yazacağını öğretir.
+3. `quest c1q1` → ilk göreve başla. Mentör Nova sana ne yazacağını öğretir.
 4. Terminale gerçek komutları yaz (`pwd`, `ls`, `chmod +x ...`, `aws ...`, `terraform ...`, `docker ...`, `kubectl ...`).
 5. Takılırsan `hint` yaz. **3 yanlış denemeden sonra** doğru komut otomatik gösterilir. Quest içinde <kbd>Tab</kbd> = doğru komutu doldurur.
 6. XP kazan → level atla → rank yüksel (Intern → … → Principal Cloud Wizard). `credits` ile `shop`'tan ödül al.

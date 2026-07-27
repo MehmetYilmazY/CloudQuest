@@ -29,22 +29,22 @@ const CQ_DATA = {
     "startup": "Meridian",
     "prologue": [
       "── MERIDIAN ──  Pazartesi, 09:14.  İlk günün.",
-      "[Deniz — CTO]: Hoş geldin. Kötü haber: tek altyapı mühendisimiz Cem cuma günü istifa etti.",
+      "[Deniz — CEO]: Hoş geldin. Kötü haber: tek altyapı mühendisimiz Null cuma günü istifa etti.",
       "[Deniz]: İyi haber: yerini sen alıyorsun. 6 hafta sonra yatırımcı demosu var ve sistem şu an kâğıttan bir kule.",
-      "[Aria — Senior Engineer]: Selam, ben Aria. Panik yok — seni yalnız bırakmayacağım.",
-      "[Aria]: Bu bir maraton. Terminalden başlayıp Meridian'ı ayakta duracak bir platforma çevireceğiz.",
-      "[Aria]: Hazırsan ilk yangını birlikte söndürelim. 'quests' yazıp göreve bak."
+      "[Nova — Senior Engineer]: Selam, ben Nova. Panik yok — seni yalnız bırakmayacağım.",
+      "[Nova]: Bu bir maraton. Terminalden başlayıp Meridian'ı ayakta duracak bir platforma çevireceğiz.",
+      "[Nova]: Hazırsan ilk yangını birlikte söndürelim. 'quests' yazıp göreve bak."
     ],
     "acts": {
       "fundamentals": {
         "title": "PERDE I — Vaftiz Ateşi",
         "intro": [
-          "[Aria]: Prod tek bir sunucuda dönüyor ve şu an deploy bozuk.",
-          "[Aria]: Önce terminalde ayaklarının üstünde durmayı öğreneceksin — her komutu birlikte gireceğiz.",
-          "[Aria]: Günün sonunda buranın dilini konuşuyor olacaksın."
+          "[Nova]: Prod tek bir sunucuda dönüyor ve şu an deploy bozuk.",
+          "[Nova]: Önce terminalde ayaklarının üstünde durmayı öğreneceksin — her komutu birlikte gireceğiz.",
+          "[Nova]: Günün sonunda buranın dilini konuşuyor olacaksın."
         ],
         "outro": [
-          "[Aria]: İlk haftan bitti ve hâlâ ayaktasın. Terminal artık düşmanın değil, aletin.",
+          "[Nova]: İlk haftan bitti ve hâlâ ayaktasın. Terminal artık düşmanın değil, aletin.",
           "[Deniz]: Fena değilmiş çaylak. Ama asıl iş şimdi: bu tek sunucu bizi öldürecek. Buluta taşınıyoruz."
         ]
       },
@@ -52,21 +52,21 @@ const CQ_DATA = {
         "title": "PERDE II — Buluta Çıkış",
         "intro": [
           "[Deniz]: Kiralık tek sunucuyla yatırımcı demosuna gidemeyiz. AWS'e geçiyoruz.",
-          "[Aria]: Sıfırdan sağlam bir bulut temeli kuracağız: kimlik, ağ, sunucu, depo, veritabanı. Sırayla."
+          "[Nova]: Sıfırdan sağlam bir bulut temeli kuracağız: kimlik, ağ, sunucu, depo, veritabanı. Sırayla."
         ],
         "outro": [
-          "[Aria]: Meridian artık gerçek bulutta. Demo sunucusu çökmeyecek.",
+          "[Nova]: Meridian artık gerçek bulutta. Demo sunucusu çökmeyecek.",
           "[Deniz]: Güzel. Ama dün gece bir ayarı elle değiştirdim, 20 dakika down olduk. Bu bir daha olmayacak."
         ]
       },
       "iac": {
         "title": "PERDE III — Bir Daha Elle Yok",
         "intro": [
-          "[Aria]: Dünkü kesinti elle yapılan bir değişiklikten çıktı. Çözüm: altyapıyı koda dökmek.",
-          "[Aria]: Terraform'la öyle kuralım ki, her şey silinse tek komutla geri gelsin."
+          "[Nova]: Dünkü kesinti elle yapılan bir değişiklikten çıktı. Çözüm: altyapıyı koda dökmek.",
+          "[Nova]: Terraform'la öyle kuralım ki, her şey silinse tek komutla geri gelsin."
         ],
         "outro": [
-          "[Aria]: Artık altyapımız kod. Kimse yanlışlıkla kalıcı bir şey bozamaz.",
+          "[Nova]: Artık altyapımız kod. Kimse yanlışlıkla kalıcı bir şey bozamaz.",
           "[Deniz]: Demo mükemmeldi — yatırım geldi! Ama kullanıcı sayısı patladı, sistem yükü zor kaldırıyor."
         ]
       },
@@ -74,21 +74,21 @@ const CQ_DATA = {
         "title": "PERDE IV — Ölçek Sınavı",
         "intro": [
           "[Deniz]: Bir gecede 10 kat kullanıcı. Sunucular kıpkırmızı.",
-          "[Aria]: Uygulamayı container'la, Kubernetes'le ölçekle. Bir pod ölse bile kimse fark etmesin."
+          "[Nova]: Uygulamayı container'la, Kubernetes'le ölçekle. Bir pod ölse bile kimse fark etmesin."
         ],
         "outro": [
-          "[Aria]: Yük dağıldı, sistem kendini iyileştiriyor. İlk kez gece telefonun çalmadı.",
+          "[Nova]: Yük dağıldı, sistem kendini iyileştiriyor. İlk kez gece telefonun çalmadı.",
           "[Deniz]: Hızlı büyüyoruz ama her deploy'da kalbimiz ağzımıza geliyor. Gece 3 alarmlarından da bıktım."
         ]
       },
       "automation": {
         "title": "PERDE V — Uyuyabilmek",
         "intro": [
-          "[Aria]: Her release'i elle yapmayı bırakıyoruz. Pipeline: her push otomatik build, test, deploy.",
-          "[Aria]: Bir de sistemin içini göreceğiz — log, metrik, alarm. Sorunu kullanıcıdan önce biz görelim."
+          "[Nova]: Her release'i elle yapmayı bırakıyoruz. Pipeline: her push otomatik build, test, deploy.",
+          "[Nova]: Bir de sistemin içini göreceğiz — log, metrik, alarm. Sorunu kullanıcıdan önce biz görelim."
         ],
         "outro": [
-          "[Aria]: Kod kendini test edip dağıtıyor, sorunları önceden yakalıyoruz. Gece 3 alarmları neredeyse bitti.",
+          "[Nova]: Kod kendini test edip dağıtıyor, sorunları önceden yakalıyoruz. Gece 3 alarmları neredeyse bitti.",
           "[Deniz]: Denetim geliyor — güvenlik ve maliyet incelemesi. Bir de şu AWS faturasını gördün mü?"
         ]
       },
@@ -96,41 +96,41 @@ const CQ_DATA = {
         "title": "PERDE VI — Mimar",
         "intro": [
           "[Deniz]: İki sorun: güvenlik açığı riski ve kontrolden çıkan fatura. İkisini de sen kapatacaksın.",
-          "[Aria]: Son perde. Yetkileri kıs, sırları koru, maliyeti dizginle."
+          "[Nova]: Son perde. Yetkileri kıs, sırları koru, maliyeti dizginle."
         ],
         "outro": [
-          "[Aria]: Başardın. Sistem güvenli, maliyet kontrol altında, ekip sana güveniyor.",
+          "[Nova]: Başardın. Sistem güvenli, maliyet kontrol altında, ekip sana güveniyor.",
           "[Deniz]: Meridian'ın Platform Lead'i sensin artık. Altı hafta önce terminalden korkuyordun; bugün belkemiğimizsin.",
-          "[Deniz]: Cem'i yalnız bıraktık, tükendi. Seni bırakmadık — hatadan öğrendik. Sen de kimseyi yalnız bırakma.",
-          "[Aria]: Git, artık kendi çaylaklarını yetiştir. 🚀"
+          "[Deniz]: Null'u yalnız bıraktık, tükendi. Seni bırakmadık — hatadan öğrendik. Sen de kimseyi yalnız bırakma.",
+          "[Nova]: Git, artık kendi çaylaklarını yetiştir. 🚀"
         ]
       }
     },
     "beats": {
       "c1q3": { "when": "complete", "title": "◇ İZ",
         "lines": [
-          "[Aria]: Şu 'permission denied' — bunu Cem eklemiş. Senden önceki tek mühendis.",
-          "[Aria]: Aylarca burayı yalnız taşıdı, böyle acele yamalar bıraktı. Her biri birer saatli bomba."
+          "[Nova]: Şu 'permission denied' — bunu Null eklemiş. Senden önceki tek mühendis.",
+          "[Nova]: Aylarca burayı yalnız taşıdı, böyle acele yamalar bıraktı. Her biri birer saatli bomba."
         ] },
       "c3q1": { "when": "complete", "title": "◇ İZ",
         "lines": [
-          "[Aria]: IAM'i kurcalarken gördüm: Cem 'app-bot' diye full yetkili bir kimlik bırakmış.",
-          "[Aria]: Şimdi sırası değil ama o botu temizleyeceğiz. Not aldım."
+          "[Nova]: IAM'i kurcalarken gördüm: Null 'app-bot' diye full yetkili bir kimlik bırakmış.",
+          "[Nova]: Şimdi sırası değil ama o botu temizleyeceğiz. Not aldım."
         ] },
       "c5q3": { "when": "intro", "title": "◇ 03:14",
         "lines": [
-          "[Deniz]: Dürüst olayım — bu gece yarısı çökmeleri Cem gittiğinden beri sürüyor.",
+          "[Deniz]: Dürüst olayım — bu gece yarısı çökmeleri Null gittiğinden beri sürüyor.",
           "[Deniz]: Onun yamalarını yamıyoruz. Bu döngüyü kıracak biri lazım. Umarım sensindir."
         ] },
       "c7q1": { "when": "complete", "title": "◇ KÖK NEDEN",
         "lines": [
-          "[Aria]: İzler tek bir yere çıkıyor: Cem'in elle kurduğu bir cron her gece DB'yi kilitliyormuş.",
-          "[Aria]: Rastgele değilmiş. Tek bir kırılgan kestirme aylardır uykumuzu kaçırıyormuş — artık görünür."
+          "[Nova]: İzler tek bir yere çıkıyor: Null'un elle kurduğu bir cron her gece DB'yi kilitliyormuş.",
+          "[Nova]: Rastgele değilmiş. Tek bir kırılgan kestirme aylardır uykumuzu kaçırıyormuş — artık görünür."
         ] },
       "c8q1": { "when": "complete", "title": "◇ SON KESTİRME",
         "lines": [
-          "[Aria]: O söktüğün full-yetkili bot — Cem'in son kestirmesiydi.",
-          "[Aria]: Artık onun bıraktığı tek bir saatli bomba bile kalmadı. Sistem ilk kez gerçekten senin."
+          "[Nova]: O söktüğün full-yetkili bot — Null'un son kestirmesiydi.",
+          "[Nova]: Artık onun bıraktığı tek bir saatli bomba bile kalmadı. Sistem ilk kez gerçekten senin."
         ] }
     }
   },
@@ -138,7 +138,7 @@ const CQ_DATA = {
     {
       "id": "c1q1", "chapter": 1, "title": "Cold Boot", "requires": [], "xp": 60, "credits": 15, "badge": "🐧 First Login",
       "brief": [
-        "[Aria]: Tamam, ilk görev. Bu prod sunucusunda yön bulmayı öğrenelim —",
+        "[Nova]: Tamam, ilk görev. Bu prod sunucusunda yön bulmayı öğrenelim —",
         "panik yok, sana ne yazacağını tek tek söyleyeceğim."
       ],
       "objectives": [
@@ -159,12 +159,12 @@ const CQ_DATA = {
           "expect": { "cmd": ["cd"], "need": ["logs|logs/"] }, "hint": "cd logs",
           "success": "logs/ içindesin. İçini birazdan kurcalayacağız." }
       ],
-      "complete": ["[Aria]: Terminalde yön bulmayı öğrendin. Şimdi şu dağınık dosyaları toparlayalım."]
+      "complete": ["[Nova]: Terminalde yön bulmayı öğrendin. Şimdi şu dağınık dosyaları toparlayalım."]
     },
     {
       "id": "c1q2", "chapter": 1, "title": "Dosya Matrisi", "requires": ["c1q1"], "xp": 70, "credits": 15, "badge": "🗂️ File Wrangler",
       "brief": [
-        "[Aria]: Deploy için düzenli bir klasör lazım. Dosya sistemini yönetmeyi öğrenelim:",
+        "[Nova]: Deploy için düzenli bir klasör lazım. Dosya sistemini yönetmeyi öğrenelim:",
         "oluştur, kopyala, taşı, sil. Bunlar bir engineer'ın günlük ekmeği."
       ],
       "objectives": [
@@ -185,12 +185,12 @@ const CQ_DATA = {
           "expect": { "cmd": ["rm"], "need": ["re:.+"] }, "hint": "rm deploy/old.tmp",
           "success": "Geçici dosya silindi. Düzen tamam." }
       ],
-      "complete": ["[Aria]: Dosya sistemine hükmediyorsun. Sırada: patlayan deploy'un sebebini loglarda avlamak."]
+      "complete": ["[Nova]: Dosya sistemine hükmediyorsun. Sırada: patlayan deploy'un sebebini loglarda avlamak."]
     },
     {
       "id": "c1q3", "chapter": 1, "title": "İz Sürücü", "requires": ["c1q2"], "xp": 85, "credits": 15, "badge": "🔎 Log Hunter",
       "brief": [
-        "[Aria]: Deploy sürekli patlıyor ve sebep loglarda saklı.",
+        "[Nova]: Deploy sürekli patlıyor ve sebep loglarda saklı.",
         "Binlerce satırın içinden doğru ipucunu çekip çıkarmayı öğrenelim: metin işleme."
       ],
       "objectives": [
@@ -212,12 +212,12 @@ const CQ_DATA = {
           "hint": "grep -c 'Permission denied' logs/app.log",
           "success": "12 kez! Kök neden kesin: izin sorunu. Sıradaki quest çözecek." }
       ],
-      "complete": ["[Aria]: Metni işleyip kök nedene indin. Bir engineer'ın en sık yaptığı iş budur."]
+      "complete": ["[Nova]: Metni işleyip kök nedene indin. Bir engineer'ın en sık yaptığı iş budur."]
     },
     {
       "id": "c1q4", "chapter": 1, "title": "Access Denied", "requires": ["c1q3"], "xp": 85, "credits": 15, "badge": "🔐 chmod Master",
       "brief": [
-        "[Aria]: Suçlu belli: deploy.sh çalıştırılamıyor — 'permission denied'.",
+        "[Nova]: Suçlu belli: deploy.sh çalıştırılamıyor — 'permission denied'.",
         "Linux izinlerini öğrenme vakti: okuma / yazma / çalıştırma (rwx)."
       ],
       "objectives": [
@@ -234,12 +234,12 @@ const CQ_DATA = {
           "expect": { "cmd": ["./deploy.sh"] }, "hint": "./deploy.sh",
           "success": ">> Deploying... OK. Prod ayakta!" }
       ],
-      "complete": ["[Aria]: İzinler cloud'da güvenliğin temelidir. İyi iş."]
+      "complete": ["[Nova]: İzinler cloud'da güvenliğin temelidir. İyi iş."]
     },
     {
       "id": "c1q5", "chapter": 1, "title": "Hayalet Süreç", "requires": ["c1q4"], "xp": 90, "credits": 15, "badge": "🩺 Process Hunter",
       "brief": [
-        "[Aria]: Deploy sonrası sunucu CPU'yu %100 yemiş. Bir süreç kaçak yapıyor.",
+        "[Nova]: Deploy sonrası sunucu CPU'yu %100 yemiş. Bir süreç kaçak yapıyor.",
         "Sunucunun durumunu oku, suçluyu bul ve durdur."
       ],
       "objectives": [
@@ -256,12 +256,12 @@ const CQ_DATA = {
           "expect": { "cmd": ["df"] }, "hint": "df -h",
           "success": "Disk %64 dolu. Sorun yok. Sistem sağlıklı." }
       ],
-      "complete": ["[Aria]: Bir sistemi teşhis edebilmek seni gerçek engineer yapar."]
+      "complete": ["[Nova]: Bir sistemi teşhis edebilmek seni gerçek engineer yapar."]
     },
     {
       "id": "c1q6", "chapter": 1, "title": "Daemon Uyanışı", "requires": ["c1q5"], "xp": 95, "credits": 20, "badge": "🛠️ Sysadmin Initiate",
       "brief": [
-        "[Aria]: Sunucuda izleme aracı ve web servisi eksik.",
+        "[Nova]: Sunucuda izleme aracı ve web servisi eksik.",
         "Paket kur, servisi başlat, ortam değişkenini ayarla — bir sunucuyu ayağa kaldırmanın temeli."
       ],
       "objectives": [
@@ -282,12 +282,12 @@ const CQ_DATA = {
           "expect": { "cmd": ["export"], "need": ["re:.+=.*"] }, "hint": "export APP_ENV=prod",
           "success": "APP_ENV=prod ayarlandı. Uygulama doğru moda geçti. Ch1 tamam! 🎉" }
       ],
-      "complete": ["[Aria]: Paket, servis ve ortam — Linux temellerini bitirdin. Sırada ağ ve Git."]
+      "complete": ["[Nova]: Paket, servis ve ortam — Linux temellerini bitirdin. Sırada ağ ve Git."]
     },
     {
       "id": "c2q1", "chapter": 2, "title": "Kayıp Paket", "requires": ["c1q6"], "xp": 95, "credits": 20, "badge": "🕵️ Network Detective",
       "brief": [
-        "[Aria]: Uygulama api.internal'e bağlanamıyor.",
+        "[Nova]: Uygulama api.internal'e bağlanamıyor.",
         "Ağ sorununu katman katman teşhis edelim: erişim → isim çözümü → servis."
       ],
       "objectives": [
@@ -304,12 +304,12 @@ const CQ_DATA = {
           "expect": { "cmd": ["curl"], "need": ["re:.+"] }, "hint": "curl http://api.internal/health",
           "success": "200 OK! Meğer security group 443'ü kapatıyormuş. Çözüldü." }
       ],
-      "complete": ["[Aria]: Ağ sorunlarını katman katman kovalamak bir süpergüçtür."]
+      "complete": ["[Nova]: Ağ sorunlarını katman katman kovalamak bir süpergüçtür."]
     },
     {
       "id": "c2q2", "chapter": 2, "title": "Katman 7", "requires": ["c2q1"], "xp": 110, "credits": 20, "badge": "🧭 Net Navigator",
       "brief": [
-        "[Aria]: Bağlantı hâlâ tuhaf. Paketin yolunu izleyelim, portları görelim,",
+        "[Nova]: Bağlantı hâlâ tuhaf. Paketin yolunu izleyelim, portları görelim,",
         "sonra sunucuya uzaktan bağlanıp dosya gönderelim. (TCP/IP, routing, SSH)"
       ],
       "objectives": [
@@ -330,12 +330,12 @@ const CQ_DATA = {
           "expect": { "cmd": ["scp"], "need": ["re:.+", "re:.+"] }, "hint": "scp config.yml engineer@api.internal:/etc/app/",
           "success": "config gönderildi. Bağlantı tamamen çözüldü." }
       ],
-      "complete": ["[Aria]: Ağı katman katman çözüp uzak sunucuya hükmettin. Şimdi kodu versiyonlayalım."]
+      "complete": ["[Nova]: Ağı katman katman çözüp uzak sunucuya hükmettin. Şimdi kodu versiyonlayalım."]
     },
     {
       "id": "c2q3", "chapter": 2, "title": "Dal Ayrımı", "requires": ["c2q2"], "xp": 110, "credits": 20, "badge": "🌿 Git Initiate",
       "brief": [
-        "[Aria]: Değişikliklerini takımla paylaşman lazım. Git zamanı.",
+        "[Nova]: Değişikliklerini takımla paylaşman lazım. Git zamanı.",
         "Klasik akış: klonla → branch aç → değiştir → commit → push → PR."
       ],
       "objectives": [
@@ -356,12 +356,12 @@ const CQ_DATA = {
           "expect": { "cmd": ["git", "push"] }, "hint": "git push origin fix/timeout",
           "success": "Push edildi. PR açmaya hazır!" }
       ],
-      "complete": ["[Aria]: Artık takımla güvenle çalışabilirsin. Versiyon kontrolü = zaman makinesi."]
+      "complete": ["[Nova]: Artık takımla güvenle çalışabilirsin. Versiyon kontrolü = zaman makinesi."]
     },
     {
       "id": "c2q4", "chapter": 2, "title": "Chronos", "requires": ["c2q3"], "xp": 110, "credits": 20, "badge": "🕰️ Git Historian",
       "brief": [
-        "[Aria]: Kod paylaşmak yetmez; geçmişi okumak, güncel kalmak ve birleştirmek de gerekir.",
+        "[Nova]: Kod paylaşmak yetmez; geçmişi okumak, güncel kalmak ve birleştirmek de gerekir.",
         "Git'in 'zaman makinesi' tarafını öğrenelim — Fundamentals'ın finali."
       ],
       "objectives": [
@@ -386,12 +386,12 @@ const CQ_DATA = {
           "expect": { "cmd": ["git", "merge"], "need": ["re:.+"] }, "hint": "git merge feature/login",
           "success": "Branch birleşti. FUNDAMENTALS tamamlandı! 🎓" }
       ],
-      "complete": ["[Aria]: Versiyon kontrolünü de kavradın. Terminal, ağ ve Git — temelin artık sağlam."]
+      "complete": ["[Nova]: Versiyon kontrolünü de kavradın. Terminal, ağ ve Git — temelin artık sağlam."]
     },
     {
       "id": "c3q1", "chapter": 3, "title": "Kimlik Matrisi", "requires": ["c2q4"], "xp": 150, "credits": 30, "badge": "🔑 IAM Keeper",
       "brief": [
-        "[Aria]: Gerçek buluta giriyoruz! Ama önce kimlik. Bulutun kuralı: önce KİM, sonra NE.",
+        "[Nova]: Gerçek buluta giriyoruz! Ama önce kimlik. Bulutun kuralı: önce KİM, sonra NE.",
         "AWS'te her şey IAM ile başlar — kullanıcı, politika, rol. Az yetki = az risk."
       ],
       "objectives": [
@@ -412,12 +412,12 @@ const CQ_DATA = {
           "expect": { "cmd": ["aws", "iam", "create-role"] }, "hint": "aws iam create-role --role-name ec2-s3-role --assume-role-policy-document file://trust.json",
           "success": "Rol hazır. Sunucular artık anahtar taşımadan erişecek." }
       ],
-      "complete": ["[Aria]: Kimlik ve erişimi kurdun — bulut güvenliğinin temeli. Şimdi ağı örelim."]
+      "complete": ["[Nova]: Kimlik ve erişimi kurdun — bulut güvenliğinin temeli. Şimdi ağı örelim."]
     },
     {
       "id": "c3q2", "chapter": 3, "title": "Sanal Omurga", "requires": ["c3q1"], "xp": 150, "credits": 30, "badge": "🏗️ Network Builder",
       "brief": [
-        "[Aria]: Sunucuların yaşayacağı özel ağı kuralım: VPC.",
+        "[Nova]: Sunucuların yaşayacağı özel ağı kuralım: VPC.",
         "CIDR ile IP aralığı, subnet ile bölme, gateway ile internet, security group ile duvar."
       ],
       "objectives": [
@@ -438,12 +438,12 @@ const CQ_DATA = {
           "expect": { "cmd": ["aws", "ec2", "create-security-group"] }, "hint": "aws ec2 create-security-group --group-name web-sg --description 'web' --vpc-id vpc-0a1b2c",
           "success": "web-sg hazır. Ağ katmanı tamam." }
       ],
-      "complete": ["[Aria]: Kendi bulut ağını sıfırdan kurdun. VPC, cloud mühendisliğinin belkemiğidir."]
+      "complete": ["[Nova]: Kendi bulut ağını sıfırdan kurdun. VPC, cloud mühendisliğinin belkemiğidir."]
     },
     {
       "id": "c3q3", "chapter": 3, "title": "Makine Uyanışı", "requires": ["c3q2"], "xp": 160, "credits": 35, "badge": "🖥️ EC2 Operator",
       "brief": [
-        "[Aria]: Ağ hazır; şimdi içine bir sunucu koyalım: EC2.",
+        "[Nova]: Ağ hazır; şimdi içine bir sunucu koyalım: EC2.",
         "Anahtar çifti, instance tipi, çalıştır, sonra sabit adres için Elastic IP."
       ],
       "objectives": [
@@ -464,12 +464,12 @@ const CQ_DATA = {
           "expect": { "cmd": ["aws", "ec2", "allocate-address"] }, "hint": "aws ec2 allocate-address",
           "success": "Elastic IP ayrıldı. Adres artık sabit." }
       ],
-      "complete": ["[Aria]: İlk sunucunu ağın içinde ayağa kaldırdın. Compute senin elinde."]
+      "complete": ["[Nova]: İlk sunucunu ağın içinde ayağa kaldırdın. Compute senin elinde."]
     },
     {
       "id": "c3q4", "chapter": 3, "title": "Nesne Kasası", "requires": ["c3q3"], "xp": 160, "credits": 30, "badge": "🪣 S3 Handler",
       "brief": [
-        "[Aria]: Uygulamanın dosyalarını dayanıklı depoya koyalım: S3.",
+        "[Nova]: Uygulamanın dosyalarını dayanıklı depoya koyalım: S3.",
         "Bucket oluştur, yükle, sonra kazara silmelere karşı versioning aç."
       ],
       "objectives": [
@@ -486,12 +486,12 @@ const CQ_DATA = {
           "expect": { "cmd": ["aws", "s3api", "put-bucket-versioning"] }, "hint": "aws s3api put-bucket-versioning --bucket cloudquest-assets-42 --versioning-configuration Status=Enabled",
           "success": "Versioning açık. Artık silmeler geri alınabilir." }
       ],
-      "complete": ["[Aria]: Object storage'ı çözdün: ölçeklenir, ucuz, dayanıklı."]
+      "complete": ["[Nova]: Object storage'ı çözdün: ölçeklenir, ucuz, dayanıklı."]
     },
     {
       "id": "c3q5", "chapter": 3, "title": "Veri Çekirdeği", "requires": ["c3q4"], "xp": 170, "credits": 35, "badge": "🗄️ RDS Admin",
       "brief": [
-        "[Aria]: Uygulamanın verisi lazım. Veritabanını kendin yönetme — AWS yönetsin: RDS.",
+        "[Nova]: Uygulamanın verisi lazım. Veritabanını kendin yönetme — AWS yönetsin: RDS.",
         "Kur, durumu izle, kullanılmadığında durdur (maliyet!). Free Tier: db.t3.micro."
       ],
       "objectives": [
@@ -508,12 +508,12 @@ const CQ_DATA = {
           "expect": { "cmd": ["aws", "rds", "stop-db-instance"] }, "hint": "aws rds stop-db-instance --db-instance-identifier cq-db",
           "success": "cq-db durduruldu. Fatura kontrol altında. Cloud Core tamam! 🎉" }
       ],
-      "complete": ["[Aria]: IAM, VPC, EC2, S3, RDS — bir uygulamayı AWS'te uçtan uca kurabilirsin artık."]
+      "complete": ["[Nova]: IAM, VPC, EC2, S3, RDS — bir uygulamayı AWS'te uçtan uca kurabilirsin artık."]
     },
     {
       "id": "c4q1", "chapter": 4, "title": "Genesis", "requires": ["c3q5"], "xp": 170, "credits": 35, "badge": "📜 IaC Believer",
       "brief": [
-        "[Aria]: Elle tıklamak hataya açık ve tekrar edilemez. Altyapıyı KODLA — Terraform.",
+        "[Nova]: Elle tıklamak hataya açık ve tekrar edilemez. Altyapıyı KODLA — Terraform.",
         "Temel döngü: başlat → biçimlendir → doğrula → önizle → uygula. Aynı sonuç, her seferinde."
       ],
       "objectives": [
@@ -538,12 +538,12 @@ const CQ_DATA = {
           "expect": { "cmd": ["terraform", "apply"] }, "hint": "terraform apply",
           "success": "Apply complete! 3 kaynak oluştu — tıklama yok, tekrar üretilebilir." }
       ],
-      "complete": ["[Aria]: IaC döngüsünü kurdun. Artık altyapı = kod = güvenilirlik."]
+      "complete": ["[Nova]: IaC döngüsünü kurdun. Artık altyapı = kod = güvenilirlik."]
     },
     {
       "id": "c4q2", "chapter": 4, "title": "Parametrik Sistem", "requires": ["c4q1"], "xp": 170, "credits": 35, "badge": "✍️ HCL Scripter",
       "brief": [
-        "[Aria]: Sabit değerler kötüdür. Kodu değişkenlerle esnet, sonuçları output ile paylaş."
+        "[Nova]: Sabit değerler kötüdür. Kodu değişkenlerle esnet, sonuçları output ile paylaş."
       ],
       "objectives": [
         { "task": "Bir input değişkeniyle plan al.",
@@ -563,12 +563,12 @@ const CQ_DATA = {
           "expect": { "cmd": ["terraform", "console"] }, "hint": "terraform console",
           "success": "> var.region -> 'eu-central-1'. Konsol çalışıyor." }
       ],
-      "complete": ["[Aria]: Değişken ve çıktılarla kodun yeniden kullanılabilir hale geldi."]
+      "complete": ["[Nova]: Değişken ve çıktılarla kodun yeniden kullanılabilir hale geldi."]
     },
     {
       "id": "c4q3", "chapter": 4, "title": "Durum Haritası", "requires": ["c4q2"], "xp": 170, "credits": 35, "badge": "🗺️ State Keeper",
       "brief": [
-        "[Aria]: Terraform gerçekliği 'state' dosyasında tutar. Onu okumayı ve düzeltmeyi öğren."
+        "[Nova]: Terraform gerçekliği 'state' dosyasında tutar. Onu okumayı ve düzeltmeyi öğren."
       ],
       "objectives": [
         { "task": "State'teki kaynakları listele.",
@@ -588,12 +588,12 @@ const CQ_DATA = {
           "expect": { "cmd": ["terraform", "apply"], "need": ["re:^-replace"] }, "hint": "terraform apply -replace=aws_instance.web",
           "success": "web instance yeniden oluşturuldu." }
       ],
-      "complete": ["[Aria]: State'i okuyup düzeltebilmek, gerçek dünyada seni kurtaran beceridir."]
+      "complete": ["[Nova]: State'i okuyup düzeltebilmek, gerçek dünyada seni kurtaran beceridir."]
     },
     {
       "id": "c4q4", "chapter": 4, "title": "Modüler Mimari", "requires": ["c4q3"], "xp": 180, "credits": 40, "badge": "🏛️ IaC Architect",
       "brief": [
-        "[Aria]: Tekrarı modüllerle önle, ortamları workspace ile ayır, sonra düzgün temizle."
+        "[Nova]: Tekrarı modüllerle önle, ortamları workspace ile ayır, sonra düzgün temizle."
       ],
       "objectives": [
         { "task": "Koddaki modülleri indir/güncelle.",
@@ -613,12 +613,12 @@ const CQ_DATA = {
           "expect": { "cmd": ["terraform", "destroy"] }, "hint": "terraform destroy",
           "success": "Destroy complete! Kaynaklar silindi. IaC modülü tamam! 🎉" }
       ],
-      "complete": ["[Aria]: Modül, workspace ve temiz yaşam döngüsü — altyapıyı artık profesyonelce kodluyorsun."]
+      "complete": ["[Nova]: Modül, workspace ve temiz yaşam döngüsü — altyapıyı artık profesyonelce kodluyorsun."]
     },
     {
       "id": "c5q1", "chapter": 5, "title": "Konteyner Doğuşu", "requires": ["c4q4"], "xp": 180, "credits": 40, "badge": "🐳 Container Captain",
       "brief": [
-        "[Aria]: 'Benim makinemde çalışıyordu' devri bitti. Docker ile paketle.",
+        "[Nova]: 'Benim makinemde çalışıyordu' devri bitti. Docker ile paketle.",
         "Uygulama + bağımlılıkları tek image'de. Her yerde aynı çalışır."
       ],
       "objectives": [
@@ -639,12 +639,12 @@ const CQ_DATA = {
           "expect": { "anyOf": [ { "cmd": ["docker", "compose", "up"] }, { "cmd": ["docker-compose", "up"] } ] }, "hint": "docker compose up -d",
           "success": "app + db birlikte ayakta. Full stack container'da!" }
       ],
-      "complete": ["[Aria]: Docker'ın temelini kurdun. Şimdi veriyi kalıcı kıl ve imajı paylaş."]
+      "complete": ["[Nova]: Docker'ın temelini kurdun. Şimdi veriyi kalıcı kıl ve imajı paylaş."]
     },
     {
       "id": "c5q2", "chapter": 5, "title": "Kalıcı Bellek", "requires": ["c5q1"], "xp": 180, "credits": 40, "badge": "🚢 Image Shipper",
       "brief": [
-        "[Aria]: İmajı çalıştırmak yetmez; içine gir, veriyi kalıcı yap, sonra registry'ye gönder.",
+        "[Nova]: İmajı çalıştırmak yetmez; içine gir, veriyi kalıcı yap, sonra registry'ye gönder.",
         "Başkaları imajını 'pull' ile çeksin — takım böyle çalışır."
       ],
       "objectives": [
@@ -665,12 +665,12 @@ const CQ_DATA = {
           "expect": { "cmd": ["docker", "push"], "need": ["re:.+"] }, "hint": "docker push mehmet/myapp:1.0",
           "success": "Push tamam. İmaj artık her yerden erişilebilir." }
       ],
-      "complete": ["[Aria]: Veri kalıcılığı ve registry ile Docker'da profesyonelleştin. Şimdi orkestra: Kubernetes."]
+      "complete": ["[Nova]: Veri kalıcılığı ve registry ile Docker'da profesyonelleştin. Şimdi orkestra: Kubernetes."]
     },
     {
       "id": "c5q3", "chapter": 5, "title": "Orkestrasyon", "requires": ["c5q2"], "xp": 190, "credits": 40, "badge": "☸️ kubectl Pilot",
       "brief": [
-        "[Aria]: Tek container yeterli değil. Kubernetes ile ölçekle ve dayanıklı kıl.",
+        "[Nova]: Tek container yeterli değil. Kubernetes ile ölçekle ve dayanıklı kıl.",
         "kubectl = Kubernetes'in komut satırı. Pod, deployment, service kavramları."
       ],
       "objectives": [
@@ -691,12 +691,12 @@ const CQ_DATA = {
           "expect": { "cmd": ["kubectl", "expose"], "need": ["re:.+"] }, "hint": "kubectl expose deployment web --port=80 --type=LoadBalancer",
           "success": "service/web açıldı. Trafik artık dağıtılıyor." }
       ],
-      "complete": ["[Aria]: Deployment ve Service ile uygulamanı cluster'da yayınladın."]
+      "complete": ["[Nova]: Deployment ve Service ile uygulamanı cluster'da yayınladın."]
     },
     {
       "id": "c5q4", "chapter": 5, "title": "Ölçek Motoru", "requires": ["c5q3"], "xp": 200, "credits": 45, "badge": "🎛️ K8s Operator",
       "brief": [
-        "[Aria]: Yayınlamak başlangıç. Şimdi ölçekle, yapılandır, sürüm yönet ve hata ayıkla."
+        "[Nova]: Yayınlamak başlangıç. Şimdi ölçekle, yapılandır, sürüm yönet ve hata ayıkla."
       ],
       "objectives": [
         { "task": "Deployment'ı 3 replikaya ölçekle.",
@@ -716,12 +716,12 @@ const CQ_DATA = {
           "expect": { "cmd": ["kubectl", "logs"], "need": ["re:.+"] }, "hint": "kubectl logs web-xxxx",
           "success": "Loglar ekranda. Kök nedene indin. Containers modülü tamam! 🎉" }
       ],
-      "complete": ["[Aria]: Ölçek, config, sürüm ve debug — Kubernetes'i işletebiliyorsun artık."]
+      "complete": ["[Nova]: Ölçek, config, sürüm ve debug — Kubernetes'i işletebiliyorsun artık."]
     },
     {
       "id": "c6q1", "chapter": 6, "title": "Otonom Hat", "requires": ["c5q4"], "xp": 200, "credits": 45, "badge": "🚀 Pipeline Builder",
       "brief": [
-        "[Aria]: Her push'ta elle test/deploy yapmak sürdürülemez.",
+        "[Nova]: Her push'ta elle test/deploy yapmak sürdürülemez.",
         "GitHub Actions ile pipeline kur: build → test → deploy, tamamen otomatik."
       ],
       "objectives": [
@@ -742,12 +742,12 @@ const CQ_DATA = {
           "expect": { "cmd": ["git", "push"] }, "hint": "git push origin main",
           "success": "Actions tetiklendi: build ✔ test ✔. Yeşil pipeline!" }
       ],
-      "complete": ["[Aria]: Artık kodun kendi kendini derleyip test ediyor. Şimdi güvenli otomatik dağıtım (CD)."]
+      "complete": ["[Nova]: Artık kodun kendi kendini derleyip test ediyor. Şimdi güvenli otomatik dağıtım (CD)."]
     },
     {
       "id": "c6q2", "chapter": 6, "title": "Deploy Kapısı", "requires": ["c6q1"], "xp": 200, "credits": 45, "badge": "🚦 Release Conductor",
       "brief": [
-        "[Aria]: Test yeşil ama iş bitmedi. Şimdi güvenli, otomatik DAĞITIM: sırlar, tetikleme, izleme, deploy.",
+        "[Nova]: Test yeşil ama iş bitmedi. Şimdi güvenli, otomatik DAĞITIM: sırlar, tetikleme, izleme, deploy.",
         "Bir daha 'elle prod'a atmak' yok."
       ],
       "objectives": [
@@ -768,12 +768,12 @@ const CQ_DATA = {
           "expect": { "cmd": ["kubectl", "apply"], "need": ["re:.+"] }, "hint": "kubectl apply -f k8s/",
           "success": "Yeni sürüm canlıda. Elle dokunmadan, izlenebilir şekilde." }
       ],
-      "complete": ["[Aria]: Artık her onaylı değişiklik güvenle, otomatik ve izlenebilir şekilde canlıya gidiyor."]
+      "complete": ["[Nova]: Artık her onaylı değişiklik güvenle, otomatik ve izlenebilir şekilde canlıya gidiyor."]
     },
     {
       "id": "c7q1", "chapter": 7, "title": "Görünmez Katman", "requires": ["c6q2"], "xp": 210, "credits": 50, "badge": "👁️ Observer",
       "brief": [
-        "[Aria]: Gece 3'te alarm çaldı. 'Yavaşlık' şikayeti var ama nerede?",
+        "[Nova]: Gece 3'te alarm çaldı. 'Yavaşlık' şikayeti var ama nerede?",
         "Gözlemlenebilirliğin 3 sütunu: loglar, metrikler, izler (traces)."
       ],
       "objectives": [
@@ -790,12 +790,12 @@ const CQ_DATA = {
           "expect": { "cmd": ["curl"], "need": ["re:/(health|healthz|status)"] }, "hint": "curl http://localhost:8080/health",
           "success": "{db: degraded} — kök neden onaylandı. Grafana'da alarm kuruldu." }
       ],
-      "complete": ["[Aria]: Ölçemediğini yönetemezsin. Ama tek tek bakmak yetmez — sistem sana haber vermeli."]
+      "complete": ["[Nova]: Ölçemediğini yönetemezsin. Ama tek tek bakmak yetmez — sistem sana haber vermeli."]
     },
     {
       "id": "c7q2", "chapter": 7, "title": "Sinyal Ağı", "requires": ["c7q1"], "xp": 220, "credits": 50, "badge": "🔔 Signal Master",
       "brief": [
-        "[Aria]: Log tek tek bakmak değil. Metrikleri sorgula, alarm kur, dağıtık izleri gör, dashboard'a bak.",
+        "[Nova]: Log tek tek bakmak değil. Metrikleri sorgula, alarm kur, dağıtık izleri gör, dashboard'a bak.",
         "Amaç: sorunu kullanıcıdan ÖNCE yakalamak."
       ],
       "objectives": [
@@ -816,12 +816,12 @@ const CQ_DATA = {
           "expect": { "cmd": ["curl"], "need": ["re:jaeger|traces|16686"] }, "hint": "curl -s \"http://jaeger:16686/api/traces?service=web\"",
           "success": "İz: gecikme DB çağrısında (820ms). Kök neden görünür. Automation modülü tamam! 🎉" }
       ],
-      "complete": ["[Aria]: Metrik, alarm, dashboard ve iz — artık sistemin sinir sistemini görüyorsun."]
+      "complete": ["[Nova]: Metrik, alarm, dashboard ve iz — artık sistemin sinir sistemini görüyorsun."]
     },
     {
       "id": "c8q1", "chapter": 8, "title": "Erişim Kalkanı", "requires": ["c7q2"], "xp": 230, "credits": 55, "badge": "🛡️ Cloud Guardian",
       "brief": [
-        "[Aria]: Son perde: güvenlik ve maliyet — bir engineer'ı senior yapan iki şey.",
+        "[Nova]: Son perde: güvenlik ve maliyet — bir engineer'ı senior yapan iki şey.",
         "Önce erişim ve sırlar. Az yetki, kilitli sır, izlenebilir hesap."
       ],
       "objectives": [
@@ -844,12 +844,12 @@ const CQ_DATA = {
           "expect": { "cmd": ["aws", "cloudtrail", "create-trail"] }, "hint": "aws cloudtrail create-trail --name audit --s3-bucket-name meridian-audit-logs",
           "success": "audit trail açık. Artık her hareket kayıt altında." }
       ],
-      "complete": ["[Aria]: Erişim ve sırlar güvende. Ama veri hâlâ açıkta olabilir — onu koruyalım."]
+      "complete": ["[Nova]: Erişim ve sırlar güvende. Ama veri hâlâ açıkta olabilir — onu koruyalım."]
     },
     {
       "id": "c8q2", "chapter": 8, "title": "Şifreleme Katmanı", "requires": ["c8q1"], "xp": 240, "credits": 55, "badge": "🔒 Data Protector",
       "brief": [
-        "[Aria]: En sık ihlal: yanlışlıkla herkese açık bir bucket. Veriyi kapat, şifrele, kodunu tara."
+        "[Nova]: En sık ihlal: yanlışlıkla herkese açık bir bucket. Veriyi kapat, şifrele, kodunu tara."
       ],
       "objectives": [
         { "task": "S3 bucket'ının herkese açık erişimini kapat.",
@@ -865,12 +865,12 @@ const CQ_DATA = {
           "expect": { "anyOf": [ { "cmd": ["trivy", "image"], "need": ["re:.+"] }, { "cmd": ["trivy"] }, { "cmd": ["checkov"] } ] }, "hint": "trivy image myapp:1.0",
           "success": "Tarama bitti: 2 kritik açık bulundu ve yamalandı. Temiz." }
       ],
-      "complete": ["[Aria]: Veri kilitli ve şifreli, kod taranmış. Geriye tek şey kaldı: fatura."]
+      "complete": ["[Nova]: Veri kilitli ve şifreli, kod taranmış. Geriye tek şey kaldı: fatura."]
     },
     {
       "id": "c8q3", "chapter": 8, "title": "Bütçe Kilidi", "requires": ["c8q2"], "xp": 260, "credits": 65, "badge": "💰 Cost Sentinel",
       "brief": [
-        "[Aria]: Büyüme güzel, sürpriz fatura değil. Maliyeti gör, sınırla, etiketle, israfı kes.",
+        "[Nova]: Büyüme güzel, sürpriz fatura değil. Maliyeti gör, sınırla, etiketle, israfı kes.",
         "Bunu yaparsan artık çaylak değilsin — Meridian'ın mimarısın."
       ],
       "objectives": [
@@ -892,7 +892,7 @@ const CQ_DATA = {
           "success": "Test sunucusu durduruldu. Fatura düşüşe geçti. 🎉" }
       ],
       "complete": [
-        "[Aria]: Güvenlik ve maliyet — ikisini de kapattın. Yolculuk tamamlandı.",
+        "[Nova]: Güvenlik ve maliyet — ikisini de kapattın. Yolculuk tamamlandı.",
         "Terminal, ağ, AWS, IaC, container, CI/CD, gözlemlenebilirlik ve güvenlik: hepsi artık senin.",
         "Sırada gerçek dünya: portföyünü GitHub'da büyüt, AWS SAA sertifikasına hazırlan."
       ]
@@ -906,7 +906,7 @@ const CQ_DATA = {
         {
           "id": "netq1", "title": "Port Haritası", "requires": [], "xp": 120, "credits": 25, "badge": "🔌 Port Hunter",
           "brief": [
-            "[Aria]: Ağ dojosuna hoş geldin. Gerçek arızalar, gerçek komutlar.",
+            "[Nova]: Ağ dojosuna hoş geldin. Gerçek arızalar, gerçek komutlar.",
             "Bir servise erişilemiyor. Önce hangi portlar açık, kim dinliyor — onu bul."
           ],
           "objectives": [
@@ -927,12 +927,12 @@ const CQ_DATA = {
               "expect": { "anyOf": [ { "cmd": ["nc"], "need": ["re:.+"] }, { "cmd": ["ncat"], "need": ["re:.+"] }, { "cmd": ["telnet"], "need": ["re:.+"] } ] }, "hint": "nc -zv 10.0.0.5 80",
               "success": "80 açık, 443 reddediyor. Servis yanlış portta ayakta." }
           ],
-          "complete": ["[Aria]: Portları haritaladın. Sorun 443'ün hiç dinlenmemesi — not al, devam."]
+          "complete": ["[Nova]: Portları haritaladın. Sorun 443'ün hiç dinlenmemesi — not al, devam."]
         },
         {
           "id": "netq2", "title": "DNS Labirenti", "requires": ["netq1"], "xp": 130, "credits": 30, "badge": "📡 Route Tracer",
           "brief": [
-            "[Aria]: Bazen sorun makinede değil, adres çözümünde ya da yolda olur.",
+            "[Nova]: Bazen sorun makinede değil, adres çözümünde ya da yolda olur.",
             "DNS zincirini ve paketin gittiği rotayı çöz."
           ],
           "objectives": [
@@ -953,12 +953,12 @@ const CQ_DATA = {
               "expect": { "cmd": ["mtr|traceroute|tracert"], "need": ["re:.+"] }, "hint": "mtr 10.0.0.5",
               "success": "3. hop'ta paketler kayboluyor — rota düzeltilince açılacak." }
           ],
-          "complete": ["[Aria]: İsim çözümü ve rotayı çözdün. Ağın haritası artık kafanda."]
+          "complete": ["[Nova]: İsim çözümü ve rotayı çözdün. Ağın haritası artık kafanda."]
         },
         {
           "id": "netq3", "title": "Paket Avcısı", "requires": ["netq2"], "xp": 140, "credits": 35, "badge": "🕸️ Packet Catcher",
           "brief": [
-            "[Aria]: Loglar sustuğunda telin üstündeki gerçeğe bakarız: paketler.",
+            "[Nova]: Loglar sustuğunda telin üstündeki gerçeğe bakarız: paketler.",
             "Trafiği yakala, TLS el sıkışmasını incele."
           ],
           "objectives": [
@@ -979,12 +979,12 @@ const CQ_DATA = {
               "expect": { "anyOf": [ { "cmd": ["tshark"] }, { "cmd": ["wireshark"] }, { "cmd": ["tcpdump"], "need": ["-r"] } ] }, "hint": "tshark -r capture.pcap",
               "success": "Analiz net: her şey sertifikaya çıkıyor. Yenilemeli." }
           ],
-          "complete": ["[Aria]: Paket seviyesine indin. Bu beceri seni 'sihirbaz' yapan şeydir."]
+          "complete": ["[Nova]: Paket seviyesine indin. Bu beceri seni 'sihirbaz' yapan şeydir."]
         },
         {
           "id": "netq4", "title": "Duvar Ardında", "requires": ["netq3"], "xp": 150, "credits": 35, "badge": "🚧 Firewall Tamer",
           "brief": [
-            "[Aria]: Son teşhis: trafiği bir duvar mı kesiyor? Kuralları oku, test et, düzelt, doğrula."
+            "[Nova]: Son teşhis: trafiği bir duvar mı kesiyor? Kuralları oku, test et, düzelt, doğrula."
           ],
           "objectives": [
             { "task": "Firewall kurallarını listele.",
@@ -1004,7 +1004,7 @@ const CQ_DATA = {
               "expect": { "cmd": ["curl"], "need": ["re:^-I|--head|^-sI"] }, "hint": "curl -I https://api.internal",
               "success": "200 OK! Ağ arızası çözüldü. Network Ops lab'ı tamam! 🎉" }
           ],
-          "complete": ["[Aria]: Port, DNS, paket ve duvar — bir ağ mühendisinin teşhis cephanesi artık sende. 🛰️"]
+          "complete": ["[Nova]: Port, DNS, paket ve duvar — bir ağ mühendisinin teşhis cephanesi artık sende. 🛰️"]
         }
       ]
     },
@@ -1015,7 +1015,7 @@ const CQ_DATA = {
         {
           "id": "scrq1", "title": "Script Çekirdeği", "requires": [], "xp": 120, "credits": 25, "badge": "🐚 Shell Novice",
           "brief": [
-            "[Aria]: Aynı işi iki kez elle yaptıysan, üçüncüsünü yazmalısın. İlk script'in: yedekleme.",
+            "[Nova]: Aynı işi iki kez elle yaptıysan, üçüncüsünü yazmalısın. İlk script'in: yedekleme.",
             "Çalıştır, argüman ver, çıkış kodunu oku, hata ayıkla."
           ],
           "objectives": [
@@ -1036,12 +1036,12 @@ const CQ_DATA = {
               "expect": { "cmd": ["bash"], "need": ["-x"] }, "hint": "bash -x backup.sh",
               "success": "İzleme akıyor; hangi satırda ne olduğu görünür." }
           ],
-          "complete": ["[Aria]: İlk script'in çalışıyor. Argüman ve exit code — otomasyonun tuğlaları."]
+          "complete": ["[Nova]: İlk script'in çalışıyor. Argüman ve exit code — otomasyonun tuğlaları."]
         },
         {
           "id": "scrq2", "title": "Mantık Devresi", "requires": ["scrq1"], "xp": 130, "credits": 30, "badge": "🌀 Flow Scripter",
           "brief": [
-            "[Aria]: Script'i akıllı yapan şey: değişken, döngü, koşul. Tekrarı makineye yıkalım."
+            "[Nova]: Script'i akıllı yapan şey: değişken, döngü, koşul. Tekrarı makineye yıkalım."
           ],
           "objectives": [
             { "task": "Bir değişkeni oku/yazdır.",
@@ -1061,12 +1061,12 @@ const CQ_DATA = {
               "expect": { "cmd": ["while"], "need": ["read"] }, "hint": "while read line; do echo \"$line\"; done < app.log",
               "success": "Satırlar tek tek işlendi." }
           ],
-          "complete": ["[Aria]: Değişken, döngü, koşul — artık script'in düşünebiliyor."]
+          "complete": ["[Nova]: Değişken, döngü, koşul — artık script'in düşünebiliyor."]
         },
         {
           "id": "scrq3", "title": "Metin Madenciliği", "requires": ["scrq2"], "xp": 140, "credits": 35, "badge": "🧵 Text Weaver",
           "brief": [
-            "[Aria]: Loglar altın madeni ama ham. grep/awk/sed üçlüsüyle işleyip anlam çıkar."
+            "[Nova]: Loglar altın madeni ama ham. grep/awk/sed üçlüsüyle işleyip anlam çıkar."
           ],
           "objectives": [
             { "task": "Hata satırlarını filtrele.",
@@ -1086,12 +1086,12 @@ const CQ_DATA = {
               "expect": { "cmd": ["uniq"], "need": ["-c"] }, "hint": "sort access.log | uniq -c | sort -rn",
               "success": "En sık IP: 10.0.0.9 (1284 istek). Şüpheli." }
           ],
-          "complete": ["[Aria]: grep-awk-sed üçlüsü — bir engineer'ın İsviçre çakısı. Ustalaştın."]
+          "complete": ["[Nova]: grep-awk-sed üçlüsü — bir engineer'ın İsviçre çakısı. Ustalaştın."]
         },
         {
           "id": "scrq4", "title": "Zamanlayıcı", "requires": ["scrq3"], "xp": 150, "credits": 35, "badge": "⏰ Cron Master",
           "brief": [
-            "[Aria]: Son adım: script'i sen uyurken çalıştır. cron + sağlam script yazımı."
+            "[Nova]: Son adım: script'i sen uyurken çalıştır. cron + sağlam script yazımı."
           ],
           "objectives": [
             { "task": "Zamanlanmış işleri listele.",
@@ -1111,7 +1111,7 @@ const CQ_DATA = {
               "expect": { "cmd": ["set"], "need": ["re:euo|pipefail|^-e"] }, "hint": "set -euo pipefail",
               "success": "Script artık sessizce hata yutmuyor. Scripting lab'ı tamam! 🎉" }
           ],
-          "complete": ["[Aria]: Yazdın, işledin, zamanladın, sağlamlaştırdın. Artık makineler senin için çalışıyor. 📜"]
+          "complete": ["[Nova]: Yazdın, işledin, zamanladın, sağlamlaştırdın. Artık makineler senin için çalışıyor. 📜"]
         }
       ]
     },
@@ -1122,7 +1122,7 @@ const CQ_DATA = {
         {
           "id": "dkq1", "title": "İmaj Fabrikası", "requires": [], "xp": 130, "credits": 30, "badge": "🐋 Image Smith",
           "brief": [
-            "[Aria]: Temel build'i biliyorsun. Şimdi imajı KÜÇÜK ve HIZLI yapmayı öğren — katmanlar ve multi-stage."
+            "[Nova]: Temel build'i biliyorsun. Şimdi imajı KÜÇÜK ve HIZLI yapmayı öğren — katmanlar ve multi-stage."
           ],
           "objectives": [
             { "task": "Bir imaj build et.",
@@ -1142,12 +1142,12 @@ const CQ_DATA = {
               "expect": { "cmd": ["docker", "build"], "need": ["re:target"] }, "hint": "docker build --target prod -t app:slim .",
               "success": "app:slim → 74MB! Multi-stage sihiri." }
           ],
-          "complete": ["[Aria]: 412MB'tan 74MB'a. Katmanları ve multi-stage'i çözdün — imaj artık zarif."]
+          "complete": ["[Nova]: 412MB'tan 74MB'a. Katmanları ve multi-stage'i çözdün — imaj artık zarif."]
         },
         {
           "id": "dkq2", "title": "Kalıcı Bağlantı", "requires": ["dkq1"], "xp": 140, "credits": 35, "badge": "🔗 Volume Keeper",
           "brief": [
-            "[Aria]: Container'lar geçici. Kalıcı veri = volume; container'lar arası konuşma = network."
+            "[Nova]: Container'lar geçici. Kalıcı veri = volume; container'lar arası konuşma = network."
           ],
           "objectives": [
             { "task": "Kalıcı veri için bir volume oluştur.",
@@ -1167,12 +1167,12 @@ const CQ_DATA = {
               "expect": { "cmd": ["docker", "run"], "need": ["re:network"] }, "hint": "docker run --network appnet -d app:1.0",
               "success": "app artık 'db' adıyla veritabanına ulaşıyor." }
           ],
-          "complete": ["[Aria]: Kalıcılık ve ağ — container'ları gerçek bir sistem gibi bağladın."]
+          "complete": ["[Nova]: Kalıcılık ve ağ — container'ları gerçek bir sistem gibi bağladın."]
         },
         {
           "id": "dkq3", "title": "Registry Ağı", "requires": ["dkq2"], "xp": 140, "credits": 35, "badge": "📦 Registry Runner",
           "brief": [
-            "[Aria]: İmaj paylaşılmazsa işe yaramaz. Registry'ye gönder, sonra derinlemesine incele."
+            "[Nova]: İmaj paylaşılmazsa işe yaramaz. Registry'ye gönder, sonra derinlemesine incele."
           ],
           "objectives": [
             { "task": "Bir container registry'sine giriş yap.",
@@ -1192,12 +1192,12 @@ const CQ_DATA = {
               "expect": { "cmd": ["docker", "inspect"], "need": ["re:.+"] }, "hint": "docker inspect app:slim",
               "success": "Env, portlar, volume'ler — hepsi görünür." }
           ],
-          "complete": ["[Aria]: Paylaş ve incele — bir imajı baştan sona yönetebiliyorsun."]
+          "complete": ["[Nova]: Paylaş ve incele — bir imajı baştan sona yönetebiliyorsun."]
         },
         {
           "id": "dkq4", "title": "Stack Komutası", "requires": ["dkq3"], "xp": 150, "credits": 35, "badge": "🧹 Compose Commander",
           "brief": [
-            "[Aria]: Çok servisli stack'i tek dosyayla yönet, ölçekle, hata ayıkla — ve arkanı temiz bırak."
+            "[Nova]: Çok servisli stack'i tek dosyayla yönet, ölçekle, hata ayıkla — ve arkanı temiz bırak."
           ],
           "objectives": [
             { "task": "Tüm stack'i compose ile ayağa kaldır.",
@@ -1217,7 +1217,7 @@ const CQ_DATA = {
               "expect": { "anyOf": [ { "cmd": ["docker", "system", "prune"] }, { "cmd": ["docker", "image", "prune"] }, { "cmd": ["docker", "container", "prune"] } ] }, "hint": "docker system prune -f",
               "success": "3.2GB geri kazanıldı. Docker Deep Dive lab'ı tamam! 🎉" }
           ],
-          "complete": ["[Aria]: Compose, ölçek, debug ve temizlik — Docker'da artık uzmansın. 🐳"]
+          "complete": ["[Nova]: Compose, ölçek, debug ve temizlik — Docker'da artık uzmansın. 🐳"]
         }
       ]
     },
@@ -1228,7 +1228,7 @@ const CQ_DATA = {
         {
           "id": "tfq1", "title": "Modül Şeması", "requires": [], "xp": 140, "credits": 35, "badge": "🧩 Module Architect",
           "brief": [
-            "[Aria]: Kopyala-yapıştır HCL değil, yeniden kullanılabilir modüller. Pro işi budur."
+            "[Nova]: Kopyala-yapıştır HCL değil, yeniden kullanılabilir modüller. Pro işi budur."
           ],
           "objectives": [
             { "task": "Koddaki modülleri indir/güncelle.",
@@ -1248,12 +1248,12 @@ const CQ_DATA = {
               "expect": { "cmd": ["terraform", "output"], "need": ["re:json|-raw"] }, "hint": "terraform output -json",
               "success": "{\"vpc_id\":{\"value\":\"vpc-0a1b\"}} — otomasyona hazır." }
           ],
-          "complete": ["[Aria]: Modüller = az tekrar, çok tutarlılık. Altyapın artık lego gibi."]
+          "complete": ["[Nova]: Modüller = az tekrar, çok tutarlılık. Altyapın artık lego gibi."]
         },
         {
           "id": "tfq2", "title": "Uzak Durum Kilidi", "requires": ["tfq1"], "xp": 150, "credits": 35, "badge": "🗃️ State Broker",
           "brief": [
-            "[Aria]: State laptopunda durmaz. Takımca paylaşılan, kilitli bir remote state şart — yoksa çakışır."
+            "[Nova]: State laptopunda durmaz. Takımca paylaşılan, kilitli bir remote state şart — yoksa çakışır."
           ],
           "objectives": [
             { "task": "State'i uzak backend'e (S3+DynamoDB) taşı/yapılandır.",
@@ -1273,12 +1273,12 @@ const CQ_DATA = {
               "expect": { "cmd": ["terraform", "state", "mv"], "need": ["re:.+", "re:.+"] }, "hint": "terraform state mv aws_instance.web module.app.aws_instance.web",
               "success": "Adres güncellendi; kaynak yeniden yaratılmadı." }
           ],
-          "complete": ["[Aria]: Remote state ve kilit — takımla güvenle çalışmanın temeli."]
+          "complete": ["[Nova]: Remote state ve kilit — takımla güvenle çalışmanın temeli."]
         },
         {
           "id": "tfq3", "title": "Drift Tespiti", "requires": ["tfq2"], "xp": 150, "credits": 35, "badge": "🌊 Drift Catcher",
           "brief": [
-            "[Aria]: Birileri konsoldan elle değişiklik yaptı — 'drift'. Yakala, uzlaştır, gerektiğinde nokta atışı müdahale et."
+            "[Nova]: Birileri konsoldan elle değişiklik yaptı — 'drift'. Yakala, uzlaştır, gerektiğinde nokta atışı müdahale et."
           ],
           "objectives": [
             { "task": "Gerçek dünya ile kod arasındaki farkı (drift) tespit et.",
@@ -1298,12 +1298,12 @@ const CQ_DATA = {
               "expect": { "cmd": ["terraform", "show"] }, "hint": "terraform show",
               "success": "Güncel durum ekranda; drift kapandı." }
           ],
-          "complete": ["[Aria]: Drift'i görüp uzlaştırdın. 'Kod ne diyorsa o' disiplinini koruyorsun."]
+          "complete": ["[Nova]: Drift'i görüp uzlaştırdın. 'Kod ne diyorsa o' disiplinini koruyorsun."]
         },
         {
           "id": "tfq4", "title": "Otonom Apply", "requires": ["tfq3"], "xp": 160, "credits": 40, "badge": "🤖 Plan Automator",
           "brief": [
-            "[Aria]: Pipeline'da 'apply' rulet olmamalı. Planı kaydet, aynısını uygula, kapıları koy."
+            "[Nova]: Pipeline'da 'apply' rulet olmamalı. Planı kaydet, aynısını uygula, kapıları koy."
           ],
           "objectives": [
             { "task": "Planı bir dosyaya kaydet (deterministik).",
@@ -1323,7 +1323,7 @@ const CQ_DATA = {
               "expect": { "anyOf": [ { "cmd": ["tfsec"] }, { "cmd": ["checkov"] }, { "cmd": ["tflint"] } ] }, "hint": "tfsec .",
               "success": "1 uyarı: public S3. Düzeltildi. Terraform Pro lab'ı tamam! 🎉" }
           ],
-          "complete": ["[Aria]: Deterministik plan, biçim ve güvenlik kapıları — altyapını CI'da güvenle sürüyorsun. 🌍"]
+          "complete": ["[Nova]: Deterministik plan, biçim ve güvenlik kapıları — altyapını CI'da güvenle sürüyorsun. 🌍"]
         }
       ]
     },

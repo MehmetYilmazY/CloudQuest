@@ -253,7 +253,7 @@
       m.topics.forEach(function (t) { print("     • " + t, "help-row"); });
       blank();
       print("   🔒 Bu modül henüz PASİF (placeholder).", "locked");
-      print("   [Aria]: Yerini ayırdım. Hazır olunca 'bunu ekleyelim' de, tane tane işleyelim.", "mentor");
+      print("   [Nova]: Yerini ayırdım. Hazır olunca 'bunu ekleyelim' de, tane tane işleyelim.", "mentor");
     }
     rule();
   }
@@ -440,7 +440,7 @@
     if (isNew) {
       if (STORY && STORY.prologue) showStoryBeat("prologue", STORY.startup + " — Prolog", STORY.prologue);
       narrate([
-        "[Aria]: Takılırsan `hint` yaz — 3 yanlıştan sonra doğru komutu gösteririm.",
+        "[Nova]: Takılırsan `hint` yaz — 3 yanlıştan sonra doğru komutu gösteririm.",
         "Başlamak için: `quests` (görevler) → `quest c1q1`."
       ], "mentor");
       blank(); print("   Komut listesi için: help", "hintline");
@@ -962,7 +962,7 @@
       "[  OK  ]  loading skill matrices",
       "[  OK  ]  calibrating XP core",
       "[ WARN ]  caffeine levels low ☕",
-      "[  OK  ]  mentor 'Aria' online",
+      "[  OK  ]  mentor 'Nova' online",
       "[  OK  ]  terminal ready"
     ];
     var i = 0, pct = 0;

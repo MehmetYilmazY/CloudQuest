@@ -529,7 +529,7 @@ function Start-Game {
         $Global:Player = New-Player (Ask-Name)
         Show-StoryBeat 'prologue' ($Global:Curriculum.story.startup + ' - Prolog') $Global:Curriculum.story.prologue
         C ''
-        C '   [Aria]: Baslamak icin: quests -> quest c1q1.  (yardim: help)' Green
+        C '   [Nova]: Baslamak icin: quests -> quest c1q1.  (yardim: help)' Green
     }
     Start-Sleep -Milliseconds 300
     Game-Loop
