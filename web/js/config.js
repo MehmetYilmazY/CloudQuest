@@ -14,6 +14,6 @@
    ========================================================================= */
 
 window.CQ_CONFIG = {
-  SUPABASE_URL: "",       // örn: "https://abcdefghijk.supabase.co"
-  SUPABASE_ANON_KEY: ""   // örn: "eyJhbGciOi..."
+  SUPABASE_URL: "https://kajzysiauagwnpkdbvjz.supabase.co",
+  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imthanp5c2lhdWFnd25wa2Ridmp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNTc2ODQsImV4cCI6MjEwMDczMzY4NH0.CW3BcxV8ahmk7TYxlpUtsYQulHlSo2yFhdjYgSAN2ho"
 };
