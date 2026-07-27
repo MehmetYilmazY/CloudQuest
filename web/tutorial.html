@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terminal 101 — CloudQuest</title>
+  <meta name="description" content="Hiç terminal kullanmadıysan buradan başla. Komut nedir, prompt ne der — çalışan bir mini terminalde adım adım öğren." />
+  <meta name="color-scheme" content="dark" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E%E2%8C%A8%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="tut-body">
+  <div class="grid-bg"></div>
+
+  <div class="t-progress"><div class="t-progress-fill" id="t-progress-fill"></div></div>
+
+  <header class="t-header">
+    <a class="t-back" href="index.html">← CloudQuest</a>
+    <div class="t-title-bar">⌨️ Terminal 101 <span class="t-sub">sıfırdan başlayanlar için</span></div>
+    <div class="t-counter" id="t-counter">1 / 10</div>
+  </header>
+
+  <main class="t-layout" id="t-root">
+    <!-- SOL: ders -->
+    <section class="t-lesson-pane">
+      <div id="t-lesson"></div>
+    </section>
+
+    <!-- SAĞ: çalışan mini terminal -->
+    <section class="t-term-pane">
+      <div class="t-term">
+        <div class="term-bar">
+          <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+          <span class="term-title">alıştırma terminali — güvenli</span>
+        </div>
+        <div class="t-output" id="t-output"></div>
+        <div class="t-input-line">
+          <span class="t-p" id="t-prompt">engineer@cloudquest:~$</span>
+          <input id="t-input" type="text" autocomplete="off" autocorrect="off"
+                 autocapitalize="off" spellcheck="false" aria-label="komut girişi" />
+        </div>
+      </div>
+      <div class="t-hintbar">
+        Takıldın mı? <code>help</code> yazıp komut listesini görebilirsin. Hiçbir şeyi bozamazsın.
+      </div>
+    </section>
+  </main>
+
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <script src="js/lib/supabase.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/tutorial.js"></script>
+  <script>
+    // Öğretici girişsiz de çalışır. Oturum varsa bitişte rozet + XP yazılır.
+    (function () {
+      var root = document.getElementById("t-root");
+      var awarded = false;
+
+      function award(badge) {
+        if (awarded) return; awarded = true;
+        try {
+          if (!Auth.isConfigured() || !Auth.currentEmail()) return;   // misafir: sadece öğrenir
+          var p = Auth.getProfile();
+          if (!p) return;
+          p.badges = p.badges || [];
+          if (p.badges.indexOf(badge) === -1) {
+            p.badges.push(badge);
+            p.xp = (p.xp || 0) + 30;
+            Auth.saveProfile(p);
+            Auth.flush && Auth.flush();
+          }
+        } catch (e) { /* rozet veremesek de öğretici çalışmaya devam etsin */ }
+      }
+
+      Tutorial.mount(root, { onFinish: award });
+      if (window.Auth && Auth.isConfigured) { Auth.init(); }
+    })();
+  </script>
+</body>
+</html>

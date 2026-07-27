@@ -193,6 +193,99 @@ body {
 .avatar-edit-btn:hover { background: rgba(192,132,252,.22); box-shadow: 0 0 16px rgba(192,132,252,.3); }
 
 /* =========================================================================
+   TERMINAL 101 — ayrı sayfa (tutorial.html)
+   ========================================================================= */
+body.tut-body { overflow: hidden; height: 100vh; }
+.t-progress { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: rgba(255,255,255,.06); z-index: 20; }
+.t-progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--neon), var(--magenta));
+  box-shadow: 0 0 12px rgba(34,211,238,.6); transition: width .35s cubic-bezier(.22,.61,.36,1); }
+
+.t-header { position: relative; z-index: 10; display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; padding: 16px 24px; border-bottom: 1px solid var(--border); background: rgba(7,12,22,.7); }
+.t-back { color: var(--muted); text-decoration: none; font-size: 13px; white-space: nowrap; }
+.t-back:hover { color: var(--neon); }
+.t-title-bar { color: #fff; font-size: 16px; font-weight: 700; }
+.t-title-bar .t-sub { display: block; font-size: 11.5px; color: var(--muted); font-weight: 400; margin-top: 2px; }
+.t-counter { color: var(--muted); font-size: 12px; letter-spacing: 2px; font-variant-numeric: tabular-nums; }
+
+.t-layout { position: relative; z-index: 5; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+  padding: 20px 24px; height: calc(100vh - 70px); }
+
+/* sol: ders */
+.t-lesson-pane { overflow-y: auto; padding-right: 6px; }
+.t-kicker { font-size: 11px; letter-spacing: 3px; color: var(--neon); margin-bottom: 12px; }
+.t-lesson-pane h2 { font-size: clamp(22px, 3vw, 32px); color: #fff; line-height: 1.2; margin-bottom: 14px; }
+.t-lesson-pane p { color: var(--muted); font-size: 15px; line-height: 1.7; }
+.t-lesson-pane code { color: var(--green); background: #0a1220; padding: 2px 7px; border-radius: 5px;
+  border: 1px solid var(--border); font-size: 14px; }
+.t-lesson-pane b { color: var(--text); }
+.t-note { margin-top: 20px; padding: 14px 16px; border-radius: 10px; background: rgba(34,211,238,.06);
+  border: 1px solid rgba(34,211,238,.22); color: var(--muted); font-size: 13.5px; line-height: 1.6; }
+.t-note b { color: var(--neon); }
+.t-task { margin-top: 22px; padding: 16px 18px; border-radius: 12px;
+  background: linear-gradient(135deg, rgba(74,222,128,.10), rgba(34,211,238,.06));
+  border: 1px solid rgba(74,222,128,.4); color: var(--text); font-size: 15px; }
+.t-task code { color: #fff; background: #05121f; border-color: rgba(74,222,128,.45); font-size: 15px; }
+.t-next { max-width: 240px; margin-top: 24px; }
+
+/* komut anatomisi diyagramı */
+.t-anatomy { margin-top: 24px; padding: 22px 18px; background: #05090f; border: 1px solid var(--border); border-radius: 12px; }
+.t-line { font-size: clamp(13px, 1.8vw, 17px); white-space: nowrap; overflow-x: auto; }
+.t-line .t-p { color: var(--green); }
+.t-c { color: var(--neon); font-weight: 700; }
+.t-f { color: var(--yellow); font-weight: 700; }
+.t-a { color: var(--magenta); font-weight: 700; }
+.t-anno, .t-anno2 { display: flex; gap: 14px; flex-wrap: wrap; font-size: 10.5px; letter-spacing: 1px; }
+.t-anno { margin-bottom: 10px; align-items: center; }
+.t-anno2 { margin-top: 12px; }
+.t-tag { color: var(--muted); border: 1px solid var(--border); border-radius: 20px; padding: 3px 10px; }
+.t-tc { color: var(--neon); border-color: rgba(34,211,238,.4); }
+.t-tf { color: var(--yellow); border-color: rgba(251,191,36,.4); }
+.t-ta { color: var(--magenta); border-color: rgba(192,132,252,.4); }
+.t-desc { color: var(--muted); font-size: 11px; }
+
+.t-prompt-explain { margin-top: 22px; display: grid; gap: 10px; }
+.t-pe { display: grid; grid-template-columns: 130px 1fr; gap: 14px; align-items: center;
+  background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; }
+.t-pe b { color: var(--green); font-size: 14px; }
+.t-pe span { color: var(--muted); font-size: 13px; }
+
+/* bitiş */
+.t-badge { margin: 24px 0; display: inline-block; font-size: 20px; font-weight: 800; padding: 14px 26px;
+  border-radius: 40px; background: linear-gradient(135deg, rgba(251,191,36,.16), rgba(192,132,252,.14));
+  border: 1px solid rgba(251,191,36,.5); color: #f4e9c8; box-shadow: 0 0 34px rgba(251,191,36,.2);
+  animation: g-pop .6s cubic-bezier(.34,1.56,.64,1) both; }
+.t-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.t-actions .btn-neon { width: auto; margin: 0; text-decoration: none; display: inline-block; padding: 12px 22px; }
+.t-actions .btn-ghost { margin: 0; }
+
+/* sağ: terminal */
+.t-term-pane { display: flex; flex-direction: column; gap: 10px; min-height: 0; }
+.t-term { flex: 1; display: flex; flex-direction: column; min-height: 0;
+  background: rgba(5,9,15,.96); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(34,211,238,.06), 0 20px 60px rgba(0,0,0,.5); }
+.t-output { flex: 1; overflow-y: auto; padding: 16px 18px; white-space: pre-wrap; word-break: break-word;
+  font-size: 13.5px; line-height: 1.6; color: var(--text); }
+.t-out { min-height: 1.2em; }
+.t-out.t-dim { color: var(--muted); }
+.t-out.t-err { color: var(--red); }
+.t-out.t-ok  { color: var(--green); }
+.t-out.t-echo .t-p { color: var(--green); }
+.t-input-line { display: flex; align-items: center; gap: 8px; padding: 12px 18px;
+  border-top: 1px solid var(--border); background: var(--panel-2); }
+.t-input-line .t-p { color: var(--green); white-space: nowrap; font-size: 13.5px; }
+#t-input { flex: 1; background: transparent; border: none; outline: none; color: var(--text);
+  font-family: var(--mono); font-size: 14px; caret-color: var(--neon); }
+.t-hintbar { color: var(--muted); font-size: 12px; text-align: center; }
+.t-hintbar code { color: var(--green); }
+
+@media (max-width: 900px) {
+  body.tut-body { overflow: auto; height: auto; }
+  .t-layout { grid-template-columns: 1fr; height: auto; }
+  .t-term { min-height: 340px; }
+}
+
+/* =========================================================================
    BAŞLANGIÇ REHBERİ (scroll-driven)
    ========================================================================= */
 .guide { z-index: 130; padding: 0; align-items: stretch; background: #05070d; }
@@ -327,6 +420,16 @@ body.guide-open { overflow: hidden; }
 .gb-text b { display: block; color: #fff; font-size: 15px; margin-bottom: 4px; }
 .gb-text em { font-style: normal; color: var(--muted); font-size: 12.5px; line-height: 1.5; }
 .gb-go { color: var(--neon); font-size: 13px; white-space: nowrap; }
+.guide-banner.gb-alt { margin-top: 12px; text-decoration: none;
+  background: linear-gradient(135deg, rgba(74,222,128,.09), rgba(34,211,238,.05)), var(--panel);
+  border-color: rgba(74,222,128,.28); }
+.guide-banner.gb-alt:hover { border-color: rgba(74,222,128,.6); box-shadow: 0 0 30px rgba(74,222,128,.14); }
+.guide-banner.gb-alt .gb-go { color: var(--green); }
+
+.auth-tut-link { display: block; margin-top: 18px; text-align: center; font-size: 12.5px;
+  color: var(--muted); text-decoration: none; padding-top: 16px; border-top: 1px solid var(--border); }
+.auth-tut-link:hover { color: var(--green); }
+.auth-tut-link b { color: var(--text); }
 
 @media (max-width: 640px) {
   .g-section { padding: 80px 18px; }
