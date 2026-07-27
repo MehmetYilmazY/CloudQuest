@@ -1327,8 +1327,224 @@ const CQ_DATA = {
         }
       ]
     },
-    { "id": "ansible",    "icon": "⚙️", "title": "Ansible",          "status": "soon", "desc": "playbook, role, inventory ile configuration management", "topics": ["inventory", "playbook/task", "role & handler", "idempotency"] },
-    { "id": "kubernetes", "icon": "☸️", "title": "Kubernetes",       "status": "soon", "desc": "deployment, service, ingress, configmap/secret, helm, troubleshooting", "topics": ["pod/deployment", "service/ingress", "config & secret", "helm & debug"] }
+    { "id": "ansible", "icon": "⚙️", "title": "Ansible", "status": "active",
+      "desc": "envanter, playbook, rol ve vault ile configuration management",
+      "topics": ["inventory & ad-hoc", "playbook & dry-run", "rol & tag", "vault & idempotency"],
+      "quests": [
+        {
+          "id": "ansq1", "title": "Envanter Taraması", "requires": [], "xp": 120, "credits": 25, "badge": "📋 Inventory Scout",
+          "brief": [
+            "[Nova]: 50 sunucuya elle SSH atmak yok. Ansible ajansız çalışır — sadece SSH yeter.",
+            "Önce envanteri tanı: kim var, ulaşılabiliyor mu, üzerinde ne dönüyor?"
+          ],
+          "objectives": [
+            { "task": "Envanterdeki tüm hostları listele.",
+              "teach": "ansible-inventory --list = envanter dosyandaki host ve grupları JSON olarak döker. İlk iş envanteri doğrulamaktır.",
+              "expect": { "cmd": ["ansible-inventory"], "need": ["re:list|graph"] }, "hint": "ansible-inventory --list",
+              "success": "3 grup bulundu: web(4), db(2), cache(1)." },
+            { "task": "Tüm hostlara bağlantı testi yap.",
+              "teach": "ansible all -m ping = her hosta 'ping' modülünü çalıştırır (ICMP değil, SSH+Python testi).",
+              "expect": { "cmd": ["ansible"], "need": ["-m", "ping"] }, "hint": "ansible all -m ping",
+              "success": "6 host SUCCESS, 1 UNREACHABLE (db02). Not alındı." },
+            { "task": "Bir grupta ad-hoc komut çalıştır.",
+              "teach": "ansible <grup> -a \"komut\" = playbook yazmadan tek seferlik komut. Hızlı teşhis için birebir.",
+              "expect": { "cmd": ["ansible"], "need": ["-a", "re:.+"] }, "hint": "ansible web -a \"uptime\"",
+              "success": "4 web sunucusunun uptime'ı geldi. Biri 200 gün ayakta." },
+            { "task": "Hostlardan sistem bilgisi (facts) topla.",
+              "teach": "setup modülü = hostun OS, IP, RAM gibi tüm 'facts' bilgisini döndürür. Playbook'larda koşul yazmanın temeli.",
+              "expect": { "cmd": ["ansible"], "need": ["-m", "setup"] }, "hint": "ansible web -m setup",
+              "success": "Facts toplandı: Ubuntu 22.04, 4 vCPU, 8GB RAM." }
+          ],
+          "complete": ["[Nova]: Envanteri tanıdın. Ansible'ın gücü buradan başlar: tek komut, elli sunucu."]
+        },
+        {
+          "id": "ansq2", "title": "Playbook Çekirdeği", "requires": ["ansq1"], "xp": 130, "credits": 30, "badge": "📘 Playbook Author",
+          "brief": [
+            "[Nova]: Ad-hoc komut geçici. Kalıcı olan playbook: YAML ile 'sistem şöyle olsun' dersin.",
+            "Ama prod'a atmadan önce: sözdizimini kontrol et, kuru çalıştır, sonra uygula."
+          ],
+          "objectives": [
+            { "task": "Playbook'un sözdizimini kontrol et.",
+              "teach": "--syntax-check = YAML ve görev yapısını çalıştırmadan doğrular. İlk kapı budur.",
+              "expect": { "cmd": ["ansible-playbook"], "need": ["re:syntax-check", "re:.+\\.ya?ml"] }, "hint": "ansible-playbook --syntax-check site.yml",
+              "success": "playbook: site.yml — sözdizimi temiz." },
+            { "task": "Kuru çalıştır (dry-run): ne değişecek gör.",
+              "teach": "--check = hiçbir şeyi değiştirmeden neyin değişeceğini raporlar. Terraform'daki 'plan' gibi.",
+              "expect": { "cmd": ["ansible-playbook"], "need": ["re:^--check$|^-C$"] }, "hint": "ansible-playbook --check site.yml",
+              "success": "changed=7 (kuru). nginx kurulacak, config güncellenecek." },
+            { "task": "Sadece tek bir grupta çalıştır.",
+              "teach": "--limit <grup> = playbook'u yalnız seçili hostlara uygular. Kademeli yayının (canary) yolu.",
+              "expect": { "cmd": ["ansible-playbook"], "need": ["re:limit"] }, "hint": "ansible-playbook site.yml --limit web",
+              "success": "Yalnız web grubu güncellendi. Kademeli yayın başladı." },
+            { "task": "Playbook'u gerçekten uygula.",
+              "teach": "Kontroller geçtiyse çalıştır. Çıktıdaki ok/changed/failed sayıları sonucu özetler.",
+              "expect": { "cmd": ["ansible-playbook"], "need": ["re:.+\\.ya?ml"] }, "hint": "ansible-playbook site.yml",
+              "success": "ok=12 changed=7 failed=0. Tüm filo aynı yapılandırmada." }
+          ],
+          "complete": ["[Nova]: Syntax → check → limit → apply. Bu dört adım seni gece yarısı felaketinden korur."]
+        },
+        {
+          "id": "ansq3", "title": "Rol Mimarisi", "requires": ["ansq2"], "xp": 140, "credits": 35, "badge": "🧱 Role Builder",
+          "brief": [
+            "[Nova]: Tek dev playbook bakımı imkânsız hale gelir. Rollere böl — Terraform'daki modül mantığı."
+          ],
+          "objectives": [
+            { "task": "Yeni bir rol iskeleti oluştur.",
+              "teach": "ansible-galaxy init roles/<ad> = tasks/, handlers/, templates/, defaults/ klasörlerini standart yapıda kurar.",
+              "expect": { "cmd": ["ansible-galaxy", "init"], "need": ["re:.+"] }, "hint": "ansible-galaxy init roles/nginx",
+              "success": "roles/nginx iskeleti hazır (tasks, handlers, templates, defaults)." },
+            { "task": "Dış bağımlılıkları (hazır rolleri) indir.",
+              "teach": "requirements.yml içindeki toplulukta yazılmış rolleri indirir. Tekerleği yeniden icat etme.",
+              "expect": { "cmd": ["ansible-galaxy", "install"], "need": ["re:^-r$|requirements"] }, "hint": "ansible-galaxy install -r requirements.yml",
+              "success": "geerlingguy.postgresql indirildi." },
+            { "task": "Playbook'un yapacağı görevleri listele.",
+              "teach": "--list-tasks = çalıştırmadan hangi rolün hangi görevleri koşacağını gösterir. Büyük playbook'u anlamanın yolu.",
+              "expect": { "cmd": ["ansible-playbook"], "need": ["re:list-tasks|list-hosts"] }, "hint": "ansible-playbook site.yml --list-tasks",
+              "success": "3 rol / 24 görev listelendi." },
+            { "task": "Sadece belirli etiketli görevleri çalıştır.",
+              "teach": "--tags = playbook'un yalnız ilgili kısmını koşturur. 'Sadece config güncelle' demenin yolu.",
+              "expect": { "cmd": ["ansible-playbook"], "need": ["re:tags"] }, "hint": "ansible-playbook site.yml --tags nginx",
+              "success": "Yalnız nginx görevleri koştu (6 saniye)." }
+          ],
+          "complete": ["[Nova]: Roller ve etiketler — altyapı kodun artık okunabilir ve parça parça yönetilebilir."]
+        },
+        {
+          "id": "ansq4", "title": "Kasa Protokolü", "requires": ["ansq3"], "xp": 150, "credits": 35, "badge": "🔏 Vault Keeper",
+          "brief": [
+            "[Nova]: Son iki ders: sırları şifrele, sonra idempotency'yi kanıtla.",
+            "Ansible'ın vaadi şu: aynı playbook'u 100 kez çalıştır, sistem hep aynı kalsın."
+          ],
+          "objectives": [
+            { "task": "Sır dosyasını şifrele.",
+              "teach": "ansible-vault encrypt = parolaları/anahtarları AES ile şifreler; şifreli hâlde repoya koyabilirsin.",
+              "expect": { "cmd": ["ansible-vault", "encrypt|create"], "need": ["re:.+"] }, "hint": "ansible-vault encrypt group_vars/prod/secrets.yml",
+              "success": "Encryption successful. Repoda artık düz parola yok." },
+            { "task": "Şifreli dosyayı çöz(meden) görüntüle.",
+              "teach": "ansible-vault view = dosyayı diske çözmeden ekranda gösterir. edit ile de düzenlersin.",
+              "expect": { "cmd": ["ansible-vault", "view|edit|decrypt"], "need": ["re:.+"] }, "hint": "ansible-vault view group_vars/prod/secrets.yml",
+              "success": "İçerik ekranda; dosya diskte şifreli kaldı." },
+            { "task": "Vault parolasıyla playbook'u çalıştır.",
+              "teach": "--ask-vault-pass (ya da --vault-password-file) = çalışma anında sırları çözer.",
+              "expect": { "cmd": ["ansible-playbook"], "need": ["re:vault"] }, "hint": "ansible-playbook site.yml --ask-vault-pass",
+              "success": "Sırlar çözüldü, playbook koştu. changed=3" },
+            { "task": "Aynı playbook'u tekrar çalıştırıp farkı gör (idempotency).",
+              "teach": "--diff = neyin değiştiğini satır satır gösterir. Doğru yazılmış playbook ikinci koşuda changed=0 verir.",
+              "expect": { "cmd": ["ansible-playbook"], "need": ["re:diff"] }, "hint": "ansible-playbook site.yml --diff",
+              "success": "changed=0 — sistem zaten istenen durumda. İşte idempotency! Ansible lab'ı tamam! 🎉" }
+          ],
+          "complete": ["[Nova]: Şifreli sırlar ve changed=0. Artık configuration management'ı gerçekten anlıyorsun. ⚙️"]
+        }
+      ]
+    },
+    { "id": "kubernetes", "icon": "☸️", "title": "Kubernetes", "status": "active",
+      "desc": "namespace & kota, probe & autoscale, secret & storage, teşhis & Helm",
+      "topics": ["namespace & kota", "probe & HPA", "secret & volume", "teşhis & Helm"],
+      "quests": [
+        {
+          "id": "k8sq1", "title": "İzole Bölge", "requires": [], "xp": 130, "credits": 30, "badge": "🏷️ Namespace Ranger",
+          "brief": [
+            "[Nova]: Temelleri biliyorsun (deployment, service). Şimdi cluster'ı gerçek bir üretim ortamı gibi böl.",
+            "Namespace = izolasyon. Kota = bir takımın tüm cluster'ı yemesini engeller."
+          ],
+          "objectives": [
+            { "task": "prod için ayrı bir namespace oluştur.",
+              "teach": "Namespace = cluster içinde mantıksal bölme. dev/staging/prod aynı cluster'da çakışmadan yaşar.",
+              "expect": { "cmd": ["kubectl", "create", "namespace|ns"], "need": ["re:.+"] }, "hint": "kubectl create namespace prod",
+              "success": "namespace/prod created" },
+            { "task": "Namespace'e kaynak kotası koy.",
+              "teach": "ResourceQuota = o namespace'in kullanabileceği toplam CPU/RAM/pod sayısını sınırlar. Komşu takımı korur.",
+              "expect": { "cmd": ["kubectl", "create", "quota"], "need": ["re:.+"] }, "hint": "kubectl create quota team-quota --hard=cpu=4,memory=8Gi,pods=10 -n prod",
+              "success": "Kota kondu: 4 CPU / 8Gi / 10 pod." },
+            { "task": "Varsayılan namespace'i prod yap.",
+              "teach": "Her komuta -n prod yazmak yorucu. set-context ile varsayılanı değiştirirsin (ve yanlış ortama deploy riskini azaltırsın).",
+              "expect": { "cmd": ["kubectl", "config", "set-context"], "need": ["re:namespace"] }, "hint": "kubectl config set-context --current --namespace=prod",
+              "success": "Artık varsayılan namespace: prod" },
+            { "task": "Namespace'teki tüm kaynakları listele.",
+              "teach": "kubectl get all -n <ns> = o bölgedeki pod/service/deployment'ları tek bakışta gösterir.",
+              "expect": { "cmd": ["kubectl", "get", "all"] }, "hint": "kubectl get all -n prod",
+              "success": "prod bölgesi hazır ve izole." }
+          ],
+          "complete": ["[Nova]: Cluster'ı böldün ve sınırladın. Çok takımlı ortamın ilk kuralı budur."]
+        },
+        {
+          "id": "k8sq2", "title": "Nabız & Ölçek", "requires": ["k8sq1"], "xp": 140, "credits": 35, "badge": "💓 Health Warden",
+          "brief": [
+            "[Nova]: Kubernetes senin yerine iyileştirir — ama yalnızca 'sağlıklı' ne demek onu söylersen.",
+            "Probe'ları oku, sonra yükü otomatik karşılayacak şekilde ölçeklendir."
+          ],
+          "objectives": [
+            { "task": "Pod'un sağlık kontrollerini (probe) incele.",
+              "teach": "describe = liveness/readiness probe durumunu, restart sayısını ve olayları gösterir. Pod neden yeniden başlıyor buradan anlaşılır.",
+              "expect": { "cmd": ["kubectl", "describe"], "need": ["re:.+"] }, "hint": "kubectl describe pod web-abc12",
+              "success": "Liveness OK, Readiness fail x3 — uygulama geç açılıyor." },
+            { "task": "Otomatik ölçeklendirme (HPA) kur.",
+              "teach": "autoscale = CPU'ya göre replika sayısını otomatik artırır/azaltır. Gece trafiğinde uyumanı sağlar.",
+              "expect": { "cmd": ["kubectl", "autoscale"], "need": ["re:.+"] }, "hint": "kubectl autoscale deployment web --min=2 --max=10 --cpu-percent=70",
+              "success": "horizontalpodautoscaler.autoscaling/web created" },
+            { "task": "HPA'nın durumunu kontrol et.",
+              "teach": "get hpa = mevcut/hedef CPU ve replika sayısını gösterir. Ölçeklemenin çalışıp çalışmadığı buradan görülür.",
+              "expect": { "cmd": ["kubectl", "get", "hpa"] }, "hint": "kubectl get hpa",
+              "success": "web  45%/70%  2/10 replika. Sistem nefes alıyor." },
+            { "task": "Gerçek kaynak tüketimini ölç.",
+              "teach": "kubectl top = pod'ların anlık CPU/bellek kullanımı. Kota ve limit ayarlarken buna bakılır.",
+              "expect": { "cmd": ["kubectl", "top"] }, "hint": "kubectl top pods -n prod",
+              "success": "En yüksek pod 380m CPU / 512Mi. Kota içinde." }
+          ],
+          "complete": ["[Nova]: Sağlık kontrolü + otomatik ölçek = kendi kendini yöneten sistem."]
+        },
+        {
+          "id": "k8sq3", "title": "Kasa & Depo", "requires": ["k8sq2"], "xp": 140, "credits": 35, "badge": "🗝️ Secret Custodian",
+          "brief": [
+            "[Nova]: ConfigMap'i gördün. Şimdi hassas veri (Secret) ve kalıcı depolama (PVC).",
+            "Pod ölür, veri ölmez — bunu garanti altına alacağız."
+          ],
+          "objectives": [
+            { "task": "Veritabanı parolası için bir Secret oluştur.",
+              "teach": "Secret = hassas veri (parola, token). ConfigMap'ten farkı: base64 saklanır ve erişimi RBAC ile kısıtlanır.",
+              "expect": { "cmd": ["kubectl", "create", "secret"], "need": ["re:.+"] }, "hint": "kubectl create secret generic db-cred --from-literal=password=S3cr3t",
+              "success": "secret/db-cred created" },
+            { "task": "Secret'ları listele (değerleri sızdırmadan).",
+              "teach": "get secrets = adları ve türleri gösterir, değerleri değil. Değeri görmek ayrı bir komut ve ayrı bir yetki ister.",
+              "expect": { "cmd": ["kubectl", "get", "secret|secrets"] }, "hint": "kubectl get secrets",
+              "success": "db-cred (Opaque, 1 data). Değer görünmüyor — doğru davranış." },
+            { "task": "Kalıcı depolama talebi (PVC) oluştur.",
+              "teach": "PersistentVolumeClaim = 'bana 10Gi disk ver' talebi. Pod silinse de veri kalır.",
+              "expect": { "cmd": ["kubectl", "apply"], "need": ["re:pvc|volume|storage"] }, "hint": "kubectl apply -f pvc.yaml",
+              "success": "persistentvolumeclaim/db-data created" },
+            { "task": "Depolama talebinin karşılandığını doğrula.",
+              "teach": "get pvc = talebin Bound (bağlandı) mı Pending mi olduğunu gösterir. Pending kalırsa StorageClass sorunu vardır.",
+              "expect": { "cmd": ["kubectl", "get", "pvc|persistentvolumeclaim"] }, "hint": "kubectl get pvc",
+              "success": "db-data  Bound  10Gi  gp3. Veri artık kalıcı." }
+          ],
+          "complete": ["[Nova]: Sırlar korunuyor, veri kalıcı. Stateful iş yükleri artık güvende."]
+        },
+        {
+          "id": "k8sq4", "title": "Teşhis Ağı", "requires": ["k8sq3"], "xp": 160, "credits": 40, "badge": "⛵ Helm Navigator",
+          "brief": [
+            "[Nova]: Son ders: bir şey bozulduğunda nasıl teşhis edersin, ve tüm bunları nasıl paketlersin (Helm)."
+          ],
+          "objectives": [
+            { "task": "Cluster olaylarını zaman sırasına göre incele.",
+              "teach": "events = 'neden bu pod başlamadı?' sorusunun cevabı. OOMKilled, ImagePullBackOff gibi gerçek sebepler burada.",
+              "expect": { "cmd": ["kubectl", "get", "events"] }, "hint": "kubectl get events --sort-by=.metadata.creationTimestamp",
+              "success": "FailedScheduling: yetersiz CPU. Kök neden bulundu." },
+            { "task": "Çalışan pod'un içine girip kontrol et.",
+              "teach": "kubectl exec = container içinde komut çalıştırır. Config gerçekten mount olmuş mu, DNS çözülüyor mu — canlı bakarsın.",
+              "expect": { "cmd": ["kubectl", "exec"], "need": ["re:.+"] }, "hint": "kubectl exec -it web-abc12 -- sh",
+              "success": "Container içindesin. Env ve mount'lar doğrulandı." },
+            { "task": "Servisi lokal makinene yönlendir.",
+              "teach": "port-forward = cluster içindeki servisi localhost'a bağlar. Ingress kurmadan hızlıca test etmenin yolu.",
+              "expect": { "cmd": ["kubectl", "port-forward"], "need": ["re:.+"] }, "hint": "kubectl port-forward svc/web 8080:80 -n prod",
+              "success": "localhost:8080 → cluster'daki web servisi. Test edilebilir." },
+            { "task": "Uygulamayı Helm chart'ı olarak kur.",
+              "teach": "Helm = Kubernetes'in paket yöneticisi. Onlarca YAML yerine tek chart + değer dosyası; sürümleme ve rollback hazır gelir.",
+              "expect": { "anyOf": [ { "cmd": ["helm", "install"], "need": ["re:.+"] }, { "cmd": ["helm", "upgrade"], "need": ["re:.+"] } ] }, "hint": "helm install myapp ./chart -n prod",
+              "success": "Release myapp deployed. Kubernetes lab'ı tamam! 🎉" }
+          ],
+          "complete": ["[Nova]: Teşhis refleksin ve Helm'in var. Cluster artık sana yabancı değil. ☸️"]
+        }
+      ]
+    }
   ],
   "shop": [
     { "id": 1, "name": "Espresso Shot",       "icon": "☕",  "cost": 40,  "desc": "anlık +30 XP",               "effect": { "xp": 30 } },
