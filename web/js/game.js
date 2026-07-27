@@ -9,6 +9,7 @@
   "use strict";
 
   const MAX_WRONG_BEFORE_ANSWER = 3;
+  const ANSWER_COST = 25;              // Tab ile cevabı yazdırmanın kredi bedeli
 
   /* ---------------- DOM ---------------- */
   const $ = function (id) { return document.getElementById(id); };
@@ -181,7 +182,7 @@
       ["help  (?)", "bu liste"]
     ].forEach(function (r) { print("   " + pad(r[0], 16) + r[1], "help-row"); });
     blank();
-    print("   Quest içindeyken: hint (ipucu) · task (görevi tekrar) · abandon (çık)", "muted");
+    print("   Quest içindeyken: hint / Tab (cevabı göster — " + ANSWER_COST + " 💠, onay ister) · task · abandon", "muted");
     rule();
   }
 
@@ -355,7 +356,7 @@
     if (track && trackQuests(track)[0].id === q.id) showActIntro(track);   // perde açılışı
     showQuestBeat(q.id, "intro");
     narrate(q.brief, "mentor"); blank();
-    print("   (yardım: hint · task · abandon)", "muted"); blank();
+    print("   (yardım: hint / Tab = cevap, " + ANSWER_COST + " 💠 · task = görevi tekrar · abandon = çık)", "muted"); blank();
     showObjective();
   }
   function showObjective() {
@@ -382,13 +383,17 @@
       if (wrongCount >= MAX_WRONG_BEFORE_ANSWER) {
         print("   ✖ Tam olmadı. Yeni başlayan modunda yardım: doğru komut ↓", "err");
         revealHint(true); wrongCount = 0;
-      } else print("   ✖ Tam olmadı. 'hint' yaz ya da tekrar dene.", "err");
+      } else print("   ✖ Tam olmadı. Tekrar dene — " + (MAX_WRONG_BEFORE_ANSWER - wrongCount) + " denemede daha bilemezsen cevabı ücretsiz gösteririm.", "err");
     }
   }
   function revealHint(auto) {
-    var obj = activeQuest.objectives[objIndex];
-    if (!auto && player.freeHints > 0) { player.freeHints--; updateHud(); }
-    print("   💬 İpucu — şunu yaz:  " + obj.hint, "hintline");
+    if (auto) {   // 3 yanlış sonrası: ücretsiz güvenlik ağı
+      print("   💬 İpucu — şunu yaz:  " + activeQuest.objectives[objIndex].hint, "hintline");
+      return;
+    }
+    payForAnswer(function (obj) {          // elle istenen ipucu: ücretli + onaylı
+      print("   💬 İpucu — şunu yaz:  " + obj.hint, "hintline");
+    });
   }
   function finishQuest() {
     var q = activeQuest;
@@ -490,9 +495,51 @@
       if (history.length) { histPos = Math.min(history.length, histPos + 1); inputEl.value = history[histPos] || ""; e.preventDefault(); }
     } else if (e.key === "Tab") {
       e.preventDefault();
-      if (mode === "quest" && activeQuest) inputEl.value = activeQuest.objectives[objIndex].hint;
+      if (mode === "quest" && activeQuest) requestAnswer();
     }
   });
+
+  /* Cevabı açmak bedava değil: önce onay, sonra ücret.
+     Ücretsiz ipucu hakkı (shop) varsa krediden düşmez, haktan düşer.
+     3 yanlış denemeden sonraki otomatik gösterim ücretsizdir (güvenlik ağı). */
+  function payForAnswer(onGranted) {
+    var obj = activeQuest.objectives[objIndex];
+    var useFree = player.freeHints > 0;
+
+    if (!useFree && player.credits < ANSWER_COST) {
+      print("   ❌ Yetersiz kredi. Cevabı görmek " + ANSWER_COST + " 💠 tutuyor (bakiyen: " + player.credits + " 💠).", "err");
+      print("   Ücretsiz yol: 3 kez yanlış denersen doğru komutu bedava gösteririm.", "hintline");
+      return;
+    }
+
+    cqConfirm({
+      icon: "question",
+      title: "Cevabı göstereyim mi?",
+      html: useFree
+        ? "🧠 <b>Ücretsiz ipucu hakkın</b> kullanılacak.<br>Kalan hak: <b>" + player.freeHints + "</b>"
+        : "Bedeli: <b>" + ANSWER_COST + " 💠</b> · Bakiyen: <b>" + player.credits + " 💠</b>" +
+          "<br><span style='opacity:.7'>3 kez yanlış denersen ücretsiz gösteririm.</span>",
+      confirmText: useFree ? "Hakkımı kullan" : "Evet, " + ANSWER_COST + " 💠 öde",
+      cancelText: "Kendim deneyeceğim"
+    }).then(function (ok) {
+      inputEl.focus();
+      if (!ok) return;
+      // Onay beklenirken oyuncu ilerlemiş olabilir; hâlâ aynı adımda mıyız?
+      if (mode !== "quest" || !activeQuest || activeQuest.objectives[objIndex] !== obj) return;
+
+      if (useFree) {
+        player.freeHints--;
+        print("   🧠 Ücretsiz ipucu kullanıldı (kalan: " + player.freeHints + ").", "hintline");
+      } else {
+        player.credits -= ANSWER_COST;
+        print("   💠 -" + ANSWER_COST + " kredi (kalan: " + player.credits + ").", "credit");
+      }
+      updateHud(); save();
+      onGranted(obj);
+    });
+  }
+  // Tab: cevabı doğrudan giriş kutusuna yazar.
+  function requestAnswer() { payForAnswer(function (obj) { inputEl.value = obj.hint; }); }
   $("terminal").addEventListener("click", function () { inputEl.focus(); });
 
   /* =======================================================================
