@@ -240,6 +240,7 @@ var Tutorial = (function () {
     if (rb) rb.onclick = restart;
     print("", "");
     print("✔ Öğreticiyi tamamladın. Serbest kullanmaya devam edebilirsin.", "t-ok");
+    if (typeof FX !== "undefined") FX.burstCenter({ count: 36 });
     if (onFinish) onFinish(BADGE);
   }
 

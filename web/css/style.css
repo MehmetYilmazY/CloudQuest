@@ -35,6 +35,83 @@ body {
   overflow: hidden;
 }
 
+/* =========================================================================
+   FX — mikro-etkileşimler, kutlama, ambiyans
+   ========================================================================= */
+/* yumuşayan aurora ambiyansı (dekoratif; metne dokunmaz) */
+body::before {
+  content: ""; position: fixed; inset: -25%; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(38% 30% at 20% 25%, rgba(34,211,238,.10), transparent 60%),
+    radial-gradient(34% 28% at 80% 20%, rgba(192,132,252,.09), transparent 60%),
+    radial-gradient(40% 34% at 55% 85%, rgba(74,222,128,.06), transparent 60%);
+  filter: blur(30px); animation: fx-aurora 22s ease-in-out infinite alternate;
+}
+@keyframes fx-aurora {
+  0%   { transform: translate3d(0,0,0) scale(1); }
+  50%  { transform: translate3d(2%, -2%, 0) scale(1.06); }
+  100% { transform: translate3d(-2%, 2%, 0) scale(1.02); }
+}
+
+/* daktilo */
+.fx-tw { opacity: 0; animation: fx-tw-in .01s linear forwards; }
+@keyframes fx-tw-in { to { opacity: 1; } }
+
+/* konfeti */
+#fx-layer { position: fixed; inset: 0; pointer-events: none; z-index: 9998; overflow: hidden; }
+.fx-particle { position: absolute; width: 8px; height: 8px; border-radius: 2px; opacity: 0;
+  animation: fx-burst 1.15s cubic-bezier(.15,.7,.3,1) forwards; }
+@keyframes fx-burst {
+  0%   { opacity: 1; transform: translate(0,0) scale(1) rotate(0deg); }
+  70%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--dx), calc(var(--dy) + 120px)) scale(.4) rotate(320deg); }
+}
+
+/* ekran geçiş perdesi */
+#fx-veil { position: fixed; inset: 0; z-index: 9990; pointer-events: none; background: #05070d;
+  opacity: 0; transition: opacity .19s cubic-bezier(.4,0,.2,1); }
+#fx-veil.on { opacity: 1; }
+
+/* level up afişi */
+.fx-levelup { position: fixed; inset: 0; z-index: 9995; display: grid; place-items: center; pointer-events: none; }
+.fx-lu-in { text-align: center; padding: 26px 46px; border-radius: 20px;
+  background: linear-gradient(135deg, rgba(192,132,252,.20), rgba(34,211,238,.14));
+  border: 1px solid rgba(192,132,252,.6); backdrop-filter: blur(8px);
+  box-shadow: 0 0 60px rgba(192,132,252,.35); animation: fx-lu-in .5s cubic-bezier(.34,1.56,.64,1) both; }
+.fx-levelup.out .fx-lu-in { animation: fx-lu-out .5s ease forwards; }
+.fx-lu-star { display: block; font-size: 34px; animation: fx-spin 1.6s ease-in-out; }
+.fx-lu-in b { display: block; font-size: 30px; color: #fff; letter-spacing: 2px; margin-top: 4px; }
+.fx-lu-in em { display: block; font-style: normal; color: var(--neon); font-size: 14px; margin-top: 4px; }
+@keyframes fx-lu-in  { from { opacity: 0; transform: scale(.7) translateY(20px); } to { opacity: 1; transform: none; } }
+@keyframes fx-lu-out { to { opacity: 0; transform: scale(1.08) translateY(-14px); } }
+@keyframes fx-spin { from { transform: rotate(-20deg) scale(.7); } to { transform: rotate(360deg) scale(1); } }
+
+/* kart eğimi */
+.fx-tilt { transition: transform .25s cubic-bezier(.22,.61,.36,1), box-shadow .25s, border-color .25s;
+  transform-style: preserve-3d; position: relative; }
+.fx-tilt::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: radial-gradient(320px circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,.07), transparent 45%);
+  opacity: 0; transition: opacity .25s; }
+.fx-tilt:hover::after { opacity: 1; }
+
+/* buton parıltısı (sweep) */
+.btn-neon { position: relative; overflow: hidden; }
+.btn-neon::after { content: ""; position: absolute; top: 0; left: -120%; width: 60%; height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,.35), transparent);
+  transform: skewX(-18deg); transition: left .55s cubic-bezier(.22,.61,.36,1); }
+.btn-neon:hover::after { left: 130%; }
+.btn-neon:active { transform: translateY(1px) scale(.995); }
+
+/* buton hover: <2px yer değiştirme (skill kuralı) */
+.btn-ghost, .auth-tab, .btn-profile { transition: transform .16s cubic-bezier(.22,.61,.36,1), border-color .2s, color .2s, background .2s, box-shadow .2s; }
+.btn-ghost:hover, .btn-profile:hover { transform: translateY(-1px); }
+
+@media (prefers-reduced-motion: reduce) {
+  body::before, .fx-tw, .fx-particle, .fx-lu-star { animation: none !important; }
+  .fx-tw { opacity: 1; }
+  .fx-tilt, .btn-neon::after { transition: none; }
+}
+
 /* neon grid arka plan (overlay'lerde) */
 .grid-bg {
   position: absolute; inset: 0; z-index: 0; pointer-events: none;

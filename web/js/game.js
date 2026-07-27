@@ -62,11 +62,14 @@
   function save() { if (player) Auth.saveProfile(player); }
 
   /* ---------------- Ekrana yazma ---------------- */
+  // Anlatı satırlarında daktilo efekti (metin DOM'a tam yazılır, görsel olarak akar)
+  const TYPED = { mentor: 1, story: 1, task: 1, teach: 1, ok: 1 };
   function print(text, cls) {
     const line = document.createElement("div");
     line.className = "line" + (cls ? " " + cls : "");
     line.textContent = text == null ? "" : text;
     screenEl.appendChild(line);
+    if (cls && TYPED[cls] && typeof FX !== "undefined") FX.typewrite(line);
     screenEl.scrollTop = screenEl.scrollHeight;
     return line;
   }
@@ -99,7 +102,8 @@
     const need = xpToNext(player.level);
     hud.xpText.textContent = player.xp + " / " + need + " XP";
     hud.xpFill.style.width = Math.min(100, Math.round((player.xp / need) * 100)) + "%";
-    hud.credits.textContent = player.credits + " 💠";
+    if (typeof FX !== "undefined") FX.countUp(hud.credits, player.credits, { suffix: " 💠" });
+    else hud.credits.textContent = player.credits + " 💠";
     hud.quests.textContent = storyDone() + " / " + QUESTS.length;
     hud.badges.textContent = player.badges.length ? player.badges.join(", ") : "—";
     const acc = Auth.accountInfo();
@@ -117,6 +121,7 @@
       print("   ⭐ LEVEL UP!  →  Level " + player.level, "levelup");
       print("   Yeni rank: " + player.rank, "levelup");
       blank();
+      if (typeof FX !== "undefined") FX.levelUp(player.level, player.rank);
     }
     updateHud();
   }
@@ -400,6 +405,7 @@
   function finishQuest() {
     var q = activeQuest;
     blank(); rule(); narrate(q.complete, "mentor"); blank();
+    if (typeof FX !== "undefined") FX.burstCenter({ count: 30 });   // quest tamamlandı kutlaması
     showQuestBeat(q.id, "complete");
     addXp(q.xp); addCredits(q.credits);
     if (q.badge && player.badges.indexOf(q.badge) === -1) { player.badges.push(q.badge); print("   🏅 Yeni rozet: " + q.badge, "levelup"); }
@@ -865,6 +871,7 @@
     renderHome();
     $("home").classList.remove("hidden");
     animateHome();
+    if (typeof FX !== "undefined") { FX.autoWire($("home")); FX.magnetic($("story-continue"), .18); }
   }
   function backToHome() { updateHud(); enterHome(); }
 
@@ -896,9 +903,21 @@
     }).join("");
   }
 
+  // Ana sayfa açılış animasyonu. Animasyon rAF'a bağlıdır; sekme arka plandaysa
+  // hiç çalışmaz. O yüzden hem reduced-motion'da hiç gizlemiyoruz hem de her
+  // durumda son hâli garantileyen bir emniyet zamanlayıcısı bırakıyoruz.
+  function homeFinalState() {
+    if (typeof anime === "undefined") return;
+    var done = storyDone(), total = QUESTS.length, circ = 264;
+    anime.set(["#home .home-hero", "#sec-story", "#sec-labs", ".lab-card"],
+              { opacity: 1, translateY: 0, scale: 1 });
+    anime.set("#story-ring-fill", { strokeDashoffset: circ * (1 - done / total) });
+  }
   function animateHome() {
     if (typeof anime === "undefined") return;
+    if (typeof FX !== "undefined" && FX.reduce) { homeFinalState(); return; }
     var done = storyDone(), total = QUESTS.length, pct = done / total, circ = 264;
+    setTimeout(homeFinalState, 2600);      // emniyet: animasyon koşmasa da içerik görünür
     anime.set(["#home .home-hero", "#sec-story", "#sec-labs"], { opacity: 0, translateY: 18 });
     anime.set(".lab-card", { opacity: 0, translateY: 16, scale: 0.96 });
     anime.set("#story-ring-fill", { strokeDashoffset: circ });
@@ -911,12 +930,15 @@
   }
 
   function goToTerminal() {
-    $("home").classList.add("hidden");
-    $("app").classList.remove("hidden");
-    mode = "menu"; refreshPrompt();
-    updateHud();
-    if (!terminalBooted) { terminalBoot(); terminalBooted = true; }
-    inputEl.focus();
+    var swap = function () {
+      $("home").classList.add("hidden");
+      $("app").classList.remove("hidden");
+      mode = "menu"; refreshPrompt();
+      updateHud();
+      if (!terminalBooted) { terminalBoot(); terminalBooted = true; }
+      inputEl.focus();
+    };
+    if (typeof FX !== "undefined") FX.screenSwap(swap); else swap();
   }
 
   function selectLab(id) {

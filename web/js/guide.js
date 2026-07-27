@@ -194,6 +194,7 @@ var Guide = (function () {
         counter.textContent = (parseInt(sec.dataset.idx, 10) + 1) + " / " + SECTIONS.length;
         if (sec.classList.contains("g-final") && !_done) {
           _done = true;
+          if (typeof FX !== "undefined") FX.burstCenter({ count: 36 });
           if (_onComplete) _onComplete(BADGE);
         }
       });
