@@ -11,7 +11,7 @@ create table if not exists public.profiles (
   avatar      smallint    not null default 0,
   level       integer     not null default 1,
   xp          integer     not null default 0,
-  credits     integer     not null default 100,
+  credits     integer     not null default 60,
   rank        text        not null default 'Intern',
   completed   jsonb       not null default '[]'::jsonb,
   badges      jsonb       not null default '[]'::jsonb,
@@ -19,6 +19,10 @@ create table if not exists public.profiles (
   free_hints  integer     not null default 0,
   updated_at  timestamptz not null default now()
 );
+
+-- 1b) Mevcut tabloda varsayılanları güncelle (tablo zaten varsa create atlanır).
+--     Ekonomi dengesi değiştiğinde bu satır yeniden çalıştırılabilir.
+alter table public.profiles alter column credits set default 60;
 
 -- 2) GÜVENLİK: Row Level Security.
 --    Bu açık olmadan anon key ile herkes her satırı okur/yazar.

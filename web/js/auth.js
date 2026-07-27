@@ -48,7 +48,7 @@ const Auth = (function () {
       avatar: typeof r.avatar === "number" ? r.avatar : 0,
       level: r.level || 1,
       xp: r.xp || 0,
-      credits: typeof r.credits === "number" ? r.credits : 100,
+      credits: typeof r.credits === "number" ? r.credits : 60,
       rank: r.rank || "Intern ☁️",
       completed: Array.isArray(r.completed) ? r.completed : [],
       badges: Array.isArray(r.badges) ? r.badges : [],

@@ -9,7 +9,8 @@
   "use strict";
 
   const MAX_WRONG_BEFORE_ANSWER = 3;
-  const ANSWER_COST = 25;              // Tab ile cevabı yazdırmanın kredi bedeli
+  const ANSWER_COST = 25;              // Tab/hint ile cevabı görmenin kredi bedeli
+  const START_CREDITS = 60;            // başlangıç bakiyesi (~2 cevaplık tampon)
 
   /* ---------------- DOM ---------------- */
   const $ = function (id) { return document.getElementById(id); };
@@ -51,7 +52,7 @@
     return {
       name: (name || "engineer").slice(0, 24),
       avatar: avatar || 0,
-      level: 1, xp: 0, credits: 100,
+      level: 1, xp: 0, credits: START_CREDITS,
       rank: rankFor(1),
       completed: [], badges: [], freeHints: 0, story: []
     };
@@ -647,7 +648,7 @@
       confirmText: "Evet, sıfırla", cancelText: "Vazgeç"
     }).then(function (ok) {
       if (!ok) { print("   İptal edildi. İlerlemen duruyor.", "hintline"); return; }
-      player.level = 1; player.xp = 0; player.credits = 100;
+      player.level = 1; player.xp = 0; player.credits = START_CREDITS;
       player.rank = rankFor(1); player.completed = []; player.badges = []; player.freeHints = 0; player.story = [];
       save(); updateHud();
       terminalBooted = false;             // terminale dönünce welcome yeniden gösterilsin

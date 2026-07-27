@@ -476,7 +476,7 @@ function Show-Help {
 # ---------------------------------------------------------------------------
 function New-Player($name) {
     return @{
-        Name=$name; Level=1; XP=0; Credits=100; Rank=(Get-Rank 1)
+        Name=$name; Level=1; XP=0; Credits=60; Rank=(Get-Rank 1)
         Completed=@(); Badges=@(); Story=@()
     }
 }
