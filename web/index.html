@@ -268,6 +268,8 @@
       <div class="term-bar">
         <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
         <span class="term-title">cloudquest — live terminal</span>
+        <button class="term-btn" id="scene-toggle" type="button"
+                title="Sahne panelini aç/kapat">🗺️ sahne</button>
       </div>
       <div class="screen" id="screen"></div>
       <div class="input-line">
@@ -276,6 +278,9 @@
                autocapitalize="off" spellcheck="false" aria-label="komut girişi" />
       </div>
     </main>
+
+    <!-- Sahne: komutun ne yaptığını gösteren görsel kutu -->
+    <aside class="scene" id="scene"></aside>
   </div>
 
   <div class="scanlines" aria-hidden="true"></div>
@@ -287,6 +292,7 @@
   <script src="js/content.generated.js"></script>
   <script src="js/parser.js"></script>
   <script src="js/fx.js"></script>
+  <script src="js/scene.js"></script>
   <script src="js/avatars.js"></script>
   <script src="js/sharecard.js"></script>
   <script src="js/guide.js"></script>

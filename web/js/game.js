@@ -167,6 +167,21 @@
   }
   function pad(s, n) { s = String(s); while (s.length < n) s += " "; return s; }
 
+  /* ---------------- Sahne paneli (sağdaki görsel kutu) ---------------- */
+  function chapterStats() {
+    return CHAPTERS.map(function (ch) {
+      var qs = QUESTS.filter(function (q) { return q.chapter === ch.n; });
+      return {
+        n: ch.n, title: ch.title, total: qs.length,
+        done: qs.filter(function (q) { return player.completed.indexOf(q.id) !== -1; }).length
+      };
+    });
+  }
+  function sceneHub()        { if (typeof CQScene !== "undefined") CQScene.hub(chapterStats()); }
+  function sceneQuest(q)     { if (typeof CQScene !== "undefined") CQScene.quest(q); }
+  function sceneStep(i, t, k){ if (typeof CQScene !== "undefined") CQScene.step(i, t, k); }
+  function sceneApply(cmd, quiet) { if (typeof CQScene !== "undefined") CQScene.apply(cmd, quiet); }
+
   /* ---------------- Menü komutları ---------------- */
   function showHelp() {
     rule(); print("   KOMUTLAR", "title"); blank();
@@ -357,6 +372,7 @@
     if (st === "done")   { print("   ✅ Bu quest zaten tamamlandı.", "hintline"); return; }
     if (st === "locked") { print("   🔒 Kilitli. Önce tamamla: " + q.requires.join(", "), "err"); return; }
     activeQuest = q; objIndex = 0; wrongCount = 0; mode = "quest"; refreshPrompt();
+    sceneQuest(q);                       // sağdaki sahneyi bu questin dünyasına kur
     clearScreen(); rule();
     print("   ▶ QUEST: " + q.title + "   [" + q.id + "]", "questhead"); rule();
     var track = trackOfChapter(q.chapter);
@@ -368,6 +384,7 @@
   }
   function showObjective() {
     var obj = activeQuest.objectives[objIndex];
+    sceneStep(objIndex, activeQuest.objectives.length, obj.task);
     print("   ── Görev " + (objIndex + 1) + "/" + activeQuest.objectives.length + " " + "─".repeat(28), "objhead");
     print("   🎯 " + obj.task, "task");
     print("   💡 " + obj.teach, "teach");
@@ -381,6 +398,7 @@
     var obj = activeQuest.objectives[objIndex];
     var ok = CQParser.match(cmd, obj.expect);
     if (ok) {
+      sceneApply(cmd);                   // doğru komut: sahnede sonucunu göster
       print("   ✔ " + obj.success, "ok");
       wrongCount = 0; objIndex++;
       if (objIndex >= activeQuest.objectives.length) finishQuest();
@@ -425,7 +443,10 @@
     }
     backToMenu();
   }
-  function backToMenu() { activeQuest = null; objIndex = 0; wrongCount = 0; mode = "menu"; refreshPrompt(); }
+  function backToMenu() {
+    activeQuest = null; objIndex = 0; wrongCount = 0; mode = "menu"; refreshPrompt();
+    sceneHub();
+  }
 
   /* ---------------- Banner + terminal boot ---------------- */
   function showBanner() {
@@ -493,7 +514,8 @@
     echoCommand(raw);
     if (raw.trim() !== "") { history.push(raw); if (history.length > 100) history.shift(); }
     histPos = history.length;
-    if (mode === "quest") handleQuestInput(raw); else handleMenuInput(raw);
+    if (mode === "quest") handleQuestInput(raw);
+    else { handleMenuInput(raw); sceneApply(raw, true); }
   }
   inputEl.addEventListener("keydown", function (e) {
     if (e.key === "Enter") { var v = inputEl.value; inputEl.value = ""; submit(v); }
@@ -860,6 +882,18 @@
       var card = e.target.closest(".lab-card");
       if (card) selectLab(card.getAttribute("data-id"));
     });
+    // sahne paneli: kur, tercihi hatırla, term-bar'daki düğmeyle aç/kapat
+    if (typeof CQScene !== "undefined") {
+      CQScene.mount($("scene"));
+      try { if (localStorage.getItem("cq.scene") === "off") document.body.classList.add("scene-off"); }
+      catch (e) { /* localStorage kapalıysa panel açık kalsın */ }
+      $("scene-toggle").onclick = function () {
+        var off = document.body.classList.toggle("scene-off");
+        try { localStorage.setItem("cq.scene", off ? "off" : "on"); } catch (e) {}
+        inputEl.focus();
+      };
+      sceneHub();
+    }
   }
 
   /* =======================================================================
@@ -934,7 +968,7 @@
       $("home").classList.add("hidden");
       $("app").classList.remove("hidden");
       mode = "menu"; refreshPrompt();
-      updateHud();
+      updateHud(); sceneHub();
       if (!terminalBooted) { terminalBoot(); terminalBooted = true; }
       inputEl.focus();
     };
