@@ -180,9 +180,35 @@ var FX = (function () {
         tw: Math.random() * Math.PI * 2               // parıldama fazı
       };
     }
+    // Akan dalgalar — zerreciklerle AYNI canvas'a, altta. Ayrı bir animasyon
+    // katmanı açmamak için: tek rAF, ek maliyet yok.
+    var WAVES = [
+      { amp: 28, len: 0.0030, spd: 0.00022, y: 0.70, c: "34,211,238",  a: 0.10 },
+      { amp: 36, len: 0.0019, spd: -0.00015, y: 0.79, c: "192,132,252", a: 0.085 },
+      { amp: 20, len: 0.0042, spd: 0.00031, y: 0.88, c: "74,222,128",  a: 0.055 }
+    ];
+    function drawWaves(t) {
+      for (var w = 0; w < WAVES.length; w++) {
+        var v = WAVES[w], base = H * v.y;
+        ctx.beginPath();
+        ctx.moveTo(0, H);
+        for (var x = 0; x <= W; x += 8) {
+          var y = base + Math.sin(x * v.len + t * v.spd) * v.amp
+                       + Math.sin(x * v.len * 2.3 + t * v.spd * 1.7) * (v.amp * 0.35);
+          ctx.lineTo(x, y);
+        }
+        ctx.lineTo(W, H); ctx.closePath();
+        var g = ctx.createLinearGradient(0, base - v.amp, 0, H);
+        g.addColorStop(0, "rgba(" + v.c + "," + v.a + ")");
+        g.addColorStop(1, "rgba(" + v.c + ",0)");
+        ctx.fillStyle = g; ctx.fill();
+      }
+    }
+
     function frame() {
       if (!running) return;
       ctx.clearRect(0, 0, W, H);
+      drawWaves(performance.now());
 
       for (var i = 0; i < pts.length; i++) {
         var p = pts[i];

@@ -42,15 +42,32 @@ body {
 body::before {
   content: ""; position: fixed; inset: -25%; z-index: 0; pointer-events: none;
   background:
-    radial-gradient(38% 30% at 20% 25%, rgba(34,211,238,.10), transparent 60%),
-    radial-gradient(34% 28% at 80% 20%, rgba(192,132,252,.09), transparent 60%),
-    radial-gradient(40% 34% at 55% 85%, rgba(74,222,128,.06), transparent 60%);
+    /* Dalgalar ambiyans görevini üstlendi; aurora artık sadece üstte hafif bir ton */
+    radial-gradient(38% 30% at 20% 22%, rgba(34,211,238,.07), transparent 60%),
+    radial-gradient(34% 28% at 80% 18%, rgba(192,132,252,.06), transparent 60%);
   filter: blur(30px); animation: fx-aurora 22s ease-in-out infinite alternate;
 }
 @keyframes fx-aurora {
   0%   { transform: translate3d(0,0,0) scale(1); }
   50%  { transform: translate3d(2%, -2%, 0) scale(1.06); }
   100% { transform: translate3d(-2%, 2%, 0) scale(1.02); }
+}
+
+/* Kromatik sapma (RGB kanal kayması) — SADECE başlıklarda, ~1px.
+   Gövde metnine asla uygulanmaz: okunurluğu bozar ve göz yorar. */
+.home-title, .g-title, .auth-logo, .home-logo, .q-title-bar, .t-title-bar, .modal-title {
+  text-shadow: -1px 0 rgba(244,114,182,.38), 1px 0 rgba(34,211,238,.38);
+}
+/* Ara sıra geçen "sinyal paraziti" — dikkat dağıtmayacak kadar seyrek */
+.home-logo, .auth-logo { animation: fx-chroma 11s steps(1) infinite; }
+@keyframes fx-chroma {
+  0%, 96%  { text-shadow: -1px 0 rgba(244,114,182,.38), 1px 0 rgba(34,211,238,.38); transform: none; }
+  97%      { text-shadow: -3px 0 rgba(244,114,182,.75), 3px 0 rgba(34,211,238,.75); transform: translateX(1px); }
+  98%      { text-shadow:  3px 0 rgba(244,114,182,.6),  -3px 0 rgba(34,211,238,.6);  transform: translateX(-1px); }
+  99%      { text-shadow: -2px 0 rgba(244,114,182,.5),  2px 0 rgba(34,211,238,.5);   transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-logo, .auth-logo { animation: none; }
 }
 
 /* arka plan zerrecikleri — her şeyin arkasında, tıklamayı engellemez */
