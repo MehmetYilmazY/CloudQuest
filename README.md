@@ -8,17 +8,26 @@ level/XP mekanikleri olan bir RPG. Tam yeni başlayanlar için tasarlandı.
 
 | Sürüm | Nerede çalışır | Nasıl başlatılır |
 |-------|----------------|------------------|
-| 🌐 **Web app** | Tarayıcı (kurulum yok) | `web/index.html` dosyasına çift tıkla |
+| 🌐 **Web app** | Tarayıcı (Supabase hesabı gerekir) | statik sunucu + deploy edilmiş `game` fonksiyonu |
 | 🖥️ **Terminal (PowerShell)** | Windows PowerShell 5.1+ | `powershell -ExecutionPolicy Bypass -File .\cloudquest.ps1` |
 
 > İkisi de aynı içeriği paylaşır: aynı bölümler, aynı questler, aynı mentör (Nova).
-> İlerlemen web'de tarayıcıya (localStorage), terminalde `data/save.json`'a kaydedilir.
+> Web'de ilerleme **sunucuda** (Postgres) tutulur; terminal sürümü yereldir (`data/save.json`).
 
 ## Web app'i açmak
 
-`web/index.html` dosyasına çift tıklaman yeterli. (Bazı tarayıcılarda `file://`
-üzerinden yerel JS/crypto kısıtlıysa, klasörü basit bir statik sunucuyla ver ve
-`http://localhost:...` üzerinden aç — hesap şifre hash'i için önerilir.)
+> ⚠️ **Değişti (Katman 1):** `web/index.html`'e çift tıklayarak `file://`
+> üzerinden oynamak artık mümkün değil. Komut doğrulama ve ödüller sunucuya
+> taşındı — oyun bir Supabase projesi ve deploy edilmiş `game` Edge
+> Function'ı ister. Nedeni ve kurulumu:
+> [`docs/LAYER-1-SERVER-AUTHORITY.md`](docs/LAYER-1-SERVER-AUTHORITY.md)
+
+```bash
+npm install && npm run build          # müfredatı derle (public + secret bundle)
+npx supabase functions deploy game    # hakemi yayına al
+```
+
+Ardından `web/` klasörünü herhangi bir statik sunucuyla (veya Vercel ile) ver.
 
 ### Görsel & hesap özellikleri
 - **Hikâye modu ("Meridian" startup dramı)** — gerçekçi bir startup'a ilk gün girer,
@@ -48,18 +57,31 @@ Müfredat **tek yerde** yaşar: [`data/curriculum.json`](data/curriculum.json) (
 tracks, quests, modules, shop). Her iki runtime de buradan beslenir:
 
 - **PowerShell** ([`cloudquest.ps1`](cloudquest.ps1)) JSON'u doğrudan okur.
-- **Web** için `build.ps1` çalıştırılır → `web/js/content.generated.js` üretilir
-  (çift-tıkla `file://` açılırlık korunur; içerik değişince yeniden build edilir):
+- **Web** için `npm run build` çalıştırılır ve **iki** çıktı üretilir:
+  - `web/js/content.generated.js` — **public** bundle (tarayıcıya gider)
+  - `supabase/functions/_shared/curriculum.json` — **secret** bundle (sunucuda kalır)
+
+  ```bash
+  npm run build
   ```
-  powershell -ExecutionPolicy Bypass -File .\build.ps1
-  ```
+
+  Public bundle'da **cevap anahtarı yoktur**: her objective'in `expect` spec'i ve
+  `hint` (doğru komut) metni yalnızca sunucu tarafındadır. Bu ayrım CI'da da
+  denetlenir — cevap sızarsa build kırmızı olur.
 
 **Komut doğrulama regex değil, yapısal parser** ile yapılır: girdi pipe/`&&`/`;` ile
 segmentlere ayrılır, quote-farkında tokenize edilir, baştaki `sudo` atılır; sonra
 her objective'in bildirimsel `expect` spec'i (`{cmd, need, anyOf}`) ile eşleşir.
 Böylece flag sırası, fazladan flag ve pipe kullanıcıyı yanlış cevaba düşürmez.
-Aynı mantık web'de [`web/js/parser.js`](web/js/parser.js), terminalde `cloudquest.ps1`
-içindeki `CQ-Match` fonksiyonlarında.
+
+Parser'ın **tek kaynağı** [`shared/parser.ts`](shared/parser.ts) ve **sunucuda**
+çalışır ([`supabase/functions/game`](supabase/functions/game/index.ts)).
+`web/js/parser.js` artık yalnızca sahne panelini çizmek için tokenize eder —
+doğru/yanlış kararı vermez. Terminal sürümü kendi `CQ-Match` fonksiyonlarını
+kullanmaya devam eder (yerel, çevrimdışı).
+
+**Ekonomi kuralları** ([`shared/progression.ts`](shared/progression.ts)) de sunucuda:
+XP, level, rank, credits ve rozetleri yalnızca Edge Function yazabilir.
 
 **Advanced Labs** (hikâyeden bağımsız yan modüller): ana sayfadaki grid'de "yakında" olanlar
 placeholder; `status:"active"` + `quests[]` dolu olan **oynanabilir**. Aktif olanlar:
@@ -69,15 +91,20 @@ Lab dokümanları: [Network Ops](docs/CURRICULUM-LAB-NETWORK-OPS.md) · [Scripti
 Lab'lar XP/rozet verir ama "hazırlık %" (story) sayacını etkilemez.
 
 **Hesap katmanı:** [`web/js/auth.js`](web/js/auth.js) Supabase Auth + `profiles` tablosunu
-sarar. Profil, oturum açılışında bir kez belleğe alınır (okumalar senkron kalsın diye),
-yazmalar debounce'lanıp buluta gider; ağ koparsa yerel yedeğe düşer ve bir sonraki
-açılışta yukarı itilir. Şema + RLS: [`supabase/schema.sql`](supabase/schema.sql).
-`web/js/config.js` içindeki **anon key gizli değildir** (tasarım gereği); koruma RLS'tedir.
-`service_role` anahtarı repoda **yoktur ve olmamalıdır**.
+sarar; [`web/js/api.js`](web/js/api.js) ise sunucudaki hakemle konuşan tek kapıdır.
+İstemci artık **ilerleme yazmaz**: `profiles` üzerinde kolon bazlı GRANT var, yalnızca
+`name`, `avatar` ve `story` (kozmetik) yazılabilir. Level, XP, credits, rozet ve
+tamamlanan questleri sadece `game` Edge Function yazabilir.
+Şema + RLS + GRANT: [`supabase/schema.sql`](supabase/schema.sql).
+`web/js/config.js` içindeki **anon key gizli değildir** (tasarım gereği); koruma RLS +
+GRANT'tedir. `service_role` anahtarı repoda **yoktur ve olmamalıdır**.
 
-Dosya yapısı: `data/curriculum.json` (SSOT) · `build.ps1` · `cloudquest.ps1` (terminal) ·
-`supabase/schema.sql` · `web/index.html` · `web/css/style.css` ·
-`web/js/{config,content.generated,parser,avatars,auth,game}.js` ·
+Ayrıntı: [`docs/LAYER-1-SERVER-AUTHORITY.md`](docs/LAYER-1-SERVER-AUTHORITY.md)
+
+Dosya yapısı: `data/curriculum.json` (SSOT) · `shared/{parser,progression,curriculum.schema,curriculum.validate}.ts` ·
+`scripts/build.ts` · `cloudquest.ps1` (terminal) · `supabase/schema.sql` ·
+`supabase/functions/game/index.ts` (hakem) · `web/index.html` · `web/css/style.css` ·
+`web/js/{config,content.generated,api,parser,avatars,auth,game}.js` ·
 `web/js/lib/{anime.min,sweetalert2.all.min,supabase.min}.js` (vendor, çevrimdışı).
 
 Dialog/onay/toast'lar **SweetAlert2** ile (reset & çıkış onayı, "yakında" bildirimleri) —

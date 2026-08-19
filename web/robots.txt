@@ -1,0 +1,14 @@
+# CloudQuest — robots
+# ALAN ADINI DEGISTIR: sitemap satirindaki adresi kendi alan adinla degistir.
+
+User-agent: *
+Allow: /
+
+# Uygulama ekranlari SEO icin degerli degil (giris gerektirir, icerik dinamik).
+Disallow: /app
+Disallow: /app.html
+
+Sitemap: https://cloudquest.vercel.app/sitemap.xml
+
+# Paylasim gorseli kaynagi (site sayfasi degil)
+Disallow: /og.html

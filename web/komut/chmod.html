@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>chmod komutu: dosya izinleri nasıl değiştirilir? — CloudQuest</title>
+  <meta name="description" content="chmod +x ne işe yarar, 755 ile 644 arasındaki fark ne? Linux dosya izinlerini örneklerle, en sık yapılan hatalarla birlikte anlatan Türkçe rehber." />
+  <link rel="canonical" href="https://cloudquest.vercel.app/komut/chmod" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#06070a" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta property="og:type" content="article" />
+  <meta property="og:locale" content="tr_TR" />
+  <meta property="og:site_name" content="CloudQuest" />
+  <meta property="og:url" content="https://cloudquest.vercel.app/komut/chmod" />
+  <meta property="og:title" content="chmod komutu: dosya izinleri nasıl değiştirilir?" />
+  <meta property="og:description" content="chmod +x ne işe yarar, 755 ile 644 arasındaki fark ne? Linux dosya izinlerini örneklerle, en sık yapılan hatalarla birlikte anlatan Türkçe rehber." />
+  <meta property="og:image" content="https://cloudquest.vercel.app/og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E%E2%98%81%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/css/landing.css" />
+  <link rel="stylesheet" href="/css/lesson.css" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"CloudQuest","item":"https://cloudquest.vercel.app/"},{"@type":"ListItem","position":2,"name":"Komutlar","item":"https://cloudquest.vercel.app/komut"},{"@type":"ListItem","position":3,"name":"chmod","item":"https://cloudquest.vercel.app/komut/chmod"}]},{"@type":"TechArticle","headline":"chmod komutu: dosya izinleri nasıl değiştirilir?","description":"chmod +x ne işe yarar, 755 ile 644 arasındaki fark ne? Linux dosya izinlerini örneklerle, en sık yapılan hatalarla birlikte anlatan Türkçe rehber.","inLanguage":"tr-TR","dateModified":"2026-08-19","url":"https://cloudquest.vercel.app/komut/chmod","publisher":{"@type":"Organization","name":"CloudQuest","url":"https://cloudquest.vercel.app"}}]}</script>
+</head>
+<body>
+  <a class="skip-link" href="#main">İçeriğe geç</a>
+  <canvas id="stars" aria-hidden="true"></canvas>
+  <div class="nebula" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="nav" id="nav">
+    <nav class="nav-inner" aria-label="Ana menü">
+      <a class="nav-logo" href="/">☁ CLOUDQUEST</a>
+      <div class="nav-links">
+        <a href="/ogren">Öğren</a>
+        <a href="/komut">Komutlar</a>
+        <a href="/#mufredat">Müfredat</a>
+        <a href="/#sss">SSS</a>
+      </div>
+      <a class="btn btn-primary btn-sm" href="/app">Giriş yap</a>
+    </nav>
+  </header>
+
+  <nav class="crumbs" aria-label="Konum">
+    <div class="wrap">
+      <a href="/">CloudQuest</a><span class="crumb-sep">/</span><a href="/komut">Komutlar</a><span class="crumb-sep">/</span><span aria-current="page">chmod</span>
+    </div>
+  </nav>
+
+  <main id="main">
+    <article class="lesson">
+      <div class="wrap">
+        <p class="lesson-kicker">Komut referansı</p>
+        <h1><code class="cmd-name">chmod</code></h1>
+        <p class="lesson-standfirst">chmod +x ne işe yarar, 755 ile 644 arasındaki fark ne? Linux dosya izinlerini örneklerle, en sık yapılan hatalarla birlikte anlatan Türkçe rehber.</p>
+        <div class="prose">
+<p><code>chmod</code> (change mode), bir dosyanın kimler tarafından okunabileceğini,
+yazılabileceğini ve çalıştırılabileceğini belirler. Linux&#39;ta izinlerle ilgili
+hemen her sorunun çözümü bu komuttan geçer.</p>
+<h2>En sık kullanılan hâli</h2>
+<pre><code>chmod +x deploy.sh
+</code></pre>
+<p>&quot;Bu dosyaya çalıştırma izni ekle&quot; demek. Yeni yazdığın bir script&#39;i
+çalıştırmaya kalkıp şu hatayı alıyorsan ihtiyacın olan şey budur:</p>
+<pre><code>bash: ./deploy.sh: Permission denied
+</code></pre>
+<p>Dosya oradadır, içeriği doğrudur — sadece işletim sistemi onu &quot;çalıştırılabilir&quot;
+saymamaktadır. <code>chmod +x</code> bunu düzeltir.</p>
+<h2>İzinler nasıl okunur</h2>
+<p><code>ls -l</code> çıktısının başındaki dizi, dosyanın izin haritasıdır:</p>
+<pre><code>-rwxr-xr--  1 engineer  staff  482 Aug 19 14:02 deploy.sh
+ │└┬┘└┬┘└┬┘
+ │ │  │  └── diğerleri : sadece okuma
+ │ │  └───── grup      : okuma + çalıştırma
+ │ └──────── sahip     : okuma + yazma + çalıştırma
+ └────────── dosya tipi (- dosya, d dizin, l sembolik link)
+</code></pre>
+<p>Üç harf tekrar eder: <code>r</code> okuma (read), <code>w</code> yazma (write), <code>x</code> çalıştırma
+(execute). Yerinde <code>-</code> varsa o izin yok demektir.</p>
+<h2>İki yazım biçimi</h2>
+<p><strong>Sembolik</strong> — ne eklediğini/çıkardığını söylersin. Okunması kolay:</p>
+<pre><code>chmod +x   script.sh      # herkese çalıştırma izni ekle
+chmod u+x  script.sh      # sadece sahibine ekle
+chmod -w   config.yml     # yazma iznini kaldır
+chmod go-r secret.env     # grup ve diğerlerinin okumasını kes
+</code></pre>
+<p>Buradaki <code>u</code> sahip (user), <code>g</code> grup, <code>o</code> diğerleri (others), <code>a</code> hepsi.</p>
+<p><strong>Sayısal</strong> — izinleri tek seferde ayarlarsın. Her hane bir grup içindir ve
+<code>r=4</code>, <code>w=2</code>, <code>x=1</code> toplanır:</p>
+<pre><code>chmod 755 deploy.sh       # sahip rwx(7), grup r-x(5), diğerleri r-x(5)
+chmod 644 config.yml      # sahip rw-(6), grup r--(4), diğerleri r--(4)
+chmod 600 id_rsa          # sahip rw-(6), başka kimse hiçbir şey
+</code></pre>
+<p>Pratikte üç sayıyı bilmen yeterli:</p>
+<table>
+<thead>
+<tr>
+<th>Değer</th>
+<th>Ne için</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>755</code></td>
+<td>Script&#39;ler ve dizinler — herkes çalıştırabilir, kimse değiştiremez</td>
+</tr>
+<tr>
+<td><code>644</code></td>
+<td>Normal dosyalar — herkes okur, sadece sahip yazar</td>
+</tr>
+<tr>
+<td><code>600</code></td>
+<td>Sırlar (SSH anahtarı, .env) — sadece sahip erişir</td>
+</tr>
+</tbody></table>
+<h2>En sık yapılan üç hata</h2>
+<p><strong>1. Her şeye 777 vermek.</strong> &quot;İzin hatası aldım, 777 yapayım geçsin&quot; refleksi
+sorunu gizler, çözmez — ve sunucudaki herkese o dosyayı değiştirme yetkisi
+verir. Güvenlik denetimlerinde ilk bakılan yerlerden biridir. Doğru soru
+&quot;kim erişmeli?&quot; olmalı.</p>
+<p><strong>2. SSH anahtarına geniş izin.</strong> OpenSSH, özel anahtarın başkaları tarafından
+okunabildiğini görürse bağlantıyı reddeder:</p>
+<pre><code>Permissions 0644 for &#39;id_rsa&#39; are too open.
+</code></pre>
+<p>Çözüm <code>chmod 600 ~/.ssh/id_rsa</code>. Bu bir katılık değil, koruma.</p>
+<p><strong>3. Dizinde <code>x</code>&#39;in ne demek olduğunu bilmemek.</strong> Dizinlerde <code>x</code> &quot;çalıştır&quot;
+değil, <strong>&quot;içine gir&quot;</strong> anlamına gelir. <code>x</code> izni olmayan bir dizinin içindeki
+dosyaları adlarıyla bilsen bile açamazsın.</p>
+<h2>Yinelemeli değiştirme</h2>
+<p><code>-R</code> bayrağı alt klasörlere de uygular:</p>
+<pre><code>chmod -R 755 /var/www/html
+</code></pre>
+<p>Dikkatli kullan: bir dizin ağacındaki dosya ve klasörlere aynı izni vermek
+genelde istediğin şey değildir. Dizinlere <code>755</code>, dosyalara <code>644</code> gerekir —
+ikisini ayırmak için <code>find</code> ile birlikte kullanılır.</p>
+<h2>chmod mu, chown mu?</h2>
+<p>Karıştırılır ama farkları nettir:</p>
+<ul>
+<li><code>chmod</code> → izinleri değiştirir (<strong>ne</strong> yapılabilir)</li>
+<li><code>chown</code> → sahibi değiştirir (<strong>kim</strong> yapabilir)</li>
+</ul>
+<p>Dosya yanlış kullanıcıya aitse <code>chmod</code> seni kurtarmaz; <code>chown</code> gerekir.</p>
+
+        </div>
+
+<aside class="practice">
+        <p class="practice-k">Şimdi uygula</p>
+        <h2>Dosya Matrisi</h2>
+        <p>Bu dersteki komutları 4 adımlık bir görevde,
+           mentör eşliğinde sen yazıyorsun. Takılırsan doğrusu gösteriliyor.</p>
+        <a class="btn btn-primary" href="/app">Quest'i aç — ücretsiz</a>
+      </aside>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <span>☁ CloudQuest · güncellendi 2026-08-19</span>
+      <nav class="footer-links" aria-label="Alt menü">
+        <a href="/ogren">Öğren</a>
+        <a href="/komut">Komutlar</a>
+        <a href="/app">Giriş yap</a>
+        <a href="/">Ana sayfa</a>
+      </nav>
+    </div>
+  </footer>
+  <script src="/js/stars.js"></script>
+  <script src="/js/landing.js"></script>
+</body>
+</html>

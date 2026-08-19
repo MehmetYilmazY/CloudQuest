@@ -36,7 +36,11 @@
   let activeQuest = null, objIndex = 0, wrongCount = 0;
   const history = []; let histPos = -1;
 
-  /* ---------------- Rank & XP ---------------- */
+  /* ---------------- Rank & XP (SADECE GÖSTERİM) ----------------
+     Bu iki fonksiyon HUD'daki çubuğu ve profil sayfasını çizmek için var.
+     Bağlayıcı hesap shared/progression.ts içinde ve SUNUCUDA çalışıyor;
+     burada bir sayı değiştirmek kaydı değiştirmez. Denge değişirse iki
+     yeri birden güncelle (Katman 2'de tek TS modülüne inecek). */
   function rankFor(level) {
     if (level >= 12) return "Principal Cloud Wizard 🧙";
     if (level >= 10) return "Cloud Architect 🏛️";
@@ -110,25 +114,33 @@
     hud.account.textContent = acc ? acc.email : "—";
   }
 
-  function addXp(amount) {
-    player.xp += amount;
-    print("   +" + amount + " XP", "xp");
-    while (player.xp >= xpToNext(player.level)) {
-      player.xp -= xpToNext(player.level);
-      player.level++;
-      player.rank = rankFor(player.level);
+  /* KATMAN 1: ödül hesabı artık burada YAPILMAZ.
+     Sunucu (game Edge Function) XP/level/credits'i hesaplar ve yazar; bu
+     fonksiyonlar yalnızca gelen sonucu ekrana döker. Yerelde bir sayı
+     uydurmak HUD'u anlık yanıltır ama kaydı değiştirmez — bu yüzden hiç
+     uydurmuyoruz: `progress` sunucunun döndürdüğü hakikattir. */
+  function showAward(award, progress) {
+    if (!award) return;
+    if (award.xp)      print("   +" + award.xp + " XP", "xp");
+    if (award.credits) print("   +" + award.credits + " cloud credits 💠", "credit");
+
+    if (progress) Auth.applyServerProgress(progress);
+
+    if (award.leveledUp) {
       blank();
       print("   ⭐ LEVEL UP!  →  Level " + player.level, "levelup");
       print("   Yeni rank: " + player.rank, "levelup");
       blank();
       if (typeof FX !== "undefined") FX.levelUp(player.level, player.rank);
     }
+    if (award.badge) print("   🏅 Yeni rozet: " + award.badge, "levelup");
     updateHud();
   }
-  function addCredits(amount) {
-    player.credits += amount;
-    print("   +" + amount + " cloud credits 💠", "credit");
-    updateHud();
+
+  /** Sunucu hatalarını tek yerden, kullanıcının anlayacağı dille bas. */
+  function serverError(e, what) {
+    print("   ⚠ " + (what || "İşlem tamamlanamadı") + ": " + (e && e.message ? e.message : e), "err");
+    print("   İlerlemen sunucuda tutuluyor; bağlantı gelince tekrar dene.", "muted");
   }
 
   /* ---------------- Quest yardımcıları ---------------- */
@@ -302,14 +314,21 @@
     var n = parseInt(nRaw, 10);
     var item = SHOP.find(function (i) { return i.id === n; });
     if (!item) { print("   ❌ Geçersiz seçim. 'shop' ile ürünleri gör.", "err"); return; }
+    // Aşağıdaki iki kontrol sadece hızlı geri bildirim için; bağlayıcı olan
+    // sunucudaki kontrol (fiyatı ve etkiyi de sunucu okur).
     if (player.credits < item.cost) { print("   ❌ Yetersiz credit (" + item.cost + " gerekli).", "err"); return; }
     if (item.effect.badge && player.badges.indexOf(item.effect.badge) !== -1) { print("   Bu ünvana zaten sahipsin.", "hintline"); return; }
-    player.credits -= item.cost;
-    print("   🛍️  Satın alındı: " + item.name, "credit");
-    if (item.effect.xp) addXp(item.effect.xp);
-    if (item.effect.badge) { player.badges.push(item.effect.badge); print("   🏅 Yeni rozet: " + item.effect.badge, "levelup"); }
-    if (item.effect.freeHints) { player.freeHints += item.effect.freeHints; print("   🧠 " + item.effect.freeHints + " ücretsiz ipucu eklendi.", "hintline"); }
-    updateHud(); save();
+
+    CQApi.purchase(item.id).then(function (res) {
+      print("   🛍️  Satın alındı: " + item.name, "credit");
+      showAward(res.award, res.progress);
+      if (item.effect.freeHints) print("   🧠 " + item.effect.freeHints + " ücretsiz ipucu eklendi.", "hintline");
+      updateHud();
+    }).catch(function (e) {
+      if (e.status === 402) { print("   ❌ Yetersiz credit.", "err"); return; }
+      if (e.status === 409) { print("   Bu ünvana zaten sahipsin.", "hintline"); return; }
+      serverError(e, "Satın alma tamamlanamadı");
+    });
   }
 
   function showRoadmap() {
@@ -371,7 +390,20 @@
     var st = questStatus(q);
     if (st === "done")   { print("   ✅ Bu quest zaten tamamlandı.", "hintline"); return; }
     if (st === "locked") { print("   🔒 Kilitli. Önce tamamla: " + q.requires.join(", "), "err"); return; }
-    activeQuest = q; objIndex = 0; wrongCount = 0; mode = "quest"; refreshPrompt();
+
+    /* Sunucu quest'i açar ve KAÇINCI adımda olduğumuzu söyler. Yarım
+       bırakılmış bir quest'e dönünce kaldığın yerden devam edersin —
+       bu bilgi artık tarayıcıda değil, quest_progress tablosunda. */
+    print("   … sunucuya bağlanılıyor", "muted");
+    CQApi.start(q.id).then(function (res) {
+      beginQuestUi(q, res.objIndex || 0);
+    }).catch(function (e) {
+      serverError(e, "Quest başlatılamadı");
+    });
+  }
+
+  function beginQuestUi(q, startIndex) {
+    activeQuest = q; objIndex = startIndex || 0; wrongCount = 0; mode = "quest"; refreshPrompt();
     sceneQuest(q);                       // sağdaki sahneyi bu questin dünyasına kur
     clearScreen(); rule();
     print("   ▶ QUEST: " + q.title + "   [" + q.id + "]", "questhead"); rule();
@@ -389,46 +421,67 @@
     print("   🎯 " + obj.task, "task");
     print("   💡 " + obj.teach, "teach");
   }
+  /* Doğrulama sunucuda olduğu için bu akış artık asenkron. Cevap gelene
+     kadar girdi kilitlenir; yoksa oyuncu aynı komutu iki kez göndererek
+     iki kez ödül almayı deneyebilirdi (sunucu da engelliyor, ama UI'ın
+     tutarlı kalması için burada da kilitliyoruz). */
+  var verifyInFlight = false;
+
   function handleQuestInput(cmd) {
     var lower = cmd.toLowerCase();
-    if (/^(abandon|exit|back|çık|cik)$/.test(lower)) { print("   ↩  Quest'ten çıkıldı (ilerleme kaydedilmedi).", "hintline"); backToMenu(); return; }
-    if (/^(hint|ipucu)$/.test(lower)) { revealHint(false); return; }
+    if (/^(abandon|exit|back|çık|cik)$/.test(lower)) { print("   ↩  Quest'ten çıkıldı (ilerlemen sunucuda duruyor).", "hintline"); backToMenu(); return; }
+    if (/^(hint|ipucu)$/.test(lower)) { revealHint(); return; }
     if (/^(task|görev|gorev|look)$/.test(lower)) { print("   🎯 " + activeQuest.objectives[objIndex].task, "task"); return; }
     if (cmd.trim() === "") return;
-    var obj = activeQuest.objectives[objIndex];
-    var ok = CQParser.match(cmd, obj.expect);
-    if (ok) {
-      sceneApply(cmd);                   // doğru komut: sahnede sonucunu göster
-      print("   ✔ " + obj.success, "ok");
-      wrongCount = 0; objIndex++;
-      if (objIndex >= activeQuest.objectives.length) finishQuest();
-      else { blank(); showObjective(); }
-    } else {
-      wrongCount++;
-      if (wrongCount >= MAX_WRONG_BEFORE_ANSWER) {
-        print("   ✖ Tam olmadı. Yeni başlayan modunda yardım: doğru komut ↓", "err");
-        revealHint(true); wrongCount = 0;
-      } else print("   ✖ Tam olmadı. Tekrar dene — " + (MAX_WRONG_BEFORE_ANSWER - wrongCount) + " denemede daha bilemezsen cevabı ücretsiz gösteririm.", "err");
-    }
+    if (verifyInFlight) { print("   … önceki komut hâlâ kontrol ediliyor", "muted"); return; }
+
+    var quest = activeQuest;
+    verifyInFlight = true;
+    CQApi.verify(quest.id, cmd)
+      .then(function (res) {
+        // Yanıt gelirken oyuncu quest'ten çıkmış olabilir.
+        if (mode !== "quest" || activeQuest !== quest) return;
+        if (res.ok) onCorrect(cmd, res);
+        else onWrong(res);
+      })
+      .catch(function (e) { serverError(e, "Komut doğrulanamadı"); })
+      .finally(function () { verifyInFlight = false; inputEl.focus(); });
   }
-  function revealHint(auto) {
-    if (auto) {   // 3 yanlış sonrası: ücretsiz güvenlik ağı
-      print("   💬 İpucu — şunu yaz:  " + activeQuest.objectives[objIndex].hint, "hintline");
+
+  function onCorrect(cmd, res) {
+    sceneApply(cmd);                      // doğru komut: sahnede sonucunu göster
+    print("   ✔ " + res.success, "ok");
+    wrongCount = 0;
+    if (res.questComplete) { finishQuest(res); return; }
+    objIndex = res.objIndex;              // sıradaki adımı SUNUCU söyler
+    blank(); showObjective();
+  }
+
+  function onWrong(res) {
+    wrongCount = res.wrongCount || 0;
+    if (res.hint) {
+      // 3 yanlış sonrası ücretsiz güvenlik ağı — bedeli sunucu değerlendirdi.
+      print("   ✖ Tam olmadı. Yeni başlayan modunda yardım: doğru komut ↓", "err");
+      print("   💬 İpucu — şunu yaz:  " + res.hint, "hintline");
       return;
     }
-    payForAnswer(function (obj) {          // elle istenen ipucu: ücretli + onaylı
-      print("   💬 İpucu — şunu yaz:  " + obj.hint, "hintline");
+    print("   ✖ Tam olmadı. Tekrar dene — " + res.remaining +
+          " denemede daha bilemezsen cevabı ücretsiz gösteririm.", "err");
+  }
+  /** Elle istenen ipucu: ücreti sunucu tahsil eder, cevabı sunucu verir. */
+  function revealHint() {
+    payForAnswer(function (hint) {
+      print("   💬 İpucu — şunu yaz:  " + hint, "hintline");
     });
   }
-  function finishQuest() {
+
+  function finishQuest(res) {
     var q = activeQuest;
     blank(); rule(); narrate(q.complete, "mentor"); blank();
     if (typeof FX !== "undefined") FX.burstCenter({ count: 30 });   // quest tamamlandı kutlaması
     showQuestBeat(q.id, "complete");
-    addXp(q.xp); addCredits(q.credits);
-    if (q.badge && player.badges.indexOf(q.badge) === -1) { player.badges.push(q.badge); print("   🏅 Yeni rozet: " + q.badge, "levelup"); }
-    if (player.completed.indexOf(q.id) === -1) player.completed.push(q.id);
-    updateHud(); save(); rule();
+    showAward(res && res.award, res && res.progress);               // ödül SUNUCUDAN
+    rule();
     var track = trackOfChapter(q.chapter);
     if (track && trackQuests(track).slice(-1)[0].id === q.id) showActOutro(track);   // perde kapanışı
     if (isLabQuest(q)) {
@@ -533,8 +586,12 @@
   /* Cevabı açmak bedava değil: önce onay, sonra ücret.
      Ücretsiz ipucu hakkı (shop) varsa krediden düşmez, haktan düşer.
      3 yanlış denemeden sonraki otomatik gösterim ücretsizdir (güvenlik ağı). */
+  /* Cevabı açmak bedava değil. Onay ekranı burada, TAHSİLAT sunucuda:
+     istemci "ödedim" diyemez, ipucunu ancak sunucu bedeli düştükten sonra
+     döndürür. Bakiye kontrolü de sunucuda tekrar yapılır. */
   function payForAnswer(onGranted) {
-    var obj = activeQuest.objectives[objIndex];
+    var quest = activeQuest;
+    var step = objIndex;
     var useFree = player.freeHints > 0;
 
     if (!useFree && player.credits < ANSWER_COST) {
@@ -556,21 +613,26 @@
       inputEl.focus();
       if (!ok) return;
       // Onay beklenirken oyuncu ilerlemiş olabilir; hâlâ aynı adımda mıyız?
-      if (mode !== "quest" || !activeQuest || activeQuest.objectives[objIndex] !== obj) return;
+      if (mode !== "quest" || activeQuest !== quest || objIndex !== step) return;
 
-      if (useFree) {
-        player.freeHints--;
-        print("   🧠 Ücretsiz ipucu kullanıldı (kalan: " + player.freeHints + ").", "hintline");
-      } else {
-        player.credits -= ANSWER_COST;
-        print("   💠 -" + ANSWER_COST + " kredi (kalan: " + player.credits + ").", "credit");
-      }
-      updateHud(); save();
-      onGranted(obj);
+      CQApi.hint(quest.id).then(function (res) {
+        if (res.paidWith === "free") {
+          Auth.applyServerProgress({ freeHints: res.freeHints });
+          print("   🧠 Ücretsiz ipucu kullanıldı (kalan: " + res.freeHints + ").", "hintline");
+        } else {
+          Auth.applyServerProgress({ credits: res.credits });
+          print("   💠 -" + ANSWER_COST + " kredi (kalan: " + res.credits + ").", "credit");
+        }
+        updateHud();
+        if (mode === "quest" && activeQuest === quest && objIndex === step) onGranted(res.hint);
+      }).catch(function (e) {
+        if (e.status === 402) { print("   ❌ Yetersiz kredi.", "err"); return; }
+        serverError(e, "İpucu alınamadı");
+      });
     });
   }
   // Tab: cevabı doğrudan giriş kutusuna yazar.
-  function requestAnswer() { payForAnswer(function (obj) { inputEl.value = obj.hint; }); }
+  function requestAnswer() { payForAnswer(function (hint) { inputEl.value = hint; }); }
   $("terminal").addEventListener("click", function () { inputEl.focus(); });
 
   /* =======================================================================
@@ -664,12 +726,13 @@
     document.body.classList.add("guide-open");
     Guide.mount(box, {
       onComplete: function (badge) {
-        if (player.badges.indexOf(badge) === -1) {
-          player.badges.push(badge);
-          player.xp += 40;
-          save(); updateHud();
+        // Rozet ve XP'yi sunucu verir; istemci sadece "rehberi bitirdim" der.
+        if (player.badges.indexOf(badge) !== -1) return;
+        CQApi.milestone("guide").then(function (res) {
+          if (res.alreadyOwned) return;
+          showAward(res.award, res.progress);
           cqToast("success", "Rozet kazandın: " + badge + "  (+40 XP)");
-        }
+        }).catch(function (e) { serverError(e, "Rozet verilemedi"); });
       }
     });
     box.querySelector("#guide-close").onclick = closeGuide;
@@ -721,13 +784,19 @@
       confirmText: "Evet, sıfırla", cancelText: "Vazgeç"
     }).then(function (ok) {
       if (!ok) { print("   İptal edildi. İlerlemen duruyor.", "hintline"); return; }
-      player.level = 1; player.xp = 0; player.credits = START_CREDITS;
-      player.rank = rankFor(1); player.completed = []; player.badges = []; player.freeHints = 0; player.story = [];
-      save(); updateHud();
-      terminalBooted = false;             // terminale dönünce welcome yeniden gösterilsin
-      print("   ♻ İlerleme sıfırlandı. Temiz başlangıç!", "levelup");
-      cqToast("success", "İlerleme sıfırlandı");
-      backToHome();
+      // Sıfırlama da sunucuda: reset_progress() hem profili hem quest_progress'i temizler.
+      CQApi.reset().then(function (res) {
+        Auth.applyServerProgress(res.progress);
+        player.story = [];                  // sinematikler kozmetik; istemci yazabilir
+        save(); updateHud();
+        terminalBooted = false;             // terminale dönünce welcome yeniden gösterilsin
+        print("   ♻ İlerleme sıfırlandı. Temiz başlangıç!", "levelup");
+        cqToast("success", "İlerleme sıfırlandı");
+        backToHome();
+      }).catch(function (e) {
+        serverError(e, "Sıfırlanamadı");
+        cqToast("error", "Sıfırlama başarısız");
+      });
     });
   }
 
@@ -765,28 +834,34 @@
 
     $("form-login").addEventListener("submit", function (e) {
       e.preventDefault();
+      clearRejected("form-login");
       $("login-err").textContent = "";
       var btn = $("form-login").querySelector("button[type=submit]");
       var email = $("login-email").value, pass = $("login-pass").value;
-      busy(btn, true, "Giriş yapılıyor…");
+      busy(btn, true, "bağlanılıyor…");
       Auth.login(email, pass).then(function (r) {
         busy(btn, false);
-        if (!r.ok) { $("login-err").textContent = r.error; return; }
-        enterAppFromAuth();
+        if (!r.ok) {
+          $("login-err").textContent = r.error;
+          stamp(r.code, "form-login");
+          return;
+        }
+        stampOk(enterAppFromAuth);
       });
     });
 
     $("form-register").addEventListener("submit", function (e) {
       e.preventDefault();
+      clearRejected("form-register");
       $("reg-err").textContent = "";
       var btn = $("form-register").querySelector("button[type=submit]");
       var name = $("reg-name").value.trim() || "engineer";
       var email = $("reg-email").value, pass = $("reg-pass").value;
       var profile = newProfile(name, regAvatar);
-      busy(btn, true, "Hesap oluşturuluyor…");
+      busy(btn, true, "hesap açılıyor…");
       Auth.register({ email: email, password: pass, profile: profile }).then(function (r) {
         busy(btn, false);
-        if (r.ok) { enterAppFromAuth(); return; }
+        if (r.ok) { stampOk(enterAppFromAuth); return; }
         if (r.needsConfirmation) {         // e-posta doğrulaması bekleniyor
           $("reg-err").textContent = "";
           cqInfo("📬 E-postanı doğrula", r.error);
@@ -795,6 +870,7 @@
           return;
         }
         $("reg-err").textContent = r.error;
+        stamp(r.code, "form-register");
       });
     });
 
@@ -803,12 +879,93 @@
       e.preventDefault();
       var email = $("login-email").value;
       Auth.resetPassword(email).then(function (r) {
-        if (!r.ok) { $("login-err").textContent = r.error; return; }
+        if (!r.ok) { $("login-err").textContent = r.error; stamp(r.code, "form-login"); return; }
         $("login-err").textContent = "";
         cqInfo("📬 Sıfırlama linki gönderildi", email + " adresine şifre sıfırlama linki yolladık.");
       });
     });
+
+    /* Kullanıcı tekrar yazmaya başlayınca kırmızı çerçeve ve hata temizlensin —
+       hata mesajının ekranda çakılı kalması cezalandırıcı hissettiriyor. */
+    ["login-email", "login-pass", "reg-email", "reg-pass", "reg-name"].forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener("input", function () {
+        var form = el.closest("form");
+        if (form) form.classList.remove("rejected");
+        var errBox = form && form.querySelector(".auth-err");
+        if (errBox) errBox.textContent = "";
+      });
+    });
   }
+
+  /* =======================================================================
+     GİRİŞ DAMGASI
+     -----------------------------------------------------------------------
+     Hata mesajı küçük gri bir satır olarak kaybolmasın: reddedilen bir evrak
+     gibi damgalansın. Damganın metni hatanın TÜRÜNE göre değişir — kullanıcı
+     "yanlış şifre" ile "sunucuya ulaşılamıyor" arasındaki farkı bir bakışta
+     görsün, çünkü ikisinin çözümü tamamen farklı.
+     ======================================================================= */
+  var STAMPS = {
+    credentials:     "ACCESS DENIED",
+    network:         "CONNECTION FAILED",
+    config:          "NO ENDPOINT",
+    unconfirmed:     "UNVERIFIED",
+    duplicate:       "DUPLICATE ENTRY",
+    ratelimit:       "RATE LIMITED",
+    "weak-password": "TOO WEAK",
+    "bad-email":     "MALFORMED",
+    unknown:         "REJECTED"
+  };
+
+  function stamp(code, formId) {
+    var el = $("auth-stamp"), card = $("auth-card"), txt = $("auth-stamp-text");
+    if (!el || !txt) return;
+
+    txt.textContent = STAMPS[code] || STAMPS.unknown;
+    el.classList.remove("ok");
+
+    // Bağlantı koptuysa başlıktaki "secure channel" göstergesi de kızarsın.
+    var net = $("auth-head-net");
+    if (net) {
+      var down = code === "network" || code === "config";
+      net.classList.toggle("down", down);
+      net.textContent = down ? "no signal" : "secure channel";
+    }
+
+    if (formId) $(formId).classList.add("rejected");
+
+    // Animasyonu yeniden tetiklemek için sınıfı düşürüp reflow zorluyoruz;
+    // yoksa arka arkaya hatalarda damga ikinci kez oynamaz.
+    el.classList.remove("hit");
+    if (card) { card.classList.remove("shake", "flash"); }
+    void el.offsetWidth;
+    el.classList.add("hit");
+    if (card) {
+      card.classList.add("shake", "flash");
+      setTimeout(function () { card.classList.remove("shake"); }, 420);
+      setTimeout(function () { card.classList.remove("flash"); }, 1400);
+    }
+  }
+
+  /** Başarıda aynı mekanik, yeşil: kapı açıldı hissi. */
+  function stampOk(then) {
+    var el = $("auth-stamp"), txt = $("auth-stamp-text");
+    if (!el || !txt) { then(); return; }
+    txt.textContent = "ACCESS GRANTED";
+    el.classList.add("ok");
+    el.classList.remove("hit");
+    void el.offsetWidth;
+    el.classList.add("hit");
+    setTimeout(then, 620);
+  }
+
+  function clearRejected(formId) {
+    var f = $(formId);
+    if (f) f.classList.remove("rejected");
+  }
+
   function busy(btn, on, label) {
     if (!btn) return;
     if (on) { btn.dataset.orig = btn.textContent; btn.textContent = label || "…"; btn.disabled = true; }
@@ -818,8 +975,12 @@
     var login = which === "login";
     $("tab-login").classList.toggle("active", login);
     $("tab-register").classList.toggle("active", !login);
+    $("tab-login").setAttribute("aria-selected", String(login));
+    $("tab-register").setAttribute("aria-selected", String(!login));
     $("form-login").classList.toggle("hidden", !login);
     $("form-register").classList.toggle("hidden", login);
+    var mode = $("auth-head-mode");
+    if (mode) mode.textContent = login ? "login" : "register";   // başlık nerede olduğunu söyler
   }
   function showAuth() { $("auth").classList.remove("hidden"); setTimeout(function () { $("login-email").focus(); }, 50); }
   function hideAuth() { $("auth").classList.add("hidden"); }
@@ -1088,6 +1249,8 @@
           showAuth();
           if (!r.ok && r.reason === "network") {
             $("login-err").textContent = "Sunucuya ulaşılamadı. İnternet bağlantını kontrol et.";
+            // Açılışta bağlantı yoksa damga hemen değil, kart oturduktan sonra insin.
+            setTimeout(function () { stamp("network"); }, 420);
           }
         }
       });

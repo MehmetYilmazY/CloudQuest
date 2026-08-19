@@ -412,7 +412,9 @@ var CQScene = (function () {
   function guessKind(q) {
     var votes = {};
     (q.objectives || []).forEach(function (o) {
-      var v = String(o.hint || "").trim().split(/\s+/)[0].toLowerCase();
+      // `verb` = objective'in komut fiili (build.ts hint'ten türetir).
+      // hint'in kendisi artık sunucuda; sahne için tek kelime yeterli.
+      var v = String(o.verb || "").toLowerCase();
       var k = v === "git" || v === "gh" ? "git"
             : v === "aws" ? "cloud"
             : v === "terraform" ? "iac"

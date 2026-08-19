@@ -1,0 +1,58 @@
+# =========================================================================
+# CloudQuest CI — bozuk müfredat ve haksız doğrulama tarayıcıya ulaşmasın.
+#
+# Üç soruyu yanıtlar:
+#   1. curriculum.json şemaya ve referans bütünlüğüne uyuyor mu?
+#   2. Parser hâlâ adil mi? (her objective'in kendi çözümü kendi spec'ini geçer)
+#   3. Üretilen dosyalar (content.generated.js, _shared/*) commit'le güncel mi?
+# =========================================================================
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Tip kontrolü
+        run: npm run typecheck
+
+      - name: Müfredat doğrulaması (şema + referanslar)
+        run: npm run validate
+
+      - name: Parser testleri
+        run: npm test
+
+      # Bu adım aynı zamanda eğitim içeriğini de denetler:
+      # frontmatter şeması, targetQuery tekrarı, kırık practiceQuest,
+      # ince içerik ve cevap sızıntısı kuralları (docs/CONTENT-ARCHITECTURE.md).
+      - name: Üretilen dosyalar güncel mi? (müfredat + ders sayfaları)
+        run: npm run build:check
+
+      # "Sayfalar hiç 404'e düşmesin": her iç bağlantı gerçek bir dosyaya
+      # ya da vercel.json'daki bir yönlendirmeye çözülmeli.
+      - name: Kırık iç bağlantı var mı?
+        run: npm run check:links
+
+      - name: Public bundle'a cevap sızmış mı?
+        # Son savunma hattı: build zaten kontrol ediyor, ama burada
+        # doğrudan üretilen dosyaya bakıyoruz — build script'i değişse bile
+        # cevap anahtarı sessizce tarayıcıya gidemesin.
+        run: |
+          if grep -qE '"(expect|hint|success)"[[:space:]]*:' web/js/content.generated.js; then
+            echo "::error::content.generated.js cevap anahtari iceriyor!"
+            exit 1
+          fi
+          echo "OK - public bundle temiz"

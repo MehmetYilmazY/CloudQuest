@@ -228,7 +228,7 @@ var Quiz = (function () {
           "<b>geliştirilebilir</b> — önemli olan neye gireceğini bilerek başlamak.</div>" +
         '<div class="q-actions">' +
           (pct >= 42
-            ? '<a class="btn-neon" href="index.html">🚀 Başlamaya hazırım</a>'
+            ? '<a class="btn-neon" href="app.html">🚀 Başlamaya hazırım</a>'
             : '<a class="btn-neon" href="tutorial.html">⌨️ Önce Terminal 101\'i dene</a>') +
           '<button class="btn-ghost" id="q-retry" type="button">↻ Testi tekrarla</button>' +
         "</div>" +

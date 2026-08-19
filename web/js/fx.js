@@ -278,9 +278,20 @@ var FX = (function () {
   };
 })();
 
-/* Zerrecikler sayfa hazır olur olmaz başlasın (loader dahil her ekranın arkasında). */
-(function () {
-  function go() { if (typeof FX !== "undefined") FX.particles(); }
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go);
-  else go();
-})();
+/* ---------------------------------------------------------------------------
+   ZEMİN AMBİYANSI ARTIK YILDIZ ALANI (js/stars.js).
+
+   Eskiden burada FX.particles() otomatik başlatılıyordu: yukarı süzülen
+   zerrecikler + alt kenarda akan dalgalar. İkisi de güzeldi ama uzay dili
+   değildi — dalgalar su/ses çağrıştırıyor, zerreciklerin bağlantı çizgileri
+   ağ grafiği gibi duruyordu. Site geneli tek bir gökyüzüne geçince
+   (landing, ders sayfaları, 404, uygulama) bu katman devre dışı bırakıldı.
+
+   FX.particles() SİLİNMEDİ — geri dönmek istersen aşağıdaki satırı aç.
+   Ama yıldızlarla aynı anda çalıştırma: iki ayrı derinlik hissi çakışıyor.
+--------------------------------------------------------------------------- */
+// (function () {
+//   function go() { if (typeof FX !== "undefined") FX.particles(); }
+//   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go);
+//   else go();
+// })();

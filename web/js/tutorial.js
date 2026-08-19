@@ -233,7 +233,7 @@ var Tutorial = (function () {
       "Bunlar bulut mühendisliğinin <b>tamamının</b> üzerine kurulduğu temeldir.</p>" +
       '<div class="t-badge">' + BADGE + "</div>" +
       '<div class="t-actions">' +
-        '<a class="btn-neon" href="index.html">🚀 Oyuna başla</a>' +
+        '<a class="btn-neon" href="app.html">🚀 Oyuna başla</a>' +
         '<button class="btn-ghost" id="t-restart" type="button">↻ Baştan al</button>' +
       "</div>";
     var rb = document.getElementById("t-restart");

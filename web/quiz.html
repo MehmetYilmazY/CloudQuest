@@ -10,6 +10,8 @@
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body class="quiz-body">
+  <canvas id="stars" aria-hidden="true"></canvas>
+  <div class="nebula" aria-hidden="true"></div>
   <div class="grid-bg"></div>
 
   <div class="q-progress"><div class="q-progress-fill" id="q-progress-fill"></div></div>
@@ -25,28 +27,26 @@
   </main>
 
   <div class="scanlines" aria-hidden="true"></div>
+  <script src="js/stars.js"></script>
 
   <script src="js/lib/supabase.min.js"></script>
   <script src="js/config.js"></script>
   <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
   <script src="js/fx.js"></script>
   <script src="js/quiz.js"></script>
   <script>
     // Test girişsiz çalışır. Oturum varsa bitişte rozet yazılır.
     (function () {
       var awarded = false;
-      function award(badge) {
+      // Rozet ve XP'yi SUNUCU verir (Katman 1). Buradan gönderilen tek şey
+      // "testi bitirdim" bilgisi; rozetin adını ve değerini istemci seçemez.
+      function award() {
         if (awarded) return; awarded = true;
-        try {
-          if (!Auth.isConfigured() || !Auth.currentEmail()) return;
-          var p = Auth.getProfile(); if (!p) return;
-          p.badges = p.badges || [];
-          if (p.badges.indexOf(badge) === -1) {
-            p.badges.push(badge);
-            p.xp = (p.xp || 0) + 20;
-            Auth.saveProfile(p); Auth.flush && Auth.flush();
-          }
-        } catch (e) {}
+        if (!Auth.isConfigured() || !Auth.currentEmail()) return;   // girişsiz de oynanır
+        CQApi.milestone("quiz").catch(function (e) {
+          console.warn("rozet verilemedi:", e && e.message);
+        });
       }
       Quiz.mount(document.getElementById("q-stage"), { onFinish: award });
       if (window.Auth && Auth.isConfigured) { Auth.init(); }

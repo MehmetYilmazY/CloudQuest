@@ -2,301 +2,488 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CloudQuest — Cloud Engineering RPG</title>
-  <meta name="description" content="Cloud Engineer olma yolculuğunu oynayarak öğren: canlı terminal, story mode, questler ve XP." />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- ===================================================================
+       SEO — arama motoru bu sayfayı görür, app.html'i değil.
+       ⚠ ALAN ADINI DEĞİŞTİR: aşağıdaki tüm https://cloudquest.vercel.app
+         adreslerini kendi alan adınla değiştir (sitemap.xml + robots.txt de).
+       =================================================================== -->
+  <title>CloudQuest — Cloud Engineer olmayı oynayarak öğren</title>
+  <meta name="description" content="Sıfırdan Cloud Engineer'a: canlı terminal, 54 quest, 211 uygulamalı görev. Linux, AWS, Terraform, Docker ve Kubernetes'i gerçek komutlar yazarak öğren. Türkçe, gerçekten yeni başlayan seviyesi." />
+  <link rel="canonical" href="https://cloudquest.vercel.app/" />
   <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#06070a" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="CloudQuest" />
+  <meta property="og:locale" content="tr_TR" />
+  <meta property="og:url" content="https://cloudquest.vercel.app/" />
+  <meta property="og:title" content="CloudQuest — Cloud Engineer olmayı oynayarak öğren" />
+  <meta property="og:description" content="Canlı terminal, 54 quest, 211 görev. Linux'tan Kubernetes'e; teori değil, elin klavyede." />
+  <meta property="og:image" content="https://cloudquest.vercel.app/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="CloudQuest — Cloud Engineer olmayı oynayarak öğren" />
+  <meta name="twitter:description" content="Canlı terminal, 54 quest, 211 görev. Teori değil, kas hafızası." />
+  <meta name="twitter:image" content="https://cloudquest.vercel.app/og.png" />
+
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E%E2%98%81%EF%B8%8F%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/landing.css" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://cloudquest.vercel.app/#website",
+        "url": "https://cloudquest.vercel.app/",
+        "name": "CloudQuest",
+        "description": "Cloud Engineering'i oynayarak öğreten Türkçe interaktif platform.",
+        "inLanguage": "tr-TR"
+      },
+      {
+        "@type": "Course",
+        "name": "CloudQuest — Cloud Engineering RPG",
+        "description": "Linux, networking, Git, AWS, Terraform, Docker, CI/CD, observability ve güvenlik konularını canlı terminalde gerçek komutlar yazarak öğreten 8 bölümlük interaktif program.",
+        "inLanguage": "tr-TR",
+        "url": "https://cloudquest.vercel.app/",
+        "provider": { "@type": "Organization", "name": "CloudQuest", "url": "https://cloudquest.vercel.app/" },
+        "teaches": ["Linux", "Terminal", "Networking", "Git", "AWS", "Terraform", "Docker", "Kubernetes", "CI/CD", "Cloud Security"],
+        "educationalLevel": "Beginner",
+        "hasCourseInstance": { "@type": "CourseInstance", "courseMode": "online", "courseWorkload": "PT40H" }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Hiç terminal kullanmadım, yine de başlayabilir miyim?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Evet. CloudQuest sıfırdan başlayanlar için tasarlandı. İlk görev 'pwd' yazmak. Mentörün Nova her adımda ne yazacağını söyler, üç kez yanlış denersen doğru komutu ücretsiz gösterir. Girişten önce Terminal 101 turu da var." }
+          },
+          {
+            "@type": "Question",
+            "name": "Gerçek AWS hesabı gerekiyor mu, para ödeyecek miyim?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Hayır. Komutları CloudQuest'in kendi terminalinde yazarsın; kredi kartı veya bulut hesabı gerekmez. Öğrendiklerini gerçek AWS Free Tier'da denemen tavsiye edilir ama zorunlu değildir." }
+          },
+          {
+            "@type": "Question",
+            "name": "Ne kadar sürede Cloud Engineer olurum?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Müfredat 6 aylık bir programa göre kurgulandı: 8 bölüm, 54 quest, 211 uygulamalı görev. Haftada birkaç saat ayıran biri için makul aralık 4-6 aydır. Oyun kas hafızasını kurar; iş görüşmesi hazırlığı için gerçek projelerle desteklenmelidir." }
+          },
+          {
+            "@type": "Question",
+            "name": "İlerlemem kayboluyor mu, cihazlar arası taşınıyor mu?",
+            "acceptedAnswer": { "@type": "Answer", "text": "İlerlemen sunucuda tutulur ve hesabınla birlikte tüm cihazlarda senkronlanır. Doğrulama da sunucuda yapıldığı için kazandığın XP ve rozetler gerçektir: kimse tarayıcı konsolundan kendine seviye yazamaz." }
+          },
+          {
+            "@type": "Question",
+            "name": "Hangi konuları kapsıyor?",
+            "acceptedAnswer": { "@type": "Answer", "text": "8 bölüm: Terminal ve Linux, Networking ve Git, AWS Core (IAM, EC2, VPC, S3), Infrastructure as Code (Terraform), Containers (Docker), CI/CD, Observability, Security ve Cost. Ayrıca 6 ileri seviye lab: Network Ops, Scripting, Docker Deep Dive, Terraform Pro, Ansible ve Kubernetes." }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
 </head>
+
 <body>
-  <!-- ================= LOADING SCREEN ================= -->
-  <div class="overlay loader" id="loader">
-    <div class="grid-bg"></div>
-    <div class="loader-inner">
-      <div class="glitch" data-text="CLOUDQUEST">CLOUDQUEST</div>
-      <div class="loader-tag">// CLOUD ENGINEERING RPG · NEURAL TERMINAL v4.8</div>
-      <pre class="boot-log" id="boot-log"></pre>
-      <div class="loader-bar"><div class="loader-fill" id="loader-fill"></div></div>
-      <div class="loader-pct" id="loader-pct">0%</div>
-    </div>
-  </div>
+  <a class="skip-link" href="#main">İçeriğe geç</a>
+  <canvas id="stars" aria-hidden="true"></canvas>
+  <div class="nebula" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
 
-  <!-- ================= AUTH SCREEN ================= -->
-  <div class="overlay auth hidden" id="auth">
-    <div class="grid-bg"></div>
-    <div class="auth-card">
-      <div class="auth-logo">☁ CLOUDQUEST</div>
-      <div class="auth-sub">Cloud Engineer olma yolculuğuna giriş yap</div>
-
-      <div class="auth-tabs">
-        <button class="auth-tab active" id="tab-login" type="button">Giriş</button>
-        <button class="auth-tab" id="tab-register" type="button">Kayıt Ol</button>
+  <header class="nav" id="nav">
+    <nav class="nav-inner" aria-label="Ana menü">
+      <a class="nav-logo" href="#main">☁ CLOUDQUEST</a>
+      <div class="nav-links">
+        <a href="/ogren">Öğren</a>
+        <a href="/komut">Komutlar</a>
+        <a href="#neden">Neden</a>
+        <a href="#mufredat">Müfredat</a>
+        <a href="#sss">SSS</a>
       </div>
+      <a class="btn btn-primary btn-sm" href="app.html">Giriş yap</a>
+    </nav>
+  </header>
 
-      <!-- LOGIN -->
-      <form class="auth-form" id="form-login">
-        <label>E-posta</label>
-        <input type="email" id="login-email" autocomplete="username" placeholder="engineer@cloud.dev" />
-        <label>Şifre</label>
-        <input type="password" id="login-pass" autocomplete="current-password" placeholder="••••••••" />
-        <div class="auth-err" id="login-err"></div>
-        <button type="submit" class="btn-neon">⚡ Giriş Yap</button>
-        <a href="#" class="forgot-link" id="forgot-link">Şifremi unuttum</a>
-      </form>
+  <main id="main">
 
-      <!-- REGISTER -->
-      <form class="auth-form hidden" id="form-register">
-        <label>Görünen ad</label>
-        <input type="text" id="reg-name" maxlength="24" placeholder="engineer" />
-        <label>E-posta</label>
-        <input type="email" id="reg-email" autocomplete="username" placeholder="engineer@cloud.dev" />
-        <label>Şifre <span class="hint-inline">(en az 6 karakter)</span></label>
-        <input type="password" id="reg-pass" autocomplete="new-password" placeholder="••••••••" />
-        <label>Avatar seç</label>
-        <div class="avatar-picker" id="reg-avatars"></div>
-        <div class="auth-err" id="reg-err"></div>
-        <button type="submit" class="btn-neon">🚀 Hesap Oluştur</button>
-      </form>
+    <!-- ============================ HERO ============================ -->
+    <section class="hero">
+      <div class="wrap">
+        <div class="hero-grid">
+          <div>
+            <p class="kicker reveal"><b>●</b> 8 bölüm · 54 quest · 211 görev · Türkçe</p>
 
-      <a class="auth-tut-link" href="tutorial.html">⌨️ Hiç terminal kullanmadın mı? Önce <b>Terminal 101</b></a>
-      <a class="auth-tut-link auth-quiz-link" href="quiz.html">🧪 Emin değil misin? <b>Bu iş bana uygun mu?</b> testine gir</a>
+            <h1 class="hero-title" id="heroTitle">
+              <span class="line"><span>Cloud Engineer</span></span>
+              <span class="line"><span>olmayı</span></span>
+              <span class="line"><span class="mark">oynayarak</span> öğren.</span>
+            </h1>
 
-    </div>
-  </div>
+            <p class="reveal d1">
+              Video izle, not al, üç gün sonra unut. Bilinen döngü.
+              Burada başka bir şey oluyor: <strong>komutu sen yazıyorsun.</strong>
+            </p>
+            <p class="reveal d2">
+              Meridian adlı bir startup'ta ilk günün. Altyapıyı taşıyan tek mühendis
+              istifa etti, yerine sen geldin. Altı hafta sonra yatırımcı demosu var.
+            </p>
 
-  <!-- ================= PROFILE PAGE ================= -->
-  <div class="overlay profile-page hidden" id="profile-page">
-    <div class="grid-bg"></div>
-    <div class="profile-card">
-      <button class="profile-close" id="profile-close" type="button" aria-label="kapat">✕</button>
-
-      <div class="profile-head">
-        <div class="profile-avatar-wrap">
-          <div class="profile-avatar" id="profile-avatar"></div>
-          <button class="avatar-edit-btn" id="avatar-edit-btn" type="button">🎭 Değiştir</button>
-        </div>
-        <div class="profile-id">
-          <div class="profile-name" id="profile-name">engineer</div>
-          <div class="profile-rank" id="profile-rank">Intern ☁️</div>
-          <div class="profile-email" id="profile-email">—</div>
-        </div>
-      </div>
-
-      <div class="profile-stats" id="profile-stats"></div>
-
-      <div class="profile-section">
-        <div class="profile-label">Cloud Engineer hazırlığı</div>
-        <div class="ready-bar"><div class="ready-fill" id="ready-fill"></div></div>
-        <div class="ready-text" id="ready-text">%0</div>
-      </div>
-
-      <div class="profile-section">
-        <div class="profile-label">🏅 Rozetler</div>
-        <div class="badge-grid" id="badge-grid"></div>
-      </div>
-
-      <div class="profile-section">
-        <div class="profile-label">🏆 Tamamlanan modüller</div>
-        <div class="modules-row" id="modules-row"></div>
-      </div>
-
-      <div class="profile-section">
-        <div class="profile-label">🎯 Şu anki modül — <span id="cur-module-name">Fundamentals</span> <span class="hint-inline" id="cur-module-pct">%0</span></div>
-        <div class="module-mini-bar"><div class="module-mini-fill" id="cur-module-fill"></div></div>
-        <div class="trainings" id="trainings"></div>
-      </div>
-
-      <div class="profile-actions">
-        <button class="btn-ghost" id="btn-logout" type="button">⎋ Çıkış Yap</button>
-        <button class="btn-ghost" id="btn-share" type="button">🎴 Kartı Paylaş</button>
-        <button class="btn-neon" id="btn-close-2" type="button">Terminale Dön</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ================= HOME / HUB ================= -->
-  <div class="overlay home hidden" id="home">
-    <div class="grid-bg"></div>
-    <div class="home-inner">
-      <header class="home-top">
-        <div class="home-logo">☁️ CLOUDQUEST</div>
-        <div class="home-user">
-          <div class="home-avatar" id="home-avatar"></div>
-          <div class="home-user-meta">
-            <div class="home-uname" id="home-uname">engineer</div>
-            <div class="home-urank" id="home-urank">Intern ☁️</div>
-          </div>
-          <button class="btn-ghost" id="home-logout" type="button">⎋ Çıkış</button>
-        </div>
-      </header>
-
-      <section class="home-hero">
-        <h1 class="home-title">Bugün ne öğreniyoruz, <span id="home-hero-name">engineer</span>?</h1>
-        <p class="home-sub">Bir görev hattı seç ve canlı terminale dal. Her quest seni bir adım daha job-ready yapar.</p>
-      </section>
-
-      <section class="home-section" id="sec-guide">
-        <button class="guide-banner" id="guide-banner" type="button">
-          <span class="gb-icon">🧭</span>
-          <span class="gb-text">
-            <b>Yeni misin? 6 dakikada temelleri öğren</b>
-            <em>Bulut nedir, ne öğrenilir, hangi sırayla — kaydırarak, sıkılmadan. Sonunda rozet.</em>
-          </span>
-          <span class="gb-go" id="gb-go">Başla →</span>
-        </button>
-        <a class="guide-banner gb-alt" href="tutorial.html">
-          <span class="gb-icon">⌨️</span>
-          <span class="gb-text">
-            <b>Hiç terminal kullanmadın mı? Terminal 101</b>
-            <em>Komut nedir, prompt ne der — çalışan bir alıştırma terminalinde adım adım. Sıfır bilgi yeterli.</em>
-          </span>
-          <span class="gb-go">Öğren →</span>
-        </a>
-        <a class="quiz-chip" href="quiz.html">
-          <span class="qc-icon">🧪</span>
-          <b>Bu iş bana uygun mu?</b>
-          <em>10 soruluk dürüst test</em>
-          <span class="qc-go">→</span>
-        </a>
-      </section>
-
-      <section class="home-section" id="sec-story">
-        <div class="home-section-label">🎯 ANA YOLCULUĞUN</div>
-        <div class="story-card" id="story-card">
-          <div class="story-main">
-            <div class="story-title">Cloud Engineer: Story Mode</div>
-            <div class="story-desc">8 bölüm · Linux'tan Security &amp; Cost'a — mentör Nova eşliğinde job-ready yolculuk.</div>
-            <div class="story-chips" id="story-chips"></div>
-          </div>
-          <div class="story-side">
-            <div class="story-ring">
-              <svg viewBox="0 0 100 100" width="96" height="96">
-                <circle cx="50" cy="50" r="42" fill="none" stroke="#17263d" stroke-width="8"/>
-                <circle id="story-ring-fill" cx="50" cy="50" r="42" fill="none" stroke="#22d3ee" stroke-width="8"
-                        stroke-linecap="round" transform="rotate(-90 50 50)"
-                        stroke-dasharray="264" stroke-dashoffset="264"/>
-              </svg>
-              <div class="story-ring-pct" id="story-ring-pct">%0</div>
+            <div class="hero-cta reveal d3">
+              <a class="btn btn-primary" href="app.html">Başla — ücretsiz</a>
+              <a class="btn btn-ghost" href="quiz.html">Bu iş bana uygun mu?</a>
             </div>
-            <button class="btn-neon" id="story-continue" type="button">▶ Devam Et</button>
+
+            <p class="hero-fine reveal d3">
+              İlk görevin <code>pwd</code> yazmak. Terminali hiç açmadıysan doğru yerdesin.
+            </p>
+          </div>
+
+          <!-- Ürünü anlatmak yerine göstermek: gerçek quest, gerçek akış. -->
+          <div class="term reveal d1" aria-hidden="true">
+            <div class="term-bar">
+              <i></i><i></i><i></i>
+              <span>cloudquest — quest c1q1 · cold boot</span>
+            </div>
+            <div class="term-body" id="termBody"></div>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section class="home-section" id="sec-labs">
-        <div class="home-section-label">🔮 ADVANCED LABS <span class="hint-inline">— seç &amp; keşfet</span></div>
-        <div class="lab-grid" id="lab-grid"></div>
-      </section>
+    <!-- ============================ TICKER ============================ -->
+    <div class="ticker" aria-hidden="true">
+      <div class="ticker-track" id="tk1"></div>
+      <div class="ticker-track" id="tk2"></div>
     </div>
-  </div>
 
-  <!-- ================= BEGINNER GUIDE ================= -->
-  <div class="overlay guide hidden" id="guide"></div>
-
-  <!-- ================= SHARE CARD MODAL ================= -->
-  <div class="overlay share-modal hidden" id="share-modal">
-    <div class="grid-bg"></div>
-    <div class="share-card-box">
-      <button class="profile-close" id="share-close" type="button" aria-label="kapat">✕</button>
-      <div class="modal-title">🎴 Başarı Kartın</div>
-      <div class="modal-sub">İndirip LinkedIn'de paylaşabilirsin.</div>
-      <div class="share-preview" id="share-preview"></div>
-      <div class="share-actions">
-        <button class="btn-ghost" id="share-copy" type="button">📋 Panoya Kopyala</button>
-        <button class="btn-neon" id="share-download" type="button">⬇ PNG İndir</button>
+    <!-- ============================ RAKAMLAR ============================ -->
+    <section aria-labelledby="rakam-h">
+      <div class="wrap">
+        <h2 class="sr-only" id="rakam-h">Rakamlarla CloudQuest</h2>
+        <div class="figures reveal">
+          <span>8 <em>bölüm</em></span>
+          <span>54 <em>quest</em></span>
+          <span>211 <em>uygulamalı görev</em></span>
+          <span>6 <em>ileri lab</em></span>
+        </div>
+        <p class="figures-note reveal d1">
+          Hiçbiri otomatik üretilmedi. 211 görevin her biri elle yazıldı ve
+          her build'de test ediliyor — çözümün kendi kontrolünü geçmediği bir görev
+          yayına çıkamıyor.
+        </p>
       </div>
+    </section>
+
+    <div class="rule"></div>
+
+    <!-- ============================ ADALET ============================ -->
+    <section id="adalet" aria-labelledby="adalet-h">
+      <div class="wrap">
+        <p class="sec-head"><span class="n">01</span> Adalet</p>
+        <div class="proof">
+          <div>
+            <h2 class="title reveal" id="adalet-h">Doğru düşündüysen,<br />doğrudur.</h2>
+            <p class="lead reveal d1">
+              Çoğu platform komutu metin olarak karşılaştırır. Flag'i başka sıraya
+              yazarsın, başına <code>sudo</code> koyarsın — "yanlış" der. Öğrenmiyorsun,
+              editörün yazdığını ezberliyorsun.
+            </p>
+            <p class="lead reveal d1">
+              CloudQuest komutu gerçekten ayrıştırır: segmentlere böler, tırnak-farkında
+              tokenize eder, niyetini kontrol eder. Yandaki dört satır aynı görevden.
+            </p>
+          </div>
+
+          <div class="proof-box reveal d2">
+            <div class="proof-task">
+              <span>Görev</span>
+              deploy.sh dosyasını çalıştırılabilir yap.
+            </div>
+            <div class="proof-row">
+              <code>chmod +x deploy.sh</code>
+              <span class="proof-yes">GEÇER</span>
+            </div>
+            <div class="proof-row">
+              <code>chmod deploy.sh +x</code>
+              <span class="proof-why">sıra farklı</span>
+              <span class="proof-yes">GEÇER</span>
+            </div>
+            <div class="proof-row">
+              <code>sudo chmod -v +x deploy.sh</code>
+              <span class="proof-why">sudo + fazladan flag</span>
+              <span class="proof-yes">GEÇER</span>
+            </div>
+            <div class="proof-row">
+              <code>chmod deploy.sh</code>
+              <span class="proof-why">izin verilmemiş</span>
+              <span class="proof-no">GEÇMEZ</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="rule"></div>
+
+    <!-- ============================ NEDEN ============================ -->
+    <section id="neden" aria-labelledby="neden-h">
+      <div class="wrap">
+        <p class="sec-head"><span class="n">02</span> Neden</p>
+        <h2 class="title reveal" id="neden-h">Kurs değil.<br />Antrenman sahası.</h2>
+
+        <div class="claims">
+          <article class="claim reveal">
+            <div class="claim-n">A</div>
+            <h3>Nova seni bırakmaz</h3>
+            <div>
+              <p>
+                Her görevde ne yazacağını <em>ve neden yazdığını</em> anlatan bir mentör var.
+                Üç kez yanlış denersen doğru komut ücretsiz gelir — takılıp bırakma diye.
+              </p>
+              <p>Kimse "araştır" deyip seni yalnız bırakmıyor.</p>
+            </div>
+          </article>
+
+          <article class="claim reveal">
+            <div class="claim-n">B</div>
+            <h3>İlerlemen gerçek</h3>
+            <div>
+              <p>
+                Doğrulama sunucuda yapılıyor. Tarayıcı konsolundan kendine seviye
+                yazamazsın; cevap anahtarı tarayıcıya hiç gönderilmiyor.
+              </p>
+              <p>Yani kazandığın rozet bir şey ifade ediyor. Kendine karşı bile.</p>
+            </div>
+          </article>
+
+          <article class="claim reveal">
+            <div class="claim-n">C</div>
+            <h3>Hikâye seni taşır</h3>
+            <div>
+              <p>
+                Her bölüm bir perde: lansman, yatırım turu, ölçek krizi, gece 3'te
+                on-call, güvenlik denetimi. Çaylaklıktan Platform Lead'e.
+              </p>
+              <p>Öğrenme merkezde, drama arkada — tersi değil.</p>
+            </div>
+          </article>
+
+          <article class="claim reveal">
+            <div class="claim-n">D</div>
+            <h3>Nerede takıldığını görürsün</h3>
+            <div>
+              <p>
+                Her deneme kaydediliyor. Hangi konuda kaç kez yanıldığın, hangi bölümün
+                seni yavaşlattığı profilinde duruyor.
+              </p>
+              <p>Neyi tekrar edeceğini tahmin etmene gerek yok.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <div class="rule"></div>
+
+    <!-- ============================ MÜFREDAT ============================ -->
+    <section id="mufredat" aria-labelledby="mufredat-h">
+      <div class="wrap">
+        <p class="sec-head"><span class="n">03</span> Müfredat</p>
+        <h2 class="title reveal" id="mufredat-h">Terminalden Kubernetes'e.</h2>
+        <p class="lead reveal d1">
+          Sekiz bölüm, sırayla açılır. Her biri bir öncekinin üstüne biner.
+          Atlamak yok — çünkü atlanan yer üç bölüm sonra seni yakalıyor.
+        </p>
+
+        <div class="syllabus reveal d1">
+          <div class="syl-row">
+            <span class="syl-n">01</span>
+            <span class="syl-t"><a href="/ogren/terminal-ve-linux">Terminal &amp; Linux</a></span>
+            <span class="syl-d">Kabuk, dosyalar, izinler, süreçler, paket ve servis yönetimi.</span>
+          </div>
+          <div class="syl-row">
+            <span class="syl-n">02</span>
+            <span class="syl-t">Networking &amp; Git</span>
+            <span class="syl-d">Paketler nasıl akar, sunucuya nasıl bağlanılır, kod nasıl versiyonlanır.</span>
+          </div>
+          <div class="syl-row">
+            <span class="syl-n">03</span>
+            <span class="syl-t">AWS Core</span>
+            <span class="syl-d">IAM, EC2, VPC, S3 — bulutun çekirdeği.</span>
+          </div>
+          <div class="syl-row">
+            <span class="syl-n">04</span>
+            <span class="syl-t">Infrastructure as Code</span>
+            <span class="syl-d">Terraform ile altyapıyı kodla; konsolda tıklamayı bırak.</span>
+          </div>
+          <div class="syl-row">
+            <span class="syl-n">05</span>
+            <span class="syl-t">Containers</span>
+            <span class="syl-d">Docker ile paketle, dağıt, ölçekle.</span>
+          </div>
+          <div class="syl-row">
+            <span class="syl-n">06</span>
+            <span class="syl-t">CI/CD</span>
+            <span class="syl-d">Otomatik build → test → deploy hattı.</span>
+          </div>
+          <div class="syl-row">
+            <span class="syl-n">07</span>
+            <span class="syl-t">Observability</span>
+            <span class="syl-d">Log, metrik, alarm. Sistem konuşur; dinlemeyi öğrenirsin.</span>
+          </div>
+          <div class="syl-row">
+            <span class="syl-n">08</span>
+            <span class="syl-t">Security &amp; Cost</span>
+            <span class="syl-d">En az yetki, sır yönetimi ve faturayı patlatmama sanatı.</span>
+          </div>
+        </div>
+
+        <p class="labs-line reveal d1" style="margin-top:22px">
+          <span>Bölümlerin yazılı anlatımı:</span> <b><a href="/ogren">ders sayfaları</a></b> ·
+          <b><a href="/komut">komut sözlüğü</a></b>
+        </p>
+        <p class="labs-line reveal d1">
+          <span>Üstüne altı ileri lab:</span>
+          <b>Network Ops · Scripting · Docker Deep Dive · Terraform Pro · Ansible · Kubernetes</b>
+        </p>
+      </div>
+    </section>
+
+    <div class="rule"></div>
+
+    <!-- ============================ BU NE DEĞİL ============================ -->
+    <section aria-labelledby="degil-h">
+      <div class="wrap">
+        <p class="sec-head"><span class="n">04</span> Beklenti</p>
+        <h2 class="title reveal" id="degil-h">Ne olduğu, ne olmadığı.</h2>
+        <p class="lead reveal d1">
+          Abartmanın kimseye faydası yok. Bitirdiğinde elinde ne olacağını
+          şimdiden bilmeni tercih ederiz.
+        </p>
+
+        <div class="honest reveal d1" style="margin-top:36px">
+          <div>
+            <h3>Bu, şudur</h3>
+            <ul class="yes">
+              <li><b>+</b> Komutların parmak hafızası. Düşünmeden yazabildiğin bir kabuk.</li>
+              <li><b>+</b> Bulut kavramlarının haritası: neyin neye bağlandığı.</li>
+              <li><b>+</b> Terminal korkusunun bittiği yer.</li>
+              <li><b>+</b> Gerçek projeye başlamak için sağlam bir zemin.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Bu, şu değildir</h3>
+            <ul class="no">
+              <li><b>—</b> Sertifika sınavı hazırlığı (AWS SAA vb.) — kapsamı farklı.</li>
+              <li><b>—</b> Gerçek AWS ortamı. Komutlar simüle terminalde çalışır.</li>
+              <li><b>—</b> İşe yerleştirme garantisi. Kimse veremez; veren doğruyu söylemiyordur.</li>
+              <li><b>—</b> Bir hafta sonluk hızlandırılmış kurs. Bu iş 4-6 ay.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="rule"></div>
+
+    <!-- ============================ SSS ============================ -->
+    <section id="sss" aria-labelledby="sss-h">
+      <div class="wrap">
+        <p class="sec-head"><span class="n">05</span> Sorular</p>
+        <h2 class="title reveal" id="sss-h">Sık sorulanlar.</h2>
+
+        <div class="faq reveal d1" style="margin-top:32px">
+          <details>
+            <summary>Hiç terminal kullanmadım, yine de başlayabilir miyim?</summary>
+            <div class="faq-a">
+              Evet — tam olarak bunun için tasarlandı. İlk görev <code>pwd</code> yazmak.
+              Nova her adımda ne yazacağını ve neden yazdığını anlatır; üç kez yanlış
+              denersen doğru komutu ücretsiz gösterir. İstersen girmeden önce
+              <a href="tutorial.html">Terminal 101</a> turunu yapabilirsin.
+            </div>
+          </details>
+          <details>
+            <summary>Gerçek AWS hesabı gerekiyor mu, para ödeyecek miyim?</summary>
+            <div class="faq-a">
+              Hayır. Komutları CloudQuest'in kendi terminalinde yazarsın; kredi kartı
+              veya bulut hesabı istemez. Öğrendiklerini gerçek AWS Free Tier'da denemeni
+              tavsiye ederiz ama zorunlu değil.
+            </div>
+          </details>
+          <details>
+            <summary>Ne kadar sürede Cloud Engineer olurum?</summary>
+            <div class="faq-a">
+              Müfredat 6 aylık bir programa göre kurgulandı: 8 bölüm, 54 quest,
+              211 uygulamalı görev. Haftada birkaç saat ayıran biri için makul aralık
+              4-6 ay. Dürüst olalım: bu oyun kas hafızanı kurar, iş görüşmesine hazırlık
+              için gerçek projelerle desteklemen gerekir.
+            </div>
+          </details>
+          <details>
+            <summary>İlerlemem kayboluyor mu?</summary>
+            <div class="faq-a">
+              Hayır. İlerlemen sunucuda tutulur ve hesabınla birlikte tüm cihazlarında
+              senkronlanır. Doğrulama da sunucuda yapılır — kimse konsoldan kendine
+              seviye yazamaz, kazandığın rozet gerçekten kazanılmıştır.
+            </div>
+          </details>
+          <details>
+            <summary>Hangi konuları kapsıyor?</summary>
+            <div class="faq-a">
+              8 bölüm: Terminal &amp; Linux, Networking &amp; Git, AWS Core, Infrastructure
+              as Code, Containers, CI/CD, Observability, Security &amp; Cost. Üstüne 6 ileri
+              lab: Network Ops, Scripting, Docker Deep Dive, Terraform Pro, Ansible ve
+              Kubernetes.
+            </div>
+          </details>
+          <details>
+            <summary>Ücretli mi?</summary>
+            <div class="faq-a">
+              Şu an ücretsiz. Hesap açman gerekiyor — ilerlemenin cihazlar arası
+              taşınabilmesi ve doğrulanabilmesi için.
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <div class="rule"></div>
+
+    <!-- ============================ FİNAL ============================ -->
+    <section class="final" aria-labelledby="final-h">
+      <div class="wrap">
+        <h2 class="reveal" id="final-h">İlk komutun<br />seni bekliyor.</h2>
+        <p class="reveal d1">
+          Kurulum yok, kart yok. Hesabını aç, terminale gir, <code>pwd</code> yaz.
+          Gerisi kendiliğinden geliyor.
+        </p>
+        <a class="btn btn-primary reveal d2" href="app.html">Başla — ücretsiz</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <span>☁ CloudQuest</span>
+      <nav class="footer-links" aria-label="Alt menü">
+        <a href="/ogren">Öğren</a>
+        <a href="/komut">Komut sözlüğü</a>
+        <a href="app.html">Giriş yap</a>
+        <a href="tutorial.html">Terminal 101</a>
+        <a href="quiz.html">Uygunluk testi</a>
+        <a href="#sss">SSS</a>
+      </nav>
     </div>
-  </div>
+  </footer>
 
-  <!-- ================= AVATAR MODAL ================= -->
-  <div class="overlay avatar-modal hidden" id="avatar-modal">
-    <div class="grid-bg"></div>
-    <div class="avatar-modal-card">
-      <button class="profile-close" id="avatar-modal-close" type="button" aria-label="kapat">✕</button>
-      <div class="modal-title">🎭 Avatar Seç</div>
-      <div class="modal-sub">Karakterini seç — anında uygulanır.</div>
-      <div class="avatar-picker" id="modal-avatars"></div>
-      <button class="btn-neon" id="avatar-modal-done" type="button">Tamam</button>
-    </div>
-  </div>
-
-  <!-- ================= APP ================= -->
-  <div class="app hidden" id="app">
-    <aside class="hud">
-      <div class="hud-logo">☁️ CloudQuest</div>
-      <div class="hud-sub">Cloud Engineer olma yolculuğu</div>
-
-      <div class="hud-card">
-        <div class="hud-avatar" id="hud-avatar"></div>
-        <div class="hud-name" id="hud-name">engineer</div>
-        <div class="hud-rank" id="hud-rank">Intern ☁️</div>
-
-        <div class="hud-row"><span>Level</span><strong id="hud-level">1</strong></div>
-        <div class="xp-bar"><div class="xp-fill" id="hud-xp-fill"></div></div>
-        <div class="xp-text" id="hud-xp-text">0 / 120 XP</div>
-
-        <div class="hud-row"><span>Credits</span><strong id="hud-credits">60 💠</strong></div>
-        <div class="hud-row"><span>Quests</span><strong id="hud-quests">0 / 0</strong></div>
-
-        <button class="btn-profile" id="btn-profile" type="button">👤 PROFİL</button>
-      </div>
-
-      <div class="hud-block">
-        <div class="hud-label">🏅 Rozetler</div>
-        <div class="hud-badges" id="hud-badges">—</div>
-      </div>
-
-      <div class="hud-block hud-help">
-        <div class="hud-label">Hızlı komutlar</div>
-        <ul>
-          <li><code>quests</code> — görev listesi</li>
-          <li><code>quest c1q1</code> — göreve başla</li>
-          <li><code>map</code> — ilerleme haritası</li>
-          <li><code>profile</code> — profil sayfan</li>
-          <li><code>help</code> — tüm komutlar</li>
-        </ul>
-        <div class="hud-tip">Quest içinde <kbd>Tab</kbd> = doğru komutu yazar (25 💠, onay ister).<br>3 kez yanlış denersen ücretsiz gösterilir.</div>
-      </div>
-
-      <div class="hud-foot">
-        <span id="hud-account">—</span> · <a href="#" id="hud-home">ana sayfa</a> · <a href="#" id="hud-logout">çıkış</a>
-      </div>
-    </aside>
-
-    <main class="terminal" id="terminal">
-      <div class="term-bar">
-        <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
-        <span class="term-title">cloudquest — live terminal</span>
-        <button class="term-btn" id="scene-toggle" type="button"
-                title="Sahne panelini aç/kapat">🗺️ sahne</button>
-      </div>
-      <div class="screen" id="screen"></div>
-      <div class="input-line">
-        <span class="prompt" id="prompt">engineer@cloudquest:~$</span>
-        <input id="cmd" type="text" autocomplete="off" autocorrect="off"
-               autocapitalize="off" spellcheck="false" aria-label="komut girişi" />
-      </div>
-    </main>
-
-    <!-- Sahne: komutun ne yaptığını gösteren görsel kutu -->
-    <aside class="scene" id="scene"></aside>
-  </div>
-
-  <div class="scanlines" aria-hidden="true"></div>
-
-  <script src="js/lib/anime.min.js"></script>
-  <script src="js/lib/sweetalert2.all.min.js"></script>
-  <script src="js/lib/supabase.min.js"></script>
-  <script src="js/config.js"></script>
-  <script src="js/content.generated.js"></script>
-  <script src="js/parser.js"></script>
-  <script src="js/fx.js"></script>
-  <script src="js/scene.js"></script>
-  <script src="js/avatars.js"></script>
-  <script src="js/sharecard.js"></script>
-  <script src="js/guide.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/game.js"></script>
+  <script src="js/stars.js"></script>
+  <script src="js/landing.js"></script>
 </body>
 </html>

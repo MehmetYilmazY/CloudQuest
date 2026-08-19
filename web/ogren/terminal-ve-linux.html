@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Terminal ve Linux: sıfırdan başlayanlar için giriş — CloudQuest</title>
+  <meta name="description" content="Terminal nedir, neden bulut mühendisliğinin temeli? Dizinler, dosyalar, izinler ve süreçler — komutları gerçekten yazarak öğrenmen için hazırlanmış Türkçe rehber." />
+  <link rel="canonical" href="https://cloudquest.vercel.app/ogren/terminal-ve-linux" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#06070a" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta property="og:type" content="article" />
+  <meta property="og:locale" content="tr_TR" />
+  <meta property="og:site_name" content="CloudQuest" />
+  <meta property="og:url" content="https://cloudquest.vercel.app/ogren/terminal-ve-linux" />
+  <meta property="og:title" content="Terminal ve Linux: sıfırdan başlayanlar için giriş" />
+  <meta property="og:description" content="Terminal nedir, neden bulut mühendisliğinin temeli? Dizinler, dosyalar, izinler ve süreçler — komutları gerçekten yazarak öğrenmen için hazırlanmış Türkçe rehber." />
+  <meta property="og:image" content="https://cloudquest.vercel.app/og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E%E2%98%81%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/css/landing.css" />
+  <link rel="stylesheet" href="/css/lesson.css" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"CloudQuest","item":"https://cloudquest.vercel.app/"},{"@type":"ListItem","position":2,"name":"Öğren","item":"https://cloudquest.vercel.app/ogren"},{"@type":"ListItem","position":3,"name":"Terminal ve Linux: sıfırdan başlayanlar için giriş","item":"https://cloudquest.vercel.app/ogren/terminal-ve-linux"}]},{"@type":"LearningResource","headline":"Terminal ve Linux: sıfırdan başlayanlar için giriş","description":"Terminal nedir, neden bulut mühendisliğinin temeli? Dizinler, dosyalar, izinler ve süreçler — komutları gerçekten yazarak öğrenmen için hazırlanmış Türkçe rehber.","inLanguage":"tr-TR","dateModified":"2026-08-19","url":"https://cloudquest.vercel.app/ogren/terminal-ve-linux","learningResourceType":"Lesson","educationalLevel":"Beginner","publisher":{"@type":"Organization","name":"CloudQuest","url":"https://cloudquest.vercel.app"}}]}</script>
+</head>
+<body>
+  <a class="skip-link" href="#main">İçeriğe geç</a>
+  <canvas id="stars" aria-hidden="true"></canvas>
+  <div class="nebula" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="nav" id="nav">
+    <nav class="nav-inner" aria-label="Ana menü">
+      <a class="nav-logo" href="/">☁ CLOUDQUEST</a>
+      <div class="nav-links">
+        <a href="/ogren">Öğren</a>
+        <a href="/komut">Komutlar</a>
+        <a href="/#mufredat">Müfredat</a>
+        <a href="/#sss">SSS</a>
+      </div>
+      <a class="btn btn-primary btn-sm" href="/app">Giriş yap</a>
+    </nav>
+  </header>
+
+  <nav class="crumbs" aria-label="Konum">
+    <div class="wrap">
+      <a href="/">CloudQuest</a><span class="crumb-sep">/</span><a href="/ogren">Öğren</a><span class="crumb-sep">/</span><span aria-current="page">Terminal ve Linux: sıfırdan başlayanlar için giriş</span>
+    </div>
+  </nav>
+
+  <main id="main">
+    <article class="lesson">
+      <div class="wrap">
+        <p class="lesson-kicker">Bölüm 1 · Terminal &amp; Linux</p>
+        <h1>Terminal ve Linux: sıfırdan başlayanlar için giriş</h1>
+        <p class="lesson-standfirst">Terminal nedir, neden bulut mühendisliğinin temeli? Dizinler, dosyalar, izinler ve süreçler — komutları gerçekten yazarak öğrenmen için hazırlanmış Türkçe rehber.</p>
+        <div class="prose">
+<p>Bulutta çalışan her şey — sunucular, konteynerler, pipeline&#39;lar — sonunda bir
+kabuğa komut yazmakla yönetiliyor. Grafik arayüzler sadece o komutların
+üstüne çizilmiş kapaklar. Bu yüzden Cloud Engineer olma yolunun ilk adımı
+AWS değil, terminal.</p>
+<p>İyi haber: öğrenilmesi gereken şey sanıldığından az. Günlük işin %90&#39;ı yirmi
+kadar komutla dönüyor. Zor olan komutları ezberlemek değil, <strong>nerede
+olduğunu bilmek</strong> — ve bu, birkaç saat içinde oturan bir alışkanlık.</p>
+<h2>Terminal aslında ne yapıyor</h2>
+<p>Terminal, bilgisayara cümle kurduğun yer. Her cümlenin yapısı aynı:</p>
+<pre><code>komut  seçenekler  hedef
+</code></pre>
+<p><code>ls -la /home</code> üç parçadan oluşuyor: <code>ls</code> komutu (listele), <code>-la</code> seçenekleri
+(uzun biçim + gizli dosyalar), <code>/home</code> hedefi. Bütün Linux komutları bu
+kalıba uyar. Yeni bir komut gördüğünde soracağın soru &quot;bu ne yapar?&quot; değil,
+<strong>&quot;bunun hedefi ne, seçenekleri ne?&quot;</strong> olmalı.</p>
+<h2>Üç soru, üç komut</h2>
+<p>Bir sunucuya bağlandığında ilk yapman gereken şey, bulunduğun yeri anlamak.
+Üç soru sorarsın ve her birinin bir komutu vardır:</p>
+<p><strong>&quot;Neredeyim?&quot;</strong> → <code>pwd</code>
+Print working directory. Dosya sistemi bir ağaç ve sen o ağacın bir dalındasın.
+Nerede olduğunu bilmeden yazacağın her komut kör atış olur.</p>
+<p><strong>&quot;Burada ne var?&quot;</strong> → <code>ls</code>
+Dizinin içeriğini gösterir. <code>ls -la</code> ile gizli dosyaları (nokta ile başlayanlar)
+ve izinleri de görürsün — sunucularda önemli olan çoğu dosya gizlidir.</p>
+<p><strong>&quot;İçinde ne yazıyor?&quot;</strong> → <code>cat</code>
+Dosyanın içeriğini ekrana basar. Uzun dosyalarda <code>less</code> daha rahattır;
+sadece son satırlar lazımsa <code>tail</code> kullanırsın.</p>
+<p>Bu üçü, bir sunucuda geçirdiğin ilk beş dakikanın tamamıdır. Deneyimli
+mühendisin yaptığı da bundan farklı değil — sadece daha hızlı yazıyor.</p>
+<h2>İzinler: en çok takılınan yer</h2>
+<p>Linux&#39;ta her dosyanın üç grup için üç izni vardır: sahip, grup, diğerleri —
+her biri için okuma, yazma, çalıştırma.</p>
+<p><code>ls -l</code> çıktısındaki <code>-rwxr-xr--</code> dizisi tam olarak bunu söylüyor:</p>
+<ul>
+<li><code>rwx</code> → sahip okuyabilir, yazabilir, çalıştırabilir</li>
+<li><code>r-x</code> → grup okuyabilir ve çalıştırabilir, yazamaz</li>
+<li><code>r--</code> → diğerleri sadece okuyabilir</li>
+</ul>
+<p>Yeni yazdığın bir script&#39;i çalıştırmaya kalkıp <code>permission denied</code> alıyorsan,
+sebep neredeyse her zaman aynı: dosyada çalıştırma izni yok.</p>
+<pre><code>chmod +x deploy.sh
+</code></pre>
+<p><code>chmod</code> izinleri değiştirir, <code>+x</code> ise &quot;çalıştırma iznini ekle&quot; demektir.
+Detay için: <a href="/komut/chmod">chmod komutu</a>.</p>
+<h2>Süreçler ve servisler</h2>
+<p>Sunucuda bir şey çalışmıyorsa üç ihtimal var: hiç başlamamış, çökmüş, ya da
+çalışıyor ama yanlış yerde dinliyor. Sırasıyla bakılır:</p>
+<ul>
+<li><code>ps aux</code> — şu an ne çalışıyor?</li>
+<li><code>systemctl status nginx</code> — servis ayakta mı, ne zaman çöktü?</li>
+<li><code>df -h</code> — disk dolmuş olabilir mi? (Şaşırtıcı sıklıkta cevap: evet.)</li>
+</ul>
+<p>Bu üç komut, gece 3&#39;te gelen alarmların büyük kısmını ilk beş dakikada çözer.</p>
+<h2>Nasıl çalışılmalı</h2>
+<p>Terminali okuyarak öğrenemezsin. Bu sayfayı bitirdiğinde bildiğin şey
+komutların ne işe yaradığı olacak — ama parmakların hâlâ bilmiyor olacak.
+Aradaki farkı yalnızca tekrar kapatır.</p>
+<p>CloudQuest&#39;in ilk bölümü tam olarak bunun için var: aynı komutları bir
+senaryo içinde, arka arkaya, sen yazıyorsun. Yanlış yazarsan mentörün
+düzeltiyor; üç kez takılırsan doğrusunu gösteriyor.</p>
+
+        </div>
+<section class="lesson-quests">
+        <h2>Bu bölümün görevleri</h2>
+        <p class="lesson-quests-note">6 quest ·
+           22 uygulamalı adım</p>
+        <ol class="qlist">
+          <li><b>Cold Boot</b><span>4 adım</span></li>
+          <li><b>Dosya Matrisi</b><span>4 adım</span></li>
+          <li><b>İz Sürücü</b><span>4 adım</span></li>
+          <li><b>Access Denied</b><span>3 adım</span></li>
+          <li><b>Hayalet Süreç</b><span>3 adım</span></li>
+          <li><b>Daemon Uyanışı</b><span>4 adım</span></li>
+        </ol>
+      </section>
+<aside class="practice">
+        <p class="practice-k">Şimdi uygula</p>
+        <h2>Cold Boot</h2>
+        <p>Bu dersteki komutları 4 adımlık bir görevde,
+           mentör eşliğinde sen yazıyorsun. Takılırsan doğrusu gösteriliyor.</p>
+        <a class="btn btn-primary" href="/app">Quest'i aç — ücretsiz</a>
+      </aside>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <span>☁ CloudQuest · güncellendi 2026-08-19</span>
+      <nav class="footer-links" aria-label="Alt menü">
+        <a href="/ogren">Öğren</a>
+        <a href="/komut">Komutlar</a>
+        <a href="/app">Giriş yap</a>
+        <a href="/">Ana sayfa</a>
+      </nav>
+    </div>
+  </footer>
+  <script src="/js/stars.js"></script>
+  <script src="/js/landing.js"></script>
+</body>
+</html>

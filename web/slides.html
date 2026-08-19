@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CloudQuest — Proje Sunumu</title>
+<style>
+:root{
+  --bg:#05070d; --bg-2:#0a0f1a; --panel:#0c1524; --panel-2:#070c16;
+  --border:#17263d; --text:#c8d3e0; --muted:#5f708a;
+  --green:#4ade80; --cyan:#38bdf8; --neon:#22d3ee; --yellow:#fbbf24;
+  --magenta:#c084fc; --pink:#f472b6; --red:#f87171; --orange:#fb923c;
+  --mono:"Cascadia Code","JetBrains Mono","Fira Code",Consolas,ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:
+    radial-gradient(900px 500px at 12% -10%, #10233f 0%, transparent 60%),
+    radial-gradient(900px 600px at 100% 0%, #241033 0%, transparent 55%),
+    var(--bg);
+  color:var(--text); font-family:var(--mono); font-size:16px; line-height:1.6;
+  overflow:hidden;
+}
+body::before{
+  content:"";position:fixed;inset:-25%;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(38% 30% at 20% 22%, rgba(34,211,238,.08), transparent 60%),
+    radial-gradient(34% 28% at 80% 18%, rgba(192,132,252,.07), transparent 60%);
+  filter:blur(30px);animation:aurora 22s ease-in-out infinite alternate;
+}
+@keyframes aurora{
+  0%{transform:translate3d(0,0,0) scale(1)}
+  50%{transform:translate3d(2%,-2%,0) scale(1.06)}
+  100%{transform:translate3d(-2%,2%,0) scale(1.02)}
+}
+/* tarama çizgileri */
+body::after{
+  content:"";position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.35;
+  background:repeating-linear-gradient(180deg,rgba(255,255,255,.02) 0 1px,transparent 1px 3px);
+}
+
+/* ---------- deck ---------- */
+#deck{position:relative;z-index:2;height:100%}
+.slide{
+  position:absolute;inset:0;display:none;
+  padding:6vh 7vw 11vh;overflow-y:auto;
+  flex-direction:column;justify-content:center;
+}
+.slide.on{display:flex;animation:in .45s cubic-bezier(.22,.7,.3,1) both}
+@keyframes in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.slide > *{animation:rise .5s cubic-bezier(.22,.7,.3,1) both}
+.slide.on > *:nth-child(1){animation-delay:.04s}
+.slide.on > *:nth-child(2){animation-delay:.10s}
+.slide.on > *:nth-child(3){animation-delay:.16s}
+.slide.on > *:nth-child(4){animation-delay:.22s}
+.slide.on > *:nth-child(5){animation-delay:.28s}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.kicker{color:var(--neon);letter-spacing:.22em;text-transform:uppercase;font-size:12px;margin-bottom:14px}
+h1{font-size:clamp(38px,6.4vw,80px);line-height:1.05;letter-spacing:-.02em;color:#eaf2ff;
+   text-shadow:-1px 0 rgba(244,114,182,.4),1px 0 rgba(34,211,238,.4)}
+h2{font-size:clamp(26px,3.6vw,44px);line-height:1.15;color:#eaf2ff;margin-bottom:22px;
+   text-shadow:-1px 0 rgba(244,114,182,.34),1px 0 rgba(34,211,238,.34)}
+h3{font-size:15px;color:var(--cyan);margin-bottom:8px;letter-spacing:.02em}
+p{color:var(--text);max-width:78ch}
+.lead{font-size:clamp(16px,1.7vw,21px);color:#9fb2c9;margin-top:18px;max-width:70ch}
+.muted{color:var(--muted)}
+.sm{font-size:13px}
+b,strong{color:#eaf2ff;font-weight:600}
+code{background:var(--panel-2);border:1px solid var(--border);border-radius:5px;
+     padding:1px 6px;color:var(--green);font-size:.9em}
+
+.grid{display:grid;gap:16px;margin-top:8px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.card{
+  background:linear-gradient(180deg,var(--panel),var(--panel-2));
+  border:1px solid var(--border);border-radius:12px;padding:18px 20px;
+  transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease;
+}
+.card:hover{transform:translateY(-4px);border-color:#254468;box-shadow:0 10px 34px rgba(34,211,238,.10)}
+.card .ico{font-size:22px;display:block;margin-bottom:10px}
+.card p{font-size:14px;color:#93a5bd}
+
+ul.bul{list-style:none;margin-top:6px}
+ul.bul li{position:relative;padding-left:26px;margin:12px 0;max-width:76ch}
+ul.bul li::before{content:"▸";position:absolute;left:4px;color:var(--neon)}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:10px}
+.stat{background:var(--panel-2);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center}
+.stat .n{font-size:clamp(28px,4vw,46px);color:var(--neon);line-height:1;
+         text-shadow:0 0 22px rgba(34,211,238,.35)}
+.stat .l{font-size:12px;color:var(--muted);margin-top:8px;letter-spacing:.06em}
+
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.chip{border:1px solid var(--border);background:var(--panel-2);border-radius:999px;
+      padding:7px 14px;font-size:13px;color:#a9bcd4}
+.chip.on{border-color:rgba(74,222,128,.45);color:var(--green)}
+.chip.soon{color:var(--muted)}
+
+pre.term{
+  background:#04070e;border:1px solid var(--border);border-radius:12px;
+  padding:18px 20px;font-size:13.5px;line-height:1.75;overflow-x:auto;color:#a9bcd4;
+  box-shadow:inset 0 0 60px rgba(34,211,238,.05);
+}
+pre.term .u{color:var(--green)}
+pre.term .c{color:var(--cyan)}
+pre.term .y{color:var(--yellow)}
+pre.term .m{color:var(--magenta)}
+pre.term .d{color:var(--muted)}
+
+.flow{display:flex;align-items:stretch;gap:14px;flex-wrap:wrap;margin-top:6px}
+.node{flex:1;min-width:190px;background:var(--panel);border:1px solid var(--border);
+      border-radius:12px;padding:16px 18px}
+.node.ssot{border-color:rgba(251,191,36,.5);box-shadow:0 0 30px rgba(251,191,36,.10)}
+.node .t{color:#eaf2ff;font-size:15px}
+.node .s{font-size:12.5px;color:var(--muted);margin-top:6px}
+.arrow{align-self:center;color:var(--neon);font-size:20px}
+
+.two{display:grid;grid-template-columns:1.05fr .95fr;gap:26px;align-items:start}
+.warn{border-left:2px solid var(--orange);padding-left:14px;color:#b9c8dc;font-size:14px;margin-top:16px}
+
+/* ---------- kroma ---------- */
+#bar{position:fixed;left:0;top:0;height:2px;background:linear-gradient(90deg,var(--neon),var(--magenta));
+     z-index:12;transition:width .35s ease;box-shadow:0 0 12px rgba(34,211,238,.6)}
+#nav{position:fixed;z-index:12;left:0;right:0;bottom:0;height:9vh;min-height:52px;
+     display:flex;align-items:center;justify-content:space-between;padding:0 7vw;
+     border-top:1px solid var(--border);background:rgba(5,7,13,.7);backdrop-filter:blur(8px)}
+#dots{display:flex;gap:8px}
+.dot{width:7px;height:7px;border-radius:50%;background:#1c3050;cursor:pointer;transition:all .25s}
+.dot:hover{background:#2c4a72}
+.dot.on{background:var(--neon);box-shadow:0 0 10px var(--neon);transform:scale(1.25)}
+#counter{font-size:12px;color:var(--muted);letter-spacing:.08em}
+#hint{font-size:11.5px;color:#31445e;letter-spacing:.06em}
+
+@media (max-width:900px){
+  body{font-size:15px}
+  .g3,.g4,.stats{grid-template-columns:repeat(2,1fr)}
+  .two{grid-template-columns:1fr}
+  .slide{padding:5vh 6vw 12vh}
+  #hint{display:none}
+}
+@media print{
+  body{overflow:visible;background:#05070d}
+  .slide{display:flex!important;position:relative;height:100vh;page-break-after:always}
+  #nav,#bar{display:none}
+}
+</style>
+</head>
+<body>
+
+<div id="bar"></div>
+<div id="deck">
+
+  <!-- 1 ---------------------------------------------------------------- -->
+  <section class="slide">
+    <div class="kicker">Proje Sunumu · 2026</div>
+    <h1>☁️ CloudQuest</h1>
+    <p class="lead">Cloud Engineering'i <b>oynayarak</b> öğreten bir terminal RPG'si.
+    Bir IT specialist'i, full-time <b>Cloud Engineer</b> pozisyonuna hazırlar.
+    Tam yeni başlayanlar için tasarlandı.</p>
+    <div class="chips" style="margin-top:34px">
+      <span class="chip">Canlı terminal simülasyonu</span>
+      <span class="chip">Hikâye kampanyası</span>
+      <span class="chip">XP · Level · Rank</span>
+      <span class="chip">Web + PowerShell</span>
+    </div>
+  </section>
+
+  <!-- 2 ---------------------------------------------------------------- -->
+  <section class="slide">
+    <div class="kicker">Problem</div>
+    <h2>Cloud öğrenmek neden tıkanıyor?</h2>
+    <div class="grid g3">
+      <div class="card"><span class="ico">📺</span><h3>İzlemek ≠ yapabilmek</h3>
+        <p>Video kursları pasif. Klavye eline geçmeden kas hafızası oluşmuyor.</p></div>
+      <div class="card"><span class="ico">💸</span><h3>Bulut denemek riskli</h3>
+        <p>Yanlış bir komut fatura demek. Yeni başlayan denemekten çekiniyor.</p></div>
+      <div class="card"><span class="ico">🥱</span><h3>Motivasyon 2. haftada biter</h3>
+        <p>İlerleme görünmez, geri bildirim yok, hedef uzak. Bırakılıyor.</p></div>
+    </div>
+    <p class="lead">CloudQuest üçüne birden cevap veriyor: <b>gerçek komutlar</b>,
+      <b>sıfır risk</b>, <b>görünür ilerleme</b>.</p>
+  </section>
+
+  <!-- 3 ---------------------------------------------------------------- -->
+  <section class="slide">
+    <div class="kicker">Ürün</div>
+    <h2>Tek içerik, iki sürüm</h2>
+    <div class="grid g2">
+      <div class="card"><span class="ico">🌐</span><h3>Web app</h3>
+        <p>Kurulum yok. <code>web/index.html</code> dosyasına çift tıkla. Cyberpunk
+        boot ekranı, animasyonlu hub, terminal + sahne paneli.</p></div>
+      <div class="card"><span class="ico">🖥️</span><h3>Terminal (PowerShell)</h3>
+        <p>Windows PowerShell 5.1+. Aynı bölümler, aynı questler, aynı mentör Nova.
+        İlerleme <code>data/save.json</code>'a yazılır.</p></div>
+    </div>
+    <pre class="term" style="margin-top:20px"><span class="d">$</span> <span class="u">quest c1q1</span>
+<span class="c">NOVA</span> <span class="d">›</span> Bulutta her şey bir dizinde başlar. Nerede olduğunu sor.
+<span class="d">›</span> <span class="u">pwd</span>
+<span class="y">/home/rookie</span>
+<span class="m">✔ Hedef tamam</span>  <span class="d">+40 XP · 2/4</span></pre>
+  </section>
+
+  <!-- 4 ---------------------------------------------------------------- -->
+  <section class="slide">
+    <div class="kicker">Hikâye modu</div>
+    <h2>"Meridian" — bir startup dramı</h2>
+    <p class="lead">Gerçekçi bir startup'a ilk gün girersin. Çaylaklıktan
+      <b>Platform Lead</b>'e yükselirsin. Her modül bir <b>PERDE</b>: prolog,
+      perde açılış ve kapanış sinematikleri olay örgüsünü ilerletir.</p>
+    <div class="grid g4" style="margin-top:22px">
+      <div class="card"><span class="ico">🚀</span><h3>Launch</h3><p>İlk canlıya çıkış.</p></div>
+      <div class="card"><span class="ico">📈</span><h3>Yatırım &amp; ölçek</h3><p>Trafik patlar, sistem çatırdar.</p></div>
+      <div class="card"><span class="ico">🌙</span><h3>Gece 3 on-call</h3><p>Alarm çalar, sen ayaktasın.</p></div>
+      <div class="card"><span class="ico">🔐</span><h3>Güvenlik &amp; maliyet</h3><p>Denetim gelir, hesap sorulur.</p></div>
+    </div>
+    <p class="sm muted" style="margin-top:18px">Mentör <b>Nova</b> ve CEO <b>Deniz</b> eşlik eder.
+      Öğrenme merkezde kalır: beat'ler bir kez gösterilir, tekrar rahatsız etmez.</p>
+  </section>
+
+  <!-- 5 ---------------------------------------------------------------- -->
+  <section class="slide">
+    <div class="kicker">Müfredat</div>
+    <h2>8 bölüm · 6 track</h2>
+    <div class="grid g4">
+      <div class="card"><span class="ico">🧱</span><h3>1 · Terminal &amp; Linux</h3><p>Kabuk, dosyalar, izinler, süreçler.</p></div>
+      <div class="card"><span class="ico">🔗</span><h3>2 · Networking &amp; Git</h3><p>DNS, port, TLS; branch ve merge.</p></div>
+      <div class="card"><span class="ico">☁️</span><h3>3 · AWS Core</h3><p>IAM, EC2, S3, VPC temelleri.</p></div>
+      <div class="card"><span class="ico">🌍</span><h3>4 · IaC</h3><p>Terraform ile tekrarlanabilir altyapı.</p></div>
+      <div class="card"><span class="ico">🐳</span><h3>5 · Containers</h3><p>Docker imaj, katman, ağ, volume.</p></div>
+      <div class="card"><span class="ico">🔁</span><h3>6 · CI/CD</h3><p>Pipeline, otomatik test ve deploy.</p></div>
+      <div class="card"><span class="ico">📊</span><h3>7 · Observability</h3><p>Log, metrik, alarm, SLO.</p></div>
+      <div class="card"><span class="ico">🛡️</span><h3>8 · Security &amp; Cost</h3><p>En az yetki, şifreleme, fatura disiplini.</p></div>
+    </div>
+    <p class="sm muted" style="margin-top:16px">Track'ler: Fundamentals · Cloud Core · IaC · Containers · Automation · Mastery.
+      Program <code>docs/ROADMAP.md</code> ile birebir hizalı.</p>
+  </section>
+
+  <!-- 6 ---------------------------------------------------------------- -->
+  <section class="slide">
+    <div class="kicker">Yan içerik</div>
+    <h2>Advanced Labs</h2>
+    <p class="lead">Hikâyeden bağımsız, derinleşmek isteyenler için yan modüller.
+      XP ve rozet verir; "Cloud Engineer hazırlığı %" sayacını <b>etkilemez</b> —
+      ana ilerleme ölçüsü hikâye kalır.</p>
+    <div class="grid g3" style="margin-top:20px">
+      <div class="card"><span class="ico">🛰️</span><h3>Network Ops</h3><p>4 quest · <span style="color:var(--green)">aktif</span></p></div>
+      <div class="card"><span class="ico">📜</span><h3>Scripting</h3><p>4 quest · <span style="color:var(--green)">aktif</span></p></div>
+      <div class="card"><span class="ico">🐳</span><h3>Docker Deep Dive</h3><p>4 quest · <span style="color:var(--green)">aktif</span></p></div>
+      <div class="card"><span class="ico">🌍</span><h3>Terraform Pro</h3><p>4 quest · <span style="color:var(--green)">aktif</span></p></div>
+      <div class="card"><span class="ico">⚙️</span><h3>Ansible</h3><p>4 quest · <span style="color:var(--green)">aktif</span></p></div>
+      <div class="card"><span class="ico">☸️</span><h3>Kubernetes</h3><p>4 quest · <span style="color:var(--green)">aktif</span></p></div>
+    </div>
+  </section>
+
+  <!-- 7 ---------------------------------------------------------------- -->
+  <section class="slide">
+    <div class="kicker">Mimari</div>
+    <h2>Tek kaynak (SSOT)</h2>
+    <p class="lead">Müfredat tek dosyada yaşar. İki runtime da oradan beslenir —
+      içerik ikiye ayrılıp birbirinden kopamaz.</p>
+    <div class="flow" style="margin-top:22px">
+      <div class="node ssot"><div class="t">📦 data/curriculum.json</div>
+        <div class="s">chapters · tracks · story · quests · modules · shop</div></div>
+      <div class="arrow">→</div>
+      <div class="node"><div class="t">🖥️ cloudquest.ps1</div>
+        <div class="s">JSON'u doğrudan okur, build gerekmez</div></div>
+      <div class="arrow">→</div>
+      <div class="node"><div class="t">🌐 build.ps1</div>
+        <div class="s">→ web/js/content.generated.js<br>(üretilmiş dosya; elle düzenlenmez)</div></div>
+    </div>
+    <div class="warn">Neden üretim adımı var? Web'in <code>file://</code> üzerinden
+      çift tıkla açılabilirliği korunsun diye: içerik JS'e gömülür, <code>fetch</code>
+      gerekmez. İçerik değişince <code>build.ps1</code> tekrar çalıştırılır.</div>
+  </section>
+
+  <!-- 8 ---------------------------------------------------------------- -->
+  <section class="slide">
+    <div class="kicker">Teknik öz</div>
+    <h2>Komut doğrulama: regex değil, parser</h2>
+    <div class="two">
+      <div>
+        <ul class="bul">
+          <li>Girdi <code>|</code>, <code>&amp;&amp;</code>, <code>;</code> ile <b>segmentlere</b> ayrılır.</li>
+          <li><b>Quote-farkında</b> tokenize edilir; baştaki <code>sudo</code> atılır.</li>
+          <li>Her hedefin bildirimsel <code>expect</code> spec'i ile eşleşir:
+            <code>{cmd, need, anyOf}</code>.</li>
+          <li>Sonuç: <b>flag sırası</b>, <b>fazladan flag</b> ve <b>pipe</b> kullanıcıyı
+            yanlış cevaba düşürmez.</li>
+          <li>Web (<code>parser.js</code>) ve PowerShell (<code>CQ-Match</code>) <b>paritede</b>.</li>
+        </ul>
+      </div>
+      <div>
+        <pre class="term">{ <span class="c">"expect"</span>: {
+    <span class="c">"cmd"</span>:  [<span class="y">"chmod"</span>],
+    <span class="c">"need"</span>: [<span class="y">"+x|755"</span>,
+              <span class="y">"re:deploy\\.sh$"</span>]
+  } }
+
+<span class="d">// hepsi kabul edilir:</span>
+<span class="u">chmod +x deploy.sh</span>
+<span class="u">sudo chmod 755 ./deploy.sh</span>
+<span class="u">ls | chmod +x deploy.sh</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 ---------------------------------------------------------------- -->
+  <section class="slide">
+    <div class="kicker">Hesap katmanı</div>
+    <h2>Supabase · cihazlar arası senkron</h2>
+    <div class="grid g2">
+      <div class="card"><span class="ico">🔑</span><h3>Gerçek kimlik doğrulama</h3>
+        <p>E-posta + şifre ile kayıt/giriş, e-posta doğrulama, şifre sıfırlama.
+        Doğrulama <b>sunucuda</b> yapılır.</p></div>
+      <div class="card"><span class="ico">🗄️</span><h3>İlerleme Postgres'te</h3>
+        <p>Profil oturum açılışında bir kez belleğe alınır (okumalar senkron kalsın diye),
+        yazmalar debounce'lanıp buluta gider.</p></div>
+      <div class="card"><span class="ico">🛡️</span><h3>Row Level Security</h3>
+        <p>Her kullanıcı yalnızca kendi satırına erişir. Koruma RLS'te —
+        <code>config.js</code>'teki anon key tasarım gereği gizli değildir.
+        <code>service_role</code> anahtarı repoda yoktur.</p></div>
+      <div class="card"><span class="ico">📴</span><h3>Ağ koparsa</h3>
+        <p>Yerel yedeğe düşer, bir sonraki açılışta buluta iter. Oyun kesilmez.</p></div>
+    </div>
+    <p class="sm muted" style="margin-top:16px">Kurulum ~5 dk, ücretsiz, kart istemez — <code>docs/SETUP-SUPABASE.md</code>.</p>
+  </section>
+
+  <!-- 10 --------------------------------------------------------------- -->
+  <section class="slide">
+    <div class="kicker">Oyunlaştırma</div>
+    <h2>İlerleme görünür olmalı</h2>
+    <div class="two">
+      <div>
+        <ul class="bul">
+          <li><b>XP &amp; Level</b> — sonraki seviye <code>level × 120</code> XP.</li>
+          <li><b>Rank</b> — Intern ☁️ → Associate → Junior → Cloud Engineer →
+            Senior → Cloud Architect 🏛️ → <b>Principal Cloud Wizard 🧙</b>.</li>
+          <li><b>Credits &amp; shop</b> — Espresso Shot (+30 XP), 'Cloud Ninja' ünvanı,
+            Mentor Tavsiyesi (3 bedava ipucu).</li>
+          <li><b>Takılma güvenliği</b> — <code>hint</code>; 3 yanlış denemeden sonra
+            doğru komut gösterilir; <kbd>Tab</kbd> komutu doldurur.</li>
+          <li><b>6 tech-anime avatar</b> — Netrunner, Ronin, Techno, Oracle, Pilot, Ghost
+            (kodla çizilmiş SVG).</li>
+        </ul>
+      </div>
+      <div>
+        <pre class="term"><span class="d">$</span> <span class="u">status</span>
+  Rank    : <span class="m">Cloud Engineer</span>
+  Level   : <span class="y">5</span>   XP <span class="c">480/600</span>
+  Credits : <span class="y">210</span>
+  Rozetler: 🥷 Cloud Ninja
+  Hazırlık: <span class="u">████████░░░░</span> <span class="c">63%</span></pre>
+        <p class="sm muted" style="margin-top:14px">Profil sayfası: avatar, rank, level/XP,
+          credits, rozetler, tamamlanan eğitimler ve "Cloud Engineer hazırlığı %".</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 --------------------------------------------------------------- -->
+  <section class="slide">
+    <div class="kicker">Deneyim detayları</div>
+    <h2>Sıfırdan gelenler düşünülerek</h2>
+    <div class="grid g3">
+      <div class="card"><span class="ico">🎓</span><h3>Terminal 101</h3>
+        <p>Hiç terminal görmemiş biri için. İçinde <b>gerçekten çalışan</b> mini kabuk:
+        sanal dosya sisteminde <code>pwd ls cd cat mkdir echo</code>.</p></div>
+      <div class="card"><span class="ico">🧭</span><h3>Uyum testi</h3>
+        <p>"Bu iş bana uygun mu?" 5 boyutlu test. <b>İltifat makinesi değil</b> —
+        uyumsuzluğu kibarca söyler, alternatif rol önerir.</p></div>
+      <div class="card"><span class="ico">🎬</span><h3>Sahne paneli</h3>
+        <p>Terminalin sağında görsel bağlam: <code>cd logs</code> yazınca yolun
+        değiştiğini, <code>mkdir</code> yazınca klasörün doğduğunu görürsün.</p></div>
+      <div class="card"><span class="ico">📖</span><h3>Başlangıç rehberi</h3>
+        <p>Scroll-driven, ADHD-dostu: ekran başına tek fikir, en fazla 2 cümle,
+        her zaman görünür ilerleme.</p></div>
+      <div class="card"><span class="ico">🖼️</span><h3>Paylaşım kartı</h3>
+        <p>Profili 1200×630 PNG'ye çizer (LinkedIn/OG oranı). Tamamen istemci
+        tarafında — veri dışarı çıkmaz.</p></div>
+      <div class="card"><span class="ico">✨</span><h3>FX &amp; hareket</h3>
+        <p>Buton hover &lt;2px, kart hover y-4 / 200-300ms, konfeti, level-up.
+        Kromatik sapma sadece başlıklarda — gövde metni okunur kalır.</p></div>
+    </div>
+  </section>
+
+  <!-- 12 --------------------------------------------------------------- -->
+  <section class="slide">
+    <div class="kicker">Rakamlar</div>
+    <h2>Bugünkü kapsam</h2>
+    <div class="stats">
+      <div class="stat"><div class="n">8</div><div class="l">BÖLÜM</div></div>
+      <div class="stat"><div class="n">54</div><div class="l">QUEST (30 story + 24 lab)</div></div>
+      <div class="stat"><div class="n">211</div><div class="l">DOĞRULANAN HEDEF</div></div>
+      <div class="stat"><div class="n">6</div><div class="l">ADVANCED LAB</div></div>
+    </div>
+    <div class="stats" style="margin-top:14px">
+      <div class="stat"><div class="n">2</div><div class="l">RUNTIME (web + PS)</div></div>
+      <div class="stat"><div class="n">6</div><div class="l">AVATAR</div></div>
+      <div class="stat"><div class="n">7</div><div class="l">RANK KADEMESİ</div></div>
+      <div class="stat"><div class="n">0</div><div class="l">CDN BAĞIMLILIĞI</div></div>
+    </div>
+    <p class="sm muted" style="margin-top:18px">Tüm kütüphaneler (anime.js, SweetAlert2, supabase-js)
+      yerel vendor'lı — çevrimdışı çalışır. Bağımlılık yönetimi yok, build adımı tek script.</p>
+  </section>
+
+  <!-- 13 --------------------------------------------------------------- -->
+  <section class="slide">
+    <div class="kicker">Öğrenme felsefesi</div>
+    <h2>Öğren → Oyna → Uygula</h2>
+    <div class="flow" style="margin-top:10px">
+      <div class="node"><div class="t">📚 Öğren</div><div class="s">Teori — %20. Kavramı anla, ezberleme.</div></div>
+      <div class="arrow">→</div>
+      <div class="node ssot"><div class="t">🎮 Oyna</div><div class="s">CloudQuest — kas hafızası. Risk yok, fatura yok.</div></div>
+      <div class="arrow">→</div>
+      <div class="node"><div class="t">🔨 Uygula</div><div class="s">Gerçek AWS Free Tier'da aynı komutlar.</div></div>
+    </div>
+    <p class="lead"><b>%20 teori, %80 elin klavyede.</b> Oyun bir vitrin değil,
+      gerçek terminale geçmeden önceki güvenli antrenman alanı.
+      Detaylı 6 aylık program: <code>docs/ROADMAP.md</code>.</p>
+  </section>
+
+  <!-- 14 --------------------------------------------------------------- -->
+  <section class="slide">
+    <div class="kicker">Kapanış</div>
+    <h1 style="font-size:clamp(32px,5vw,64px)">Hedef: full-time<br>Cloud Engineer</h1>
+    <p class="lead">CloudQuest bir kurs değil, bir <b>antrenman rejimi</b>.
+      Her gün 20 dakika terminal, görünür ilerleme, gerçek komutlar.</p>
+    <pre class="term" style="margin-top:24px;max-width:640px"><span class="d">#</span> web
+<span class="u">web/index.html</span> <span class="d">→ çift tıkla</span>
+
+<span class="d">#</span> terminal
+<span class="u">powershell -ExecutionPolicy Bypass -File .\cloudquest.ps1</span>
+
+<span class="d">#</span> içerik değiştikten sonra
+<span class="u">powershell -ExecutionPolicy Bypass -File .\build.ps1</span></pre>
+  </section>
+
+</div>
+
+<div id="nav">
+  <span id="counter">01 / 14</span>
+  <div id="dots"></div>
+  <span id="hint">← →  ·  SPACE  ·  F tam ekran</span>
+</div>
+
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var dotsEl = document.getElementById('dots');
+  var bar = document.getElementById('bar');
+  var counter = document.getElementById('counter');
+  var i = 0;
+
+  slides.forEach(function(_, n){
+    var d = document.createElement('div');
+    d.className = 'dot';
+    d.title = 'Slayt ' + (n+1);
+    d.addEventListener('click', function(){ go(n); });
+    dotsEl.appendChild(d);
+  });
+  var dots = Array.prototype.slice.call(dotsEl.children);
+
+  function pad(n){ return (n<10?'0':'') + n; }
+
+  function go(n){
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function(s, k){ s.classList.toggle('on', k === i); });
+    dots.forEach(function(d, k){ d.classList.toggle('on', k === i); });
+    bar.style.width = ((i+1) / slides.length * 100) + '%';
+    counter.textContent = pad(i+1) + ' / ' + pad(slides.length);
+    slides[i].scrollTop = 0;
+    if (location.hash !== '#' + (i+1)) history.replaceState(null, '', '#' + (i+1));
+  }
+
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if (k === 'ArrowRight' || k === 'PageDown' || k === ' ' || k === 'Enter') { e.preventDefault(); go(i+1); }
+    else if (k === 'ArrowLeft' || k === 'PageUp' || k === 'Backspace') { e.preventDefault(); go(i-1); }
+    else if (k === 'Home') { go(0); }
+    else if (k === 'End') { go(slides.length-1); }
+    else if (k === 'f' || k === 'F') {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen();
+    }
+  });
+
+  // dokunmatik kaydırma
+  var x0 = null;
+  document.addEventListener('touchstart', function(e){ x0 = e.touches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    if (x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 60) go(dx < 0 ? i+1 : i-1);
+    x0 = null;
+  }, {passive:true});
+
+  var start = parseInt((location.hash || '').slice(1), 10);
+  go(isNaN(start) ? 0 : start - 1);
+})();
+</script>
+</body>
+</html>

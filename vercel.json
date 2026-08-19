@@ -1,9 +1,32 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "echo 'static site - no build'",
+  "buildCommand": "npm run build",
   "outputDirectory": "web",
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    { "source": "/index.html", "destination": "/", "permanent": true },
+    { "source": "/app.html", "destination": "/app", "permanent": true },
+    { "source": "/tutorial.html", "destination": "/tutorial", "permanent": true },
+    { "source": "/quiz.html", "destination": "/quiz", "permanent": true },
+
+    { "source": "/oyun", "destination": "/app", "permanent": false },
+    { "source": "/login", "destination": "/app", "permanent": false },
+    { "source": "/giris", "destination": "/app", "permanent": false },
+    { "source": "/kayit", "destination": "/app", "permanent": false },
+    { "source": "/terminal", "destination": "/app", "permanent": false },
+
+    { "source": "/dersler", "destination": "/ogren", "permanent": false },
+    { "source": "/egitim", "destination": "/ogren", "permanent": false },
+    { "source": "/learn", "destination": "/ogren", "permanent": false },
+    { "source": "/blog", "destination": "/ogren", "permanent": false },
+    { "source": "/komutlar", "destination": "/komut", "permanent": false },
+    { "source": "/commands", "destination": "/komut", "permanent": false },
+
+    { "source": "/test", "destination": "/quiz", "permanent": false },
+    { "source": "/sss", "destination": "/#sss", "permanent": false },
+    { "source": "/mufredat", "destination": "/#mufredat", "permanent": false }
+  ],
   "headers": [
     {
       "source": "/(.*)",

@@ -24,10 +24,10 @@
 html, body { height: 100%; }
 
 body {
-  background:
-    radial-gradient(900px 500px at 12% -10%, #10233f 0%, transparent 60%),
-    radial-gradient(900px 600px at 100% 0%, #241033 0%, transparent 55%),
-    var(--bg);
+  /* Düz siyah: derinliği artık yıldız alanı veriyor, gradient değil.
+     (Eski radial gradient'ler zemini "renkli duman"a çeviriyordu ve
+     yıldızların üstünü örtüyordu.) */
+  background: var(--bg);
   color: var(--text);
   font-family: var(--mono);
   font-size: 14px;
@@ -36,22 +36,39 @@ body {
 }
 
 /* =========================================================================
-   FX — mikro-etkileşimler, kutlama, ambiyans
+   ZEMİN — uzay boşluğu  (site ile ORTAK dil)
+   -------------------------------------------------------------------------
+   Landing, ders sayfaları ve 404 ile aynı gökyüzü: yıldız alanı (canvas,
+   js/stars.js) + iki nebula lekesi. Kurallar landing.css'tekiyle birebir
+   aynı; app.html landing.css yüklemediği için burada tekrarlanıyor.
+
+   Buradan KALDIRILANLAR ve nedenleri:
+     • aurora (body::before)  -> nebula'nın işini yapıyordu, ikisi birden
+                                 zemini bulanıklaştırıyordu
+     • .grid-bg (overlay'ler) -> perspektifsiz ızgara yıldızlarla çakışıyor
+     • akan dalgalar (fx.js)  -> su/ses dili; uzay değil. Kod duruyor
+                                 (FX.particles), sadece çağrılmıyor.
    ========================================================================= */
-/* yumuşayan aurora ambiyansı (dekoratif; metne dokunmaz) */
-body::before {
-  content: ""; position: fixed; inset: -25%; z-index: 0; pointer-events: none;
+#stars {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  width: 100%; height: 100%;
+}
+.nebula {
+  position: fixed; inset: -20%; z-index: 0; pointer-events: none;
   background:
-    /* Dalgalar ambiyans görevini üstlendi; aurora artık sadece üstte hafif bir ton */
-    radial-gradient(38% 30% at 20% 22%, rgba(34,211,238,.07), transparent 60%),
-    radial-gradient(34% 28% at 80% 18%, rgba(192,132,252,.06), transparent 60%);
-  filter: blur(30px); animation: fx-aurora 22s ease-in-out infinite alternate;
+    radial-gradient(40% 34% at 22% 30%, rgba(34,211,238,.09), transparent 62%),
+    radial-gradient(36% 30% at 78% 62%, rgba(192,132,252,.08), transparent 62%);
+  filter: blur(50px);
+  animation: neb-drift 40s ease-in-out infinite alternate;
 }
-@keyframes fx-aurora {
-  0%   { transform: translate3d(0,0,0) scale(1); }
-  50%  { transform: translate3d(2%, -2%, 0) scale(1.06); }
-  100% { transform: translate3d(-2%, 2%, 0) scale(1.02); }
+@keyframes neb-drift {
+  from { transform: translate3d(-1.5%, 1%, 0) scale(1); }
+  to   { transform: translate3d(1.5%, -1%, 0) scale(1.07); }
 }
+
+/* =========================================================================
+   FX — mikro-etkileşimler, kutlama
+   ========================================================================= */
 
 /* Kromatik sapma (RGB kanal kayması) — SADECE başlıklarda, ~1px.
    Gövde metnine asla uygulanmaz: okunurluğu bozar ve göz yorar. */
@@ -135,15 +152,12 @@ body::before {
   .fx-tilt, .btn-neon::after { transition: none; }
 }
 
-/* neon grid arka plan (overlay'lerde) */
+/* Overlay zemini: eski neon ızgaranın yerine yumuşak bir vinyet.
+   Izgara yıldızlarla çakışıyordu (iki farklı "uzaklık" hissi aynı anda).
+   Vinyet ise kartı öne çıkarıp yıldızları kenarlarda yaşatıyor. */
 .grid-bg {
   position: absolute; inset: 0; z-index: 0; pointer-events: none;
-  background-image:
-    linear-gradient(rgba(56,189,248,0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(56,189,248,0.06) 1px, transparent 1px);
-  background-size: 38px 38px;
-  mask-image: radial-gradient(circle at 50% 40%, #000 0%, transparent 78%);
-  -webkit-mask-image: radial-gradient(circle at 50% 40%, #000 0%, transparent 78%);
+  background: radial-gradient(closest-side at 50% 45%, rgba(4,6,11,.72), transparent 100%);
 }
 
 /* CRT tarama çizgileri (global, hafif) */
@@ -205,35 +219,143 @@ body::before {
 /* =========================================================================
    AUTH SCREEN
    ========================================================================= */
+/* Kart: yuvarlak köşe + gradient yerine sert kenar ve tek accent.
+   Landing ile aynı dil — kullanıcı aynı üründe olduğunu hissetsin. */
 .auth-card {
-  position: relative; z-index: 1; width: min(440px, 94vw);
-  background: linear-gradient(180deg, var(--panel), var(--panel-2));
-  border: 1px solid var(--border); border-radius: 16px; padding: 28px 26px;
-  box-shadow: 0 0 0 1px rgba(34,211,238,.08), 0 30px 80px rgba(0,0,0,.6);
+  position: relative; z-index: 1; width: min(430px, 94vw);
+  background: #080b12;
+  border: 1px solid var(--border); border-radius: 2px; padding: 0 24px 24px;
+  box-shadow: 0 30px 90px rgba(0,0,0,.7);
+  overflow: hidden;
+  animation: auth-in .5s cubic-bezier(.16,1,.3,1) both;
 }
-.auth-logo { font-size: 26px; font-weight: 800; color: #fff; letter-spacing: 3px; text-shadow: 0 0 16px rgba(34,211,238,.5); }
-.auth-sub { color: var(--muted); font-size: 13px; margin: 6px 0 20px; }
+@keyframes auth-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
 
-.auth-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+/* Kartın üstündeki "terminal başlığı" — hangi ekranda olduğunu söyler. */
+.auth-head {
+  display: flex; align-items: center; gap: 7px;
+  margin: 0 -24px 22px; padding: 9px 14px;
+  border-bottom: 1px solid var(--border); background: #0a0e17;
+  font-size: 11px; letter-spacing: .1em; color: var(--muted);
+}
+.auth-head-id   { color: var(--neon); }
+.auth-head-sep  { color: #2a3145; }
+.auth-head-mode { color: var(--text); }
+.auth-head-caret {
+  width: 6px; height: 11px; background: var(--neon);
+  animation: auth-blink 1.05s steps(1) infinite;
+}
+@keyframes auth-blink { 50% { opacity: 0; } }
+.auth-head-net { margin-left: auto; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--green); }
+.auth-head-net.down { color: var(--red); }
+
+.auth-logo { font-size: 24px; font-weight: 800; color: #fff; letter-spacing: 3px; }
+.auth-sub { color: var(--muted); font-size: 12.5px; margin: 6px 0 22px; }
+
+/* Sekmeler: pill/gradient değil, altı çizili — sade ve okunur. */
+.auth-tabs { display: flex; gap: 0; margin-bottom: 18px; border-bottom: 1px solid var(--border); }
 .auth-tab {
-  flex: 1; padding: 10px; background: #0a1220; color: var(--muted);
-  border: 1px solid var(--border); border-radius: 8px; cursor: pointer;
-  font-family: var(--mono); font-size: 13px; transition: .2s;
+  padding: 10px 16px; background: none; color: var(--muted);
+  border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px;
+  cursor: pointer; font-family: var(--mono); font-size: 13px; transition: color .18s, border-color .18s;
 }
-.auth-tab.active { color: #05121f; background: linear-gradient(90deg, var(--neon), var(--cyan)); border-color: transparent; font-weight: 700; }
+.auth-tab:hover { color: var(--text); }
+.auth-tab.active { color: var(--neon); border-bottom-color: var(--neon); font-weight: 700; }
 
-.auth-form label { display: block; font-size: 12px; color: var(--muted); margin: 12px 0 5px; letter-spacing: .5px; }
-.hint-inline { color: #44546b; }
+.auth-form label {
+  display: block; font-size: 10.5px; color: var(--muted);
+  margin: 14px 0 6px; letter-spacing: .16em; text-transform: uppercase;
+}
+.hint-inline { color: #44546b; text-transform: none; letter-spacing: 0; }
 .auth-form input {
-  width: 100%; background: #060d18; border: 1px solid var(--border); border-radius: 8px;
+  width: 100%; background: #05080f; border: 1px solid var(--border); border-radius: 2px;
   padding: 11px 12px; color: var(--text); font-family: var(--mono); font-size: 14px; outline: none;
-  transition: border-color .2s, box-shadow .2s;
+  transition: border-color .18s, background .18s;
 }
-.auth-form input:focus { border-color: var(--neon); box-shadow: 0 0 0 3px rgba(34,211,238,.15); }
-.auth-err { color: var(--red); font-size: 12.5px; min-height: 18px; margin-top: 10px; }
+.auth-form input:focus { border-color: var(--neon); background: #060c16; }
+/* Hata sonrası alanlar kırmızıya döner; tekrar yazmaya başlayınca temizlenir. */
+.auth-form.rejected input { border-color: rgba(248,113,113,.55); }
 
-.forgot-link { display: block; text-align: center; margin-top: 12px; font-size: 12px; color: var(--muted); text-decoration: none; }
-.forgot-link:hover { color: var(--neon); text-decoration: underline; }
+.auth-err { color: var(--red); font-size: 12.5px; min-height: 18px; margin: 10px 0 2px; }
+
+.auth-submit {
+  width: 100%; margin-top: 14px; padding: 13px;
+  background: var(--neon); color: #04121a; border: 1px solid var(--neon); border-radius: 2px;
+  font-family: var(--mono); font-size: 13.5px; font-weight: 700; letter-spacing: .04em;
+  cursor: pointer; transition: background .16s, color .16s, opacity .16s;
+}
+.auth-submit:hover:not(:disabled) { background: transparent; color: var(--neon); }
+.auth-submit:disabled { opacity: .55; cursor: wait; }
+
+.forgot-link { display: block; text-align: center; margin-top: 14px; font-size: 12px; color: var(--muted); text-decoration: none; }
+.forgot-link:hover { color: var(--neon); }
+
+.auth-foot { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--border); }
+.auth-foot a { display: block; font-size: 12px; color: var(--muted); text-decoration: none; padding: 5px 0; transition: color .16s; }
+.auth-foot a:hover { color: var(--neon); }
+
+/* =========================================================================
+   DAMGA — başarısız denemede kartın üstüne "inen" kauçuk mühür
+   -------------------------------------------------------------------------
+   Fikir: hata mesajı küçük gri bir satır olarak kaybolmasın. Reddedilen bir
+   evrak gibi damgalansın. Damga 3 saniye durur, sonra silinir; ekranı
+   kilitlemez (pointer-events yok), form arkada kullanılabilir kalır.
+   ========================================================================= */
+.auth-stamp {
+  position: absolute; inset: 0; z-index: 5;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none; opacity: 0; visibility: hidden;
+}
+.auth-stamp span {
+  font-family: var(--mono); font-weight: 800;
+  font-size: clamp(20px, 5.4vw, 30px); letter-spacing: .12em; text-transform: uppercase;
+  color: var(--red); border: 4px solid var(--red); border-radius: 3px;
+  padding: 10px 20px; transform: rotate(-11deg);
+  background: rgba(8,11,18,.62);
+  box-shadow: 0 0 0 1px rgba(248,113,113,.25) inset;
+  text-align: center; line-height: 1.15;
+}
+/* Onay damgası aynı mekanik, farklı renk. */
+.auth-stamp.ok span { color: var(--green); border-color: var(--green); box-shadow: 0 0 0 1px rgba(74,222,128,.25) inset; }
+
+.auth-stamp.hit {
+  visibility: visible;
+  animation: stamp-hold 2.8s ease-out forwards;
+}
+.auth-stamp.hit span { animation: stamp-slam .42s cubic-bezier(.2,1.5,.4,1) both; }
+
+/* Yukarıdan büyükçe gelip sert oturur — mürekkep basıyormuş gibi. */
+@keyframes stamp-slam {
+  0%   { transform: rotate(-24deg) scale(2.6); opacity: 0; }
+  55%  { transform: rotate(-9deg)  scale(.93); opacity: 1; }
+  70%  { transform: rotate(-12deg) scale(1.04); }
+  100% { transform: rotate(-11deg) scale(1); opacity: 1; }
+}
+@keyframes stamp-hold {
+  0%, 82% { opacity: 1; }
+  100%    { opacity: 0; visibility: hidden; }
+}
+
+/* Damga inerken kart sarsılır + kenarı kızarır. */
+.auth-card.shake { animation: auth-shake .4s cubic-bezier(.36,.07,.19,.97) both; }
+@keyframes auth-shake {
+  10%, 90% { transform: translateX(-2px); }
+  20%, 80% { transform: translateX(4px); }
+  30%, 50%, 70% { transform: translateX(-7px); }
+  40%, 60% { transform: translateX(7px); }
+}
+.auth-card.flash { border-color: rgba(248,113,113,.65); }
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-card { animation: none; }
+  .auth-card.shake { animation: none; }
+  .auth-stamp.hit span { animation: none; }
+  .auth-stamp.hit { animation: stamp-hold 2.8s linear forwards; }
+  .auth-head-caret { animation: none; }
+}
 
 .auth-setup { margin-top: 8px; font-size: 13px; color: var(--text); line-height: 1.6; }
 .auth-setup p { margin: 8px 0; }

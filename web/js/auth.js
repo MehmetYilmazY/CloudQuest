@@ -56,18 +56,16 @@ const Auth = (function () {
       freeHints: r.free_hints || 0
     };
   }
+  /* KATMAN 1: istemci artık ilerleme YAZMAZ.
+     Veritabanında `profiles` üzerinde kolon bazlı GRANT var — bu üç alan
+     dışında bir şey göndermek Postgres tarafından reddedilir. Level, XP,
+     credits, rozet ve tamamlanan questleri yalnızca `game` Edge Function
+     yazabilir (bkz. supabase/schema.sql §5). */
   function profileToRow(p) {
     return {
       name: String(p.name || "engineer").slice(0, 24),
       avatar: Number(p.avatar) || 0,
-      level: Number(p.level) || 1,
-      xp: Number(p.xp) || 0,
-      credits: Number(p.credits) || 0,
-      rank: String(p.rank || ""),
-      completed: p.completed || [],
-      badges: p.badges || [],
-      story: p.story || [],
-      free_hints: Number(p.freeHints) || 0
+      story: p.story || []          // hangi sinematik gösterildi (kozmetik)
     };
   }
 
@@ -92,26 +90,44 @@ const Auth = (function () {
     const { data, error } = await c.from("profiles").select("*").eq("id", _user.id).maybeSingle();
     if (error) throw error;
 
-    let prof;
-    if (data) {
-      prof = rowToProfile(data);
-    } else {
-      // Trigger henüz çalışmadıysa/eksikse profili burada oluştur.
-      prof = rowToProfile({ name: (_user.email || "engineer").split("@")[0] });
-      await c.from("profiles").insert(Object.assign({ id: _user.id }, profileToRow(prof)));
+    if (!data) {
+      // Satırı handle_new_user() trigger'ı oluşturur; istemcinin INSERT
+      // yetkisi yok (kendi başlangıç değerlerini seçemesin diye).
+      // Trigger'ın yetişmediği nadir durumda kısa bir kez daha bakarız.
+      await new Promise(function (r) { setTimeout(r, 400); });
+      const retry = await c.from("profiles").select("*").eq("id", _user.id).maybeSingle();
+      if (retry.error || !retry.data) throw new Error("Profil bulunamadı. Şemayı kurdun mu? (supabase/schema.sql)");
+      _cache = rowToProfile(retry.data);
+      return _cache;
     }
 
-    // Çevrimdışı yedek buluttan ileriyse (son senkron başarısız olmuş), onu kullan ve yukarı it.
-    const backup = readLocalBackup();
-    if (backup && Array.isArray(backup.completed) &&
-        backup.completed.length > prof.completed.length) {
-      prof = backup;
-      _cache = prof;
-      await pushNow();
-    }
-    _cache = prof;
+    /* NOT (Katman 1): eskiden burada "çevrimdışı yedek buluttan ileriyse onu
+       kullan" mantığı vardı. Kaldırıldı — localStorage'ı elle düzenleyip
+       daha "ileri" bir ilerleme uydurmak hesabı yükseltiyordu. Artık tek
+       otorite sunucu; çevrimdışı ilerleme diye bir şey yok. */
+    _cache = rowToProfile(data);
     writeLocalBackup();
-    return prof;
+    return _cache;
+  }
+
+  /** Sunucudan gelen ilerlemeyi belleğe uygula (Edge Function yanıtları). */
+  function applyServerProgress(progress) {
+    if (!_cache || !progress) return _cache;
+    if (typeof progress.level === "number")   _cache.level = progress.level;
+    if (typeof progress.xp === "number")      _cache.xp = progress.xp;
+    if (typeof progress.credits === "number") _cache.credits = progress.credits;
+    if (typeof progress.rank === "string")    _cache.rank = progress.rank;
+    if (Array.isArray(progress.badges))       _cache.badges = progress.badges;
+    if (Array.isArray(progress.completed))    _cache.completed = progress.completed;
+    if (typeof progress.freeHints === "number") _cache.freeHints = progress.freeHints;
+    writeLocalBackup();
+    return _cache;
+  }
+
+  /** Profili sunucudan tazele (ödül sonrası kesin doğruluk için). */
+  async function refreshProfile() {
+    if (!_user) return null;
+    return loadProfile();
   }
 
   async function pushNow() {
@@ -165,12 +181,12 @@ const Auth = (function () {
 
   /* ---------- kayıt / giriş / çıkış ---------- */
   async function register(opts) {
-    if (!isConfigured()) return { ok: false, error: "Sunucu yapılandırılmamış (js/config.js)." };
+    if (!isConfigured()) return { ok: false, error: "Sunucu yapılandırılmamış (js/config.js).", code: "config" };
     const email = String(opts.email || "").trim().toLowerCase();
     const password = String(opts.password || "");
     const name = String((opts.profile && opts.profile.name) || "engineer").slice(0, 24);
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return { ok: false, error: "Geçerli bir e-posta gir." };
-    if (password.length < 6) return { ok: false, error: "Şifre en az 6 karakter olmalı." };
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return { ok: false, error: "Geçerli bir e-posta gir.", code: "bad-email" };
+    if (password.length < 6) return { ok: false, error: "Şifre en az 6 karakter olmalı.", code: "weak-password" };
 
     const c = client();
     try {
@@ -178,11 +194,11 @@ const Auth = (function () {
         email: email, password: password,
         options: { data: { name: name } }
       });
-      if (error) return { ok: false, error: trError(error.message) };
+      if (error) return { ok: false, error: trError(error.message), code: errCode(error.message) };
 
       // E-posta doğrulaması açıksa oturum gelmez.
       if (!data.session) {
-        return { ok: false, needsConfirmation: true,
+        return { ok: false, needsConfirmation: true, code: "unconfirmed",
                  error: "Hesabın oluşturuldu! " + email + " adresine doğrulama linki gönderdik — onayladıktan sonra giriş yap." };
       }
       _user = { id: data.user.id, email: data.user.email };
@@ -195,22 +211,22 @@ const Auth = (function () {
       }
       return { ok: true, email: email };
     } catch (e) {
-      return { ok: false, error: trError(e.message) };
+      return { ok: false, error: trError(e.message), code: errCode(e.message) };
     }
   }
 
   async function login(emailRaw, password) {
-    if (!isConfigured()) return { ok: false, error: "Sunucu yapılandırılmamış (js/config.js)." };
+    if (!isConfigured()) return { ok: false, error: "Sunucu yapılandırılmamış (js/config.js).", code: "config" };
     const email = String(emailRaw || "").trim().toLowerCase();
     const c = client();
     try {
       const { data, error } = await c.auth.signInWithPassword({ email: email, password: String(password || "") });
-      if (error) return { ok: false, error: trError(error.message) };
+      if (error) return { ok: false, error: trError(error.message), code: errCode(error.message) };
       _user = { id: data.user.id, email: data.user.email };
       await loadProfile();
       return { ok: true, email: email };
     } catch (e) {
-      return { ok: false, error: trError(e.message) };
+      return { ok: false, error: trError(e.message), code: errCode(e.message) };
     }
   }
 
@@ -222,15 +238,15 @@ const Auth = (function () {
   }
 
   async function resetPassword(emailRaw) {
-    if (!isConfigured()) return { ok: false, error: "Sunucu yapılandırılmamış." };
+    if (!isConfigured()) return { ok: false, error: "Sunucu yapılandırılmamış.", code: "config" };
     const email = String(emailRaw || "").trim().toLowerCase();
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return { ok: false, error: "Önce geçerli bir e-posta gir." };
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return { ok: false, error: "Önce geçerli bir e-posta gir.", code: "bad-email" };
     try {
       const { error } = await client().auth.resetPasswordForEmail(email, { redirectTo: location.href.split("#")[0] });
-      if (error) return { ok: false, error: trError(error.message) };
+      if (error) return { ok: false, error: trError(error.message), code: errCode(error.message) };
       return { ok: true };
     } catch (e) {
-      return { ok: false, error: trError(e.message) };
+      return { ok: false, error: trError(e.message), code: errCode(e.message) };
     }
   }
 
@@ -243,20 +259,48 @@ const Auth = (function () {
     scheduleSave();
   }
   function accountInfo() { return _user ? { email: _user.email, id: _user.id } : null; }
+
+  /** Edge Function çağrıları için taze access token (CQApi ödünç alır).
+      getSession() süresi dolmuşsa token'ı kendisi yeniler; bu yüzden
+      token'ı elde saklamıyoruz — her çağrıda buradan isteniyor. */
+  async function accessToken() {
+    const c = client();
+    if (!c) return null;
+    try {
+      const { data } = await c.auth.getSession();
+      return (data && data.session && data.session.access_token) || null;
+    } catch (e) {
+      return null;
+    }
+  }
   function hasPendingWrites() { return _dirty || _saving; }
   async function flush() { clearTimeout(_saveTimer); if (_dirty) return pushNow(); return { ok: true }; }
 
   /* ---------- yardımcı ---------- */
-  function trError(msg) {
+  /* Hatanın TÜRÜ. Arayüz bunu damga metnine çevirir (ACCESS DENIED,
+     CONNECTION FAILED, …) — kullanıcıya sadece "bir şeyler ters gitti"
+     demek yerine neyin ters gittiğini söyleyebilmek için. */
+  function errCode(msg) {
     const m = String(msg || "");
-    if (/Failed to fetch|NetworkError|fetch failed|ERR_NAME|ENOTFOUND/i.test(m))
-      return "Sunucuya ulaşılamadı. İnternet bağlantını (veya Supabase ayarlarını) kontrol et.";
-    if (/Invalid login credentials/i.test(m)) return "E-posta ya da şifre hatalı.";
-    if (/Email not confirmed/i.test(m))       return "E-postanı henüz doğrulamadın. Gelen kutunu kontrol et.";
-    if (/User already registered/i.test(m))   return "Bu e-posta zaten kayıtlı. Giriş yap.";
-    if (/rate limit|too many/i.test(m))       return "Çok fazla deneme. Biraz bekleyip tekrar dene.";
-    if (/Password should be/i.test(m))        return "Şifre en az 6 karakter olmalı.";
-    return m;
+    if (/Failed to fetch|NetworkError|fetch failed|ERR_NAME|ENOTFOUND/i.test(m)) return "network";
+    if (/Invalid login credentials/i.test(m)) return "credentials";
+    if (/Email not confirmed/i.test(m))       return "unconfirmed";
+    if (/User already registered/i.test(m))   return "duplicate";
+    if (/rate limit|too many/i.test(m))       return "ratelimit";
+    if (/Password should be/i.test(m))        return "weak-password";
+    return "unknown";
+  }
+
+  function trError(msg) {
+    switch (errCode(msg)) {
+      case "network":       return "Sunucuya ulaşılamadı. İnternet bağlantını (veya Supabase ayarlarını) kontrol et.";
+      case "credentials":   return "E-posta ya da şifre hatalı.";
+      case "unconfirmed":   return "E-postanı henüz doğrulamadın. Gelen kutunu kontrol et.";
+      case "duplicate":     return "Bu e-posta zaten kayıtlı. Giriş yap.";
+      case "ratelimit":     return "Çok fazla deneme. Biraz bekleyip tekrar dene.";
+      case "weak-password": return "Şifre en az 6 karakter olmalı.";
+      default:              return String(msg || "");
+    }
   }
 
   // Sekme kapanırken bekleyen yazmayı kurtar.
@@ -274,6 +318,9 @@ const Auth = (function () {
     currentEmail: currentEmail,
     getProfile: getProfile,
     saveProfile: saveProfile,
+    applyServerProgress: applyServerProgress,
+    refreshProfile: refreshProfile,
+    accessToken: accessToken,
     accountInfo: accountInfo,
     hasPendingWrites: hasPendingWrites,
     flush: flush
