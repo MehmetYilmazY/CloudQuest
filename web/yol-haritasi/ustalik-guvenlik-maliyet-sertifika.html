@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aşama 6: güvenlik, maliyet ve sertifika (hafta 23-26) — CloudQuest</title>
+  <meta name="description" content="Son dört hafta: yetkileri daraltma, faturayı kontrol etme, bitirme projesini toparlama ve AWS sertifikasına hazırlanma. İş başvurusuna hazır hale gelme aşaması." />
+  <link rel="canonical" href="https://cloudquest.vercel.app/yol-haritasi/ustalik-guvenlik-maliyet-sertifika" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#06070a" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta property="og:type" content="article" />
+  <meta property="og:locale" content="tr_TR" />
+  <meta property="og:site_name" content="CloudQuest" />
+  <meta property="og:url" content="https://cloudquest.vercel.app/yol-haritasi/ustalik-guvenlik-maliyet-sertifika" />
+  <meta property="og:title" content="Aşama 6: güvenlik, maliyet ve sertifika (hafta 23-26)" />
+  <meta property="og:description" content="Son dört hafta: yetkileri daraltma, faturayı kontrol etme, bitirme projesini toparlama ve AWS sertifikasına hazırlanma. İş başvurusuna hazır hale gelme aşaması." />
+  <meta property="og:image" content="https://cloudquest.vercel.app/og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E%E2%98%81%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/css/landing.css" />
+  <link rel="stylesheet" href="/css/lesson.css" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"CloudQuest","item":"https://cloudquest.vercel.app/"},{"@type":"ListItem","position":2,"name":"Yol haritası","item":"https://cloudquest.vercel.app/yol-haritasi"},{"@type":"ListItem","position":3,"name":"Aşama 6: güvenlik, maliyet ve sertifika (hafta 23-26)","item":"https://cloudquest.vercel.app/yol-haritasi/ustalik-guvenlik-maliyet-sertifika"}]},{"@type":"LearningResource","headline":"Aşama 6: güvenlik, maliyet ve sertifika (hafta 23-26)","description":"Son dört hafta: yetkileri daraltma, faturayı kontrol etme, bitirme projesini toparlama ve AWS sertifikasına hazırlanma. İş başvurusuna hazır hale gelme aşaması.","inLanguage":"tr-TR","dateModified":"2026-08-24","url":"https://cloudquest.vercel.app/yol-haritasi/ustalik-guvenlik-maliyet-sertifika","learningResourceType":"Syllabus","educationalLevel":"Beginner","timeRequired":"PT10H","publisher":{"@type":"Organization","name":"CloudQuest","url":"https://cloudquest.vercel.app"}}]}</script>
+</head>
+<body>
+  <a class="skip-link" href="#main">İçeriğe geç</a>
+  <canvas id="stars" aria-hidden="true"></canvas>
+  <div class="nebula" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="nav" id="nav">
+    <nav class="nav-inner" aria-label="Ana menü">
+      <a class="nav-logo" href="/">☁ CLOUDQUEST</a>
+      <div class="nav-links">
+        <a href="/yol-haritasi">Yol haritası</a>
+        <a href="/ogren">Öğren</a>
+        <a href="/komut">Komutlar</a>
+        <a href="/#mufredat">Müfredat</a>
+        <a href="/#sss">SSS</a>
+      </div>
+      <a class="btn btn-primary btn-sm" href="/app">Giriş yap</a>
+    </nav>
+  </header>
+
+  <nav class="crumbs" aria-label="Konum">
+    <div class="wrap">
+      <a href="/">CloudQuest</a><span class="crumb-sep">/</span><a href="/yol-haritasi">Yol haritası</a><span class="crumb-sep">/</span><span aria-current="page">Aşama 6: güvenlik, maliyet ve sertifika (hafta 23-26)</span>
+    </div>
+  </nav>
+
+  <main id="main">
+    <article class="lesson">
+      <div class="wrap">
+        <p class="lesson-kicker">Yol haritası · Aşama 06 · Hafta 23-26</p>
+        <h1>Aşama 6: güvenlik, maliyet ve sertifika (hafta 23-26)</h1>
+        <p class="lesson-standfirst">Son dört hafta: yetkileri daraltma, faturayı kontrol etme, bitirme projesini toparlama ve AWS sertifikasına hazırlanma. İş başvurusuna hazır hale gelme aşaması.</p>
+        <dl class="stage-meta">
+          <div><dt>Takvim</dt><dd>Hafta 23-26</dd></div>
+          <div><dt>Haftalık yük</dt><dd>~10 saat</dd></div>
+          <div><dt>Müfredat bölümü</dt><dd>08</dd></div>
+          <div><dt>Uygulamalı adım</dt><dd>3 quest · 11 adım</dd></div>
+        </dl>
+        <div class="prose">
+<p>Son dört hafta yeni araç öğrenmekle geçmiyor. Bildiklerini <strong>savunulabilir</strong>
+hale getiriyorsun: güvenli, hesaplanabilir ve anlatılabilir. İş görüşmesinde
+sorulan soru &quot;Terraform biliyor musun&quot; değil, &quot;bu altyapıyı neden böyle
+kurdun&quot; oluyor.</p>
+<h2>Hafta 23 — Güvenlik</h2>
+<p>İkinci aşamada tanıştığın en az yetki fikri burada disipline dönüşüyor.
+Yapacağın iş, kendi projene bir saldırganın gözüyle bakmak:</p>
+<ul>
+<li>Hangi kimlikler ihtiyacından fazla yetkiye sahip?</li>
+<li>Hangi şeyler internete gereksiz yere açık?</li>
+<li>Gizli değerler nerede duruyor — kodda mı, bir sır kasasında mı?</li>
+<li>Veri hem dururken hem giderken şifreli mi?</li>
+</ul>
+<p>Bu bir denetim listesi değil, alışkanlık. Bulduğun her fazlalığı daraltıyorsun
+ve sistemin hâlâ çalıştığını doğruluyorsun. Bir şeyi kırmadan daraltamıyorsan,
+neden gerekli olduğunu öğrenmiş oluyorsun — o da bilgi.</p>
+<h2>Hafta 24 — Maliyet</h2>
+<p>Cloud engineer&#39;ın en az konuşulan ama en çok fark yaratan becerisi bu. Şirket
+için bir mühendisin değeri, kurduğu sistem kadar kurtardığı faturayla da
+ölçülüyor.</p>
+<p>Öğrenilecekler: neyin ne kadar tuttuğunu okumak, kaynakları ihtiyaca göre
+boyutlandırmak (right-sizing), kullanılmayanı bulup kapatmak, her kaynağı
+etiketlemek (tagging) ki hangi maliyetin kime ait olduğu görünsün.</p>
+<p>Kendi hesabında yapacağın egzersiz basit: faturayı aç, en büyük üç kalemi
+bul, her biri için &quot;bu gerçekten gerekli mi, daha küçüğü yeter mi&quot; diye sor.
+Bu soruyu sorabilen bir aday, görüşmede fark ediliyor.</p>
+<h2>Hafta 25 — Bitirme projesi</h2>
+<p>Şimdiye kadar yaptığın parçaları tek bir projede birleştiriyorsun: kodla
+kurulan altyapı, konteynerize uygulama, otomatik dağıtım, panel ve alarm.
+Yeni bir şey eklemek zorunda değilsin — mevcut parçaların <strong>birlikte</strong>
+çalıştığını göstermek yeterli.</p>
+<p>En çok atlanan ve en çok işe yarayan kısım: <strong>README</strong>. Ne kurduğunu, hangi
+kararı neden aldığını, neyi bilerek yapmadığını yazan bir metin. İşe alım
+yapan insanlar kodu her zaman okumuyor; README&#39;yi okuyorlar. Bir mimari
+çizim (kutular ve oklar yeterli) bunun değerini iki katına çıkarıyor.</p>
+<h2>Hafta 26 — Sertifika</h2>
+<p><strong>AWS Certified Solutions Architect – Associate</strong> bu yolun doğal sınavı.
+Sertifika tek başına iş vermiyor ama iki işi iyi yapıyor: bilgindeki
+boşlukları gösteriyor ve CV&#39;nin ilk elemeden geçmesine yardım ediyor.</p>
+<p>Hazırlanma biçimi önemli: baştan sona kurs izlemek yerine <strong>pratik sınav</strong>
+çöz, yanlışlarını konu konu topla, sadece o konulara dön. Altı aydır
+elleriyle iş yapmış birinin eksiği genellikle dar bir alanda oluyor —
+tüm müfredatı tekrar etmek zaman kaybı.</p>
+<h2>Bundan sonra</h2>
+<p>Altı ayın sonunda &quot;her şeyi biliyorum&quot; hissi gelmeyecek. Gelmemesi normal;
+bu alanda kimsede yok. Değişen şey başka: artık bilmediğin bir şeyle
+karşılaştığında ne yapacağını biliyorsun — belgeyi okuyup denemeyi, logdan
+teşhis etmeyi, küçük parçaya indirip test etmeyi.</p>
+<p>Başvurmaya bu noktada başla, kendini &quot;tamamen hazır&quot; hissettiğinde değil. O
+his gelmiyor; ilan gerekliliklerinin %60&#39;ını karşılıyorsan başvuru zamanı.
+Devamı için derinleşme modülleri var — ağ teşhisi, betik yazımı, Terraform
+ileri konular, Kubernetes.</p>
+<h2>Bu aşamayı bitirdiğini nasıl anlarsın</h2>
+<ul>
+<li>Projendeki her yetkinin neden gerekli olduğunu açıklayabiliyorsun.</li>
+<li>Kurduğun sistemin aylık maliyetini tahmin edebiliyorsun.</li>
+<li>GitHub&#39;da, README&#39;si ve mimari çizimi olan bir bitirme projen var.</li>
+<li>Pratik sınavlarda geçme eşiğinin üstünde puan alıyorsun.</li>
+</ul>
+
+        </div>
+<section class="stage-covers">
+        <h2>Bu aşamada işlenen bölümler</h2>
+        <div class="hub-row is-soon"><span class="hub-n">08</span>
+             <span class="hub-t">Security &amp; Cost</span><span class="hub-d">Least privilege, maliyet kontrolu, sertifika.</span></div>
+      </section>
+<section class="stage-project">
+        <p class="practice-k">Aşama projesi</p>
+        <p>Uçtan uca bitirme projesi: kodla kurulan, konteynerize, otomatik dağıtılan ve izlenen bir uygulama — yetkileri daraltılmış, maliyeti hesaplanmış ve README'si yazılmış halde.</p>
+      </section>
+<aside class="practice">
+        <p class="practice-k">Şimdi uygula</p>
+        <h2>Erişim Kalkanı</h2>
+        <p>Bu dersteki komutları 4 adımlık bir görevde,
+           mentör eşliğinde sen yazıyorsun. Takılırsan doğrusu gösteriliyor.</p>
+        <a class="btn btn-primary" href="/app">Quest'i aç — ücretsiz</a>
+      </aside>
+<nav class="stage-nav" aria-label="Aşamalar arası gezinme">
+        <a class="stage-step is-prev" href="/yol-haritasi/otomasyon-ci-cd-ve-izleme">
+             <span>← önceki aşama</span>
+             <b>Aşama 5: CI/CD ve gözlemlenebilirlik (hafta 18-22)</b></a>
+        
+      </nav>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <span>☁ CloudQuest · güncellendi 2026-08-24</span>
+      <nav class="footer-links" aria-label="Alt menü">
+        <a href="/yol-haritasi">Yol haritası</a>
+        <a href="/ogren">Öğren</a>
+        <a href="/komut">Komutlar</a>
+        <a href="/app">Giriş yap</a>
+        <a href="/">Ana sayfa</a>
+      </nav>
+    </div>
+  </footer>
+  <script src="/js/stars.js"></script>
+  <script src="/js/landing.js"></script>
+</body>
+</html>

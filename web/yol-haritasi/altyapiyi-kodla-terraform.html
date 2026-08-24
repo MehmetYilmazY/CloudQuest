@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aşama 3: altyapıyı kodla — Terraform (hafta 9-12) — CloudQuest</title>
+  <meta name="description" content="Tıklayarak kurduğun altyapıyı koda çevirme aşaması. Terraform'un temel kavramları, state neden bu kadar önemli ve dört haftada nereye kadar gelinir." />
+  <link rel="canonical" href="https://cloudquest.vercel.app/yol-haritasi/altyapiyi-kodla-terraform" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#06070a" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta property="og:type" content="article" />
+  <meta property="og:locale" content="tr_TR" />
+  <meta property="og:site_name" content="CloudQuest" />
+  <meta property="og:url" content="https://cloudquest.vercel.app/yol-haritasi/altyapiyi-kodla-terraform" />
+  <meta property="og:title" content="Aşama 3: altyapıyı kodla — Terraform (hafta 9-12)" />
+  <meta property="og:description" content="Tıklayarak kurduğun altyapıyı koda çevirme aşaması. Terraform'un temel kavramları, state neden bu kadar önemli ve dört haftada nereye kadar gelinir." />
+  <meta property="og:image" content="https://cloudquest.vercel.app/og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E%E2%98%81%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/css/landing.css" />
+  <link rel="stylesheet" href="/css/lesson.css" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"CloudQuest","item":"https://cloudquest.vercel.app/"},{"@type":"ListItem","position":2,"name":"Yol haritası","item":"https://cloudquest.vercel.app/yol-haritasi"},{"@type":"ListItem","position":3,"name":"Aşama 3: altyapıyı kodla — Terraform (hafta 9-12)","item":"https://cloudquest.vercel.app/yol-haritasi/altyapiyi-kodla-terraform"}]},{"@type":"LearningResource","headline":"Aşama 3: altyapıyı kodla — Terraform (hafta 9-12)","description":"Tıklayarak kurduğun altyapıyı koda çevirme aşaması. Terraform'un temel kavramları, state neden bu kadar önemli ve dört haftada nereye kadar gelinir.","inLanguage":"tr-TR","dateModified":"2026-08-24","url":"https://cloudquest.vercel.app/yol-haritasi/altyapiyi-kodla-terraform","learningResourceType":"Syllabus","educationalLevel":"Beginner","timeRequired":"PT10H","publisher":{"@type":"Organization","name":"CloudQuest","url":"https://cloudquest.vercel.app"}}]}</script>
+</head>
+<body>
+  <a class="skip-link" href="#main">İçeriğe geç</a>
+  <canvas id="stars" aria-hidden="true"></canvas>
+  <div class="nebula" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="nav" id="nav">
+    <nav class="nav-inner" aria-label="Ana menü">
+      <a class="nav-logo" href="/">☁ CLOUDQUEST</a>
+      <div class="nav-links">
+        <a href="/yol-haritasi">Yol haritası</a>
+        <a href="/ogren">Öğren</a>
+        <a href="/komut">Komutlar</a>
+        <a href="/#mufredat">Müfredat</a>
+        <a href="/#sss">SSS</a>
+      </div>
+      <a class="btn btn-primary btn-sm" href="/app">Giriş yap</a>
+    </nav>
+  </header>
+
+  <nav class="crumbs" aria-label="Konum">
+    <div class="wrap">
+      <a href="/">CloudQuest</a><span class="crumb-sep">/</span><a href="/yol-haritasi">Yol haritası</a><span class="crumb-sep">/</span><span aria-current="page">Aşama 3: altyapıyı kodla — Terraform (hafta 9-12)</span>
+    </div>
+  </nav>
+
+  <main id="main">
+    <article class="lesson">
+      <div class="wrap">
+        <p class="lesson-kicker">Yol haritası · Aşama 03 · Hafta 9-12</p>
+        <h1>Aşama 3: altyapıyı kodla — Terraform (hafta 9-12)</h1>
+        <p class="lesson-standfirst">Tıklayarak kurduğun altyapıyı koda çevirme aşaması. Terraform'un temel kavramları, state neden bu kadar önemli ve dört haftada nereye kadar gelinir.</p>
+        <dl class="stage-meta">
+          <div><dt>Takvim</dt><dd>Hafta 9-12</dd></div>
+          <div><dt>Haftalık yük</dt><dd>~10 saat</dd></div>
+          <div><dt>Müfredat bölümü</dt><dd>04</dd></div>
+          <div><dt>Uygulamalı adım</dt><dd>4 quest · 17 adım</dd></div>
+        </dl>
+        <div class="prose">
+<p>İkinci aşamada altyapıyı tıklayarak kurdun. Bu aşamada aynı işi <strong>yazarak</strong>
+yapıyorsun ve neden diye sorman gerekiyor — çünkü cevabı, bu mesleğin en
+önemli fikirlerinden biri.</p>
+<p>Tıklayarak kurduğun altyapının üç sorunu var: tekrar üretilemez (aynı şeyi
+ikinci kez kurmaya çalış, küçük farklarla kuracaksın), gözden geçirilemez
+(bir meslektaşın senin tıklamalarını inceleyemez) ve hatırlanmaz (altı ay
+sonra o ayarı neden öyle yaptığını kimse bilmiyor). Kod bu üçünü de çözüyor:
+versiyonlanıyor, okunuyor, tekrar çalıştırılıyor.</p>
+<h2>Hafta 9 — Kavramlar ve ilk kaynak</h2>
+<p>Terraform&#39;un sözlüğü küçük: <strong>provider</strong> (hangi buluta konuşuyor), <strong>resource</strong>
+(kurulacak şey), <strong>variable</strong> (dışarıdan verilen değer), <strong>output</strong> (kurulum
+sonrası öğrenilen değer). Döngü de dört adım: başlat, planla, uygula, yık.</p>
+<p>Bu haftanın en önemli alışkanlığı <strong>plan okumak</strong>. Terraform uygulamadan önce
+ne yapacağını satır satır söylüyor. Planı okumadan uygulamak, imzalamadan
+sözleşme kabul etmek gibi — ve üretimde silinen bir veritabanının hikâyesi
+genellikle burada başlıyor.</p>
+<h2>Hafta 10 — Değişkenler ve tekrar kullanım</h2>
+<p>Aynı altyapıyı test ve üretim için ayrı ayrı kurmak isteyeceksin. Kopyala-
+yapıştır ilk gün çalışır, üçüncü ay çöker: iki kopya birbirinden sessizce
+ayrışıyor. Çözüm, farkı <strong>parametreye</strong> çıkarmak.</p>
+<p>Bu hafta ayrıca kodun içine gizli değer yazmamayı öğreniyorsun. Bir şifre
+repoya girdiğinde, sonradan silsen de Git geçmişinde kalıyor.</p>
+<h2>Hafta 11 — State: en çok yanlış anlaşılan konu</h2>
+<p>Terraform, kurduğu her şeyin kaydını <strong>state</strong> dosyasında tutuyor. Bu dosya
+altyapının hafızası: &quot;şu kaynağı ben kurdum, kimliği şu.&quot; State bozulursa
+Terraform gerçekliği kaybediyor — ya var olan bir şeyi tekrar kurmaya çalışıyor
+ya da yanlış şeyi siliyor.</p>
+<p>Öğrenilecekler: state neden <strong>uzakta</strong> (remote) tutulmalı, iki kişi aynı anda
+uygularsa ne olur (kilitleme), bir kaynak elle değiştirilmişse ne olur
+(drift), var olan bir kaynak koda nasıl alınır (import).</p>
+<p>Bu hafta zor gelecek. Normal — state kavramı, altyapı kodunun en soyut parçası
+ve genellikle ikinci karşılaşmada oturuyor.</p>
+<h2>Hafta 12 — Modüller</h2>
+<p>Bir modül, tekrar kullanılabilir bir altyapı parçası: &quot;bir ağ kur&quot; ya da &quot;bir
+web sunucusu kur&quot; tarifini bir kez yazıp her yerde çağırıyorsun. Ekip
+çalışmasında altyapı kodunun büyümesi böyle yönetiliyor.</p>
+<p>Bu haftanın sonunda ilk aşamalardaki proje geri dönüyor: ikinci aşamada elle
+kurduğun her şey artık kodda duruyor. Yıkıp tekrar kurduğunda aynı sonucu
+almalısın. Alıyorsan, iş görüşmesinde anlatacağın ilk gerçek hikâyeye sahipsin.</p>
+<h2>Sık yapılan hata</h2>
+<p>Terraform öğrenirken en sık düşülen tuzak, bulut kavramlarını atlayıp doğrudan
+koda geçmek. Terraform bir bulut öğretmiyor — <strong>var olan bilgini yazıya
+çeviriyor</strong>. Neyin kurulduğunu bilmiyorsan, kurulum kodu da anlamsız bir
+şablona dönüşüyor. İkinci aşamayı atladıysan geri dön; burada kaybettiğin
+zaman daha fazla.</p>
+<h2>Bu aşamayı bitirdiğini nasıl anlarsın</h2>
+<ul>
+<li>Bir altyapıyı sıfırdan kurup yıkabiliyor, sonucun aynı olduğunu görüyorsun.</li>
+<li>Plan çıktısını okuyup &quot;bu kaynağı silecek&quot; diyebiliyorsun.</li>
+<li>State&#39;i neden uzakta tuttuğunu bir cümlede anlatabiliyorsun.</li>
+<li>Kodunda hiçbir gizli değer yazılı değil.</li>
+</ul>
+
+        </div>
+<section class="stage-covers">
+        <h2>Bu aşamada işlenen bölümler</h2>
+        <div class="hub-row is-soon"><span class="hub-n">04</span>
+             <span class="hub-t">Infrastructure as Code</span><span class="hub-d">Terraform ile altyapiyi kodla.</span></div>
+      </section>
+<section class="stage-project">
+        <p class="practice-k">Aşama projesi</p>
+        <p>İkinci aşamada elle kurduğun altyapının tamamını Terraform ile yeniden kur, sonra tek komutla yık ve tekrar kur — çıktı birebir aynı olmalı.</p>
+      </section>
+<aside class="practice">
+        <p class="practice-k">Şimdi uygula</p>
+        <h2>Genesis</h2>
+        <p>Bu dersteki komutları 5 adımlık bir görevde,
+           mentör eşliğinde sen yazıyorsun. Takılırsan doğrusu gösteriliyor.</p>
+        <a class="btn btn-primary" href="/app">Quest'i aç — ücretsiz</a>
+      </aside>
+<nav class="stage-nav" aria-label="Aşamalar arası gezinme">
+        <a class="stage-step is-prev" href="/yol-haritasi/aws-temelleri">
+             <span>← önceki aşama</span>
+             <b>Aşama 2: AWS çekirdeği — IAM, VPC, EC2, S3 (hafta 5-8)</b></a>
+        <a class="stage-step is-next" href="/yol-haritasi/konteynerler-docker-ve-kubernetes">
+             <span>sonraki aşama →</span>
+             <b>Aşama 4: konteynerler — Docker ve Kubernetes (hafta 13-17)</b></a>
+      </nav>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <span>☁ CloudQuest · güncellendi 2026-08-24</span>
+      <nav class="footer-links" aria-label="Alt menü">
+        <a href="/yol-haritasi">Yol haritası</a>
+        <a href="/ogren">Öğren</a>
+        <a href="/komut">Komutlar</a>
+        <a href="/app">Giriş yap</a>
+        <a href="/">Ana sayfa</a>
+      </nav>
+    </div>
+  </footer>
+  <script src="/js/stars.js"></script>
+  <script src="/js/landing.js"></script>
+</body>
+</html>

@@ -136,3 +136,30 @@ cyberpunk temalı, yerel vendor'lı (CDN'siz).
 
 **Öğren** (teori) → **Oyna** (bu oyun, kas hafızası) → **Uygula** (gerçek AWS Free Tier).
 %20 teori, %80 elin klavyede. Detaylı 6 aylık program: [`docs/ROADMAP.md`](docs/ROADMAP.md).
+
+## Eğitim katmanı (public, indekslenebilir)
+
+Oyunun dışında, herkese açık üç sayfa ailesi var — üçü ayrı soruyu cevaplıyor:
+
+| Alan | Soru | Kaynak |
+|---|---|---|
+| `/yol-haritasi` | "sıfırdan sırayla ne yapayım?" | `content/yol-haritasi/*.md` |
+| `/ogren` | "bu konu nedir?" | `content/ogren/*.md` |
+| `/komut` | "bu komut ne yapar?" | `content/komut/*.md` |
+
+**Yol haritası** yedi aşamadan oluşuyor: Hafta 0 (hazırlık — kabuk kurulumu,
+hesaplar, çalışma ritmi) ve müfredat track'lerine birebir oturan altı aşama
+(Foundations → Cloud Core → IaC → Containers → Otomasyon → Ustalık). Her aşama
+sayfası takvimini, haftalık yükünü, gerçek hayat projesini ve kapsadığı
+bölümleri gösterir — **kapsam elle yazılmaz**, frontmatter'daki `track`
+üzerinden `curriculum.json`'dan okunur.
+
+Markdown + frontmatter yazılır, `npm run build` HTML ve `sitemap.xml` üretir
+(üretilen dosyalar commit'lenir; CI drift'i denetler). Kurallar ve yeni sayfa
+ekleme adımları: [`docs/CONTENT-ARCHITECTURE.md`](docs/CONTENT-ARCHITECTURE.md).
+
+Yerel önizleme (Vercel'in `cleanUrls` davranışını taklit eder):
+
+```bash
+node scripts/serve.cjs   # http://localhost:4321
+```

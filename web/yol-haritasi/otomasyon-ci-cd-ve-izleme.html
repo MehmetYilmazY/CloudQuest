@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aşama 5: CI/CD ve gözlemlenebilirlik (hafta 18-22) — CloudQuest</title>
+  <meta name="description" content="Elle yaptığın işi otomatikleştirme ve çalışanı görünür kılma aşaması. Pipeline mantığı, GitHub Actions, log, metrik ve alarm kurmanın temelleri." />
+  <link rel="canonical" href="https://cloudquest.vercel.app/yol-haritasi/otomasyon-ci-cd-ve-izleme" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#06070a" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta property="og:type" content="article" />
+  <meta property="og:locale" content="tr_TR" />
+  <meta property="og:site_name" content="CloudQuest" />
+  <meta property="og:url" content="https://cloudquest.vercel.app/yol-haritasi/otomasyon-ci-cd-ve-izleme" />
+  <meta property="og:title" content="Aşama 5: CI/CD ve gözlemlenebilirlik (hafta 18-22)" />
+  <meta property="og:description" content="Elle yaptığın işi otomatikleştirme ve çalışanı görünür kılma aşaması. Pipeline mantığı, GitHub Actions, log, metrik ve alarm kurmanın temelleri." />
+  <meta property="og:image" content="https://cloudquest.vercel.app/og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E%E2%98%81%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/css/landing.css" />
+  <link rel="stylesheet" href="/css/lesson.css" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"CloudQuest","item":"https://cloudquest.vercel.app/"},{"@type":"ListItem","position":2,"name":"Yol haritası","item":"https://cloudquest.vercel.app/yol-haritasi"},{"@type":"ListItem","position":3,"name":"Aşama 5: CI/CD ve gözlemlenebilirlik (hafta 18-22)","item":"https://cloudquest.vercel.app/yol-haritasi/otomasyon-ci-cd-ve-izleme"}]},{"@type":"LearningResource","headline":"Aşama 5: CI/CD ve gözlemlenebilirlik (hafta 18-22)","description":"Elle yaptığın işi otomatikleştirme ve çalışanı görünür kılma aşaması. Pipeline mantığı, GitHub Actions, log, metrik ve alarm kurmanın temelleri.","inLanguage":"tr-TR","dateModified":"2026-08-24","url":"https://cloudquest.vercel.app/yol-haritasi/otomasyon-ci-cd-ve-izleme","learningResourceType":"Syllabus","educationalLevel":"Beginner","timeRequired":"PT10H","publisher":{"@type":"Organization","name":"CloudQuest","url":"https://cloudquest.vercel.app"}}]}</script>
+</head>
+<body>
+  <a class="skip-link" href="#main">İçeriğe geç</a>
+  <canvas id="stars" aria-hidden="true"></canvas>
+  <div class="nebula" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="nav" id="nav">
+    <nav class="nav-inner" aria-label="Ana menü">
+      <a class="nav-logo" href="/">☁ CLOUDQUEST</a>
+      <div class="nav-links">
+        <a href="/yol-haritasi">Yol haritası</a>
+        <a href="/ogren">Öğren</a>
+        <a href="/komut">Komutlar</a>
+        <a href="/#mufredat">Müfredat</a>
+        <a href="/#sss">SSS</a>
+      </div>
+      <a class="btn btn-primary btn-sm" href="/app">Giriş yap</a>
+    </nav>
+  </header>
+
+  <nav class="crumbs" aria-label="Konum">
+    <div class="wrap">
+      <a href="/">CloudQuest</a><span class="crumb-sep">/</span><a href="/yol-haritasi">Yol haritası</a><span class="crumb-sep">/</span><span aria-current="page">Aşama 5: CI/CD ve gözlemlenebilirlik (hafta 18-22)</span>
+    </div>
+  </nav>
+
+  <main id="main">
+    <article class="lesson">
+      <div class="wrap">
+        <p class="lesson-kicker">Yol haritası · Aşama 05 · Hafta 18-22</p>
+        <h1>Aşama 5: CI/CD ve gözlemlenebilirlik (hafta 18-22)</h1>
+        <p class="lesson-standfirst">Elle yaptığın işi otomatikleştirme ve çalışanı görünür kılma aşaması. Pipeline mantığı, GitHub Actions, log, metrik ve alarm kurmanın temelleri.</p>
+        <dl class="stage-meta">
+          <div><dt>Takvim</dt><dd>Hafta 18-22</dd></div>
+          <div><dt>Haftalık yük</dt><dd>~10 saat</dd></div>
+          <div><dt>Müfredat bölümü</dt><dd>06 · 07</dd></div>
+          <div><dt>Uygulamalı adım</dt><dd>4 quest · 15 adım</dd></div>
+        </dl>
+        <div class="prose">
+<p>Buraya kadar öğrendiğin her şeyi elle yaptın: sunucuyu sen açtın, kodu sen
+kurdun, imajı sen derledin. Bu aşama o işi bir daha yapmamakla ilgili — ve
+mesleğin adındaki &quot;engineer&quot;ın asıl karşılığı bu.</p>
+<p>Beş hafta iki konuya bölünüyor: üç hafta <strong>otomasyon</strong> (işi makineye
+devretmek), iki hafta <strong>gözlemlenebilirlik</strong> (makinenin ne yaptığını görmek).
+İkisi aynı madalyonun yüzleri: otomatikleştirilen ama izlenmeyen bir sistem,
+sessizce bozulan bir sistem.</p>
+<h2>Hafta 18 — Pipeline mantığı</h2>
+<p>Araçtan önce fikir: her değişiklik aynı hattan geçiyor — <strong>derle → test et →
+dağıt</strong>. Hattın değeri hızda değil, <strong>tekrarlanabilirlikte</strong>: kimin
+gönderdiğinden bağımsız olarak aynı adımlar aynı sırada çalışıyor.</p>
+<p>Bu haftanın sorusu şu: hangi adım başarısız olursa dağıtım durmalı? Cevabı
+düşünmeden kurulan hatlar, bozuk kodu üretime taşıyan otomatik bir makineye
+dönüşüyor.</p>
+<h2>Hafta 19-20 — GitHub Actions</h2>
+<p>Sözlük yine küçük: <strong>workflow</strong> (ne zaman tetiklenir), <strong>job</strong> (paralel
+çalışabilen iş bloğu), <strong>step</strong> (tek bir komut ya da hazır eylem),
+<strong>secret</strong> (repoya yazılamayan değerler).</p>
+<p>Kuracağın hat sırasıyla büyüyor:</p>
+<ol>
+<li>Her push&#39;ta testleri çalıştır.</li>
+<li>Testler geçerse imajı derle ve kayıt deposuna gönder.</li>
+<li>Ana dala birleşince yayına al.</li>
+</ol>
+<p>Üçüncü adımda ilk kez &quot;yetki&quot; sorunuyla karşılaşacaksın: hattın buluta bir
+şey kurabilmesi için bir kimliğe ihtiyacı var. İkinci aşamada öğrendiğin en
+az yetki alışkanlığı tam burada işe yarıyor — bir hatta yönetici yetkisi
+vermek, yaygın ve pahalı bir kısayol.</p>
+<h2>Hafta 21 — Log, metrik, alarm</h2>
+<p>Gözlemlenebilirliğin üç sütunu: <strong>log</strong> (ne oldu), <strong>metrik</strong> (ne kadar,
+hangi hızla), <strong>trace</strong> (istek hangi servislerden geçti). Üçü aynı soruya
+farklı çözünürlükte cevap veriyor.</p>
+<p>Bu haftada bir uygulamaya metrik ekliyorsun ve bir panel çiziyorsun. Panelin
+işi güzel görünmek değil, <strong>tek bakışta &quot;iyi mi kötü mü&quot; sorusuna cevap
+vermek</strong>. Otuz grafikli bir panel, hiç panel olmamasıyla neredeyse aynı.</p>
+<h2>Hafta 22 — Alarm ve SLO</h2>
+<p>Alarm kurmak kolay, <strong>doğru</strong> alarm kurmak zor. Kötü alarm iki türlü olur: hiç
+çalmaz ya da sürekli çalar. İkincisi daha tehlikeli, çünkü ekip alarmı
+susturmayı öğreniyor.</p>
+<p>Öğrenilecek fikir: alarm bir eşiğe değil, <strong>kullanıcının hissettiği bir
+bozulmaya</strong> bağlanmalı. Sunucunun işlemcisi %90 ama herkes hizmet alıyorsa
+sorun yok; işlemci %20 ama istekler zaman aşımına düşüyorsa sorun var. SLO/SLI
+kavramları bu ayrımı ölçülebilir hale getiriyor.</p>
+<h2>Bu aşamayı bitirdiğini nasıl anlarsın</h2>
+<ul>
+<li>Bir push&#39;un testten geçip yayına çıkmasını izledin — hiçbir adımı elle
+yapmadan.</li>
+<li>Hattın gizli değerleri repoda yazılı değil.</li>
+<li>Uygulamanın sağlığını gösteren tek bir panelin var.</li>
+<li>Kurduğun alarm, gerçek bir bozulmada çalacak; her dalgalanmada değil.</li>
+</ul>
+
+        </div>
+<section class="stage-covers">
+        <h2>Bu aşamada işlenen bölümler</h2>
+        <div class="hub-row is-soon"><span class="hub-n">06</span>
+             <span class="hub-t">CI/CD</span><span class="hub-d">Otomatik build -&gt; test -&gt; deploy pipeline'i.</span></div>
+        <div class="hub-row is-soon"><span class="hub-n">07</span>
+             <span class="hub-t">Observability</span><span class="hub-d">Log, metrik, dashboard, alarm.</span></div>
+      </section>
+<section class="stage-project">
+        <p class="practice-k">Aşama projesi</p>
+        <p>Bir uygulamayı push'ta test eden, imajını derleyip yayına alan bir hat kur; sonra aynı uygulamaya metrik ekleyip bir panel ve tek bir anlamlı alarm oluştur.</p>
+      </section>
+<aside class="practice">
+        <p class="practice-k">Şimdi uygula</p>
+        <h2>Otonom Hat</h2>
+        <p>Bu dersteki komutları 4 adımlık bir görevde,
+           mentör eşliğinde sen yazıyorsun. Takılırsan doğrusu gösteriliyor.</p>
+        <a class="btn btn-primary" href="/app">Quest'i aç — ücretsiz</a>
+      </aside>
+<nav class="stage-nav" aria-label="Aşamalar arası gezinme">
+        <a class="stage-step is-prev" href="/yol-haritasi/konteynerler-docker-ve-kubernetes">
+             <span>← önceki aşama</span>
+             <b>Aşama 4: konteynerler — Docker ve Kubernetes (hafta 13-17)</b></a>
+        <a class="stage-step is-next" href="/yol-haritasi/ustalik-guvenlik-maliyet-sertifika">
+             <span>sonraki aşama →</span>
+             <b>Aşama 6: güvenlik, maliyet ve sertifika (hafta 23-26)</b></a>
+      </nav>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <span>☁ CloudQuest · güncellendi 2026-08-24</span>
+      <nav class="footer-links" aria-label="Alt menü">
+        <a href="/yol-haritasi">Yol haritası</a>
+        <a href="/ogren">Öğren</a>
+        <a href="/komut">Komutlar</a>
+        <a href="/app">Giriş yap</a>
+        <a href="/">Ana sayfa</a>
+      </nav>
+    </div>
+  </footer>
+  <script src="/js/stars.js"></script>
+  <script src="/js/landing.js"></script>
+</body>
+</html>

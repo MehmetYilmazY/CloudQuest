@@ -35,12 +35,37 @@ sayfasındaki quest listesi kendiliğinden güncellenir.
 | URL | Adet | Ne |
 |---|---|---|
 | `/` | 1 | Landing |
+| `/yol-haritasi` | 1 | Program hub'ı — 7 aşamanın takvimi |
+| `/yol-haritasi/<slug>` | 7 | Aşama sayfası (`/yol-haritasi/aws-temelleri`) |
 | `/ogren` | 1 | Ders hub'ı — 8 bölümün listesi |
 | `/ogren/<slug>` | 8 | Bölüm dersi (`/ogren/terminal-ve-linux`) |
 | `/komut` | 1 | Komut sözlüğü hub'ı |
 | `/komut/<komut>` | ~59 | Tek komut sayfası (`/komut/chmod`) |
 
-Toplam hedef: **~69 indekslenebilir sayfa.**
+Toplam hedef: **~77 indekslenebilir sayfa.**
+
+### Üç tür, üç soru
+
+Üç sayfa türü var ve üçü ayrı soruyu cevaplıyor — bilerek ayrı sayfalar:
+
+| Tür | Soru | Örnek arama |
+|---|---|---|
+| `stage` (`/yol-haritasi`) | "sırayla ne yapayım?" | *cloud engineer yol haritası* |
+| `chapter` (`/ogren`) | "bu konu nedir?" | *linux terminal öğrenme* |
+| `command` (`/komut`) | "bu komut ne yapar?" | *chmod komutu* |
+
+Aynı sayfaya sıkıştırılsalar üçü de yarım cevap olurdu: program arayan kişi
+kavram anlatımının içinde kaybolur, konu arayan kişi takvimle uğraşır.
+
+**Aşama sayfaları kapsamlarını elle yazmaz.** Frontmatter'daki `track`,
+`curriculum.json`'daki bir track'in id'si; hangi bölümleri kapsadığı ve kaç
+quest/adım içerdiği oradan okunur. Müfredata bir quest eklenince aşama
+sayfasındaki sayı da değişir.
+
+Aşamaların sırası ve kimliği `shared/content.schema.ts` içindeki
+`ROADMAP_SPINE`'da. Neden ayrı bir liste: hub, henüz **yazılmamış** aşamayı da
+"yakında" olarak göstermeli — yoksa okuyucu programın üç aşamadan oluştuğunu
+sanır. Aşama 1-6 track'lerle aynı sırada olmak zorunda; kayarsa build kırılır.
 
 > **Quest başına sayfa YOK.** İlk planda 54 quest sayfası vardı; iptal edildi.
 > Quest sayfaları bölüm sayfalarıyla aynı konuyu anlatacaktı — Google bunu
@@ -53,7 +78,8 @@ Slug'lar Türkçe kelimelerden türetilir ama ASCII'ye indirilir
 
 ## Yeni sayfa nasıl eklenir
 
-1. `content/ogren/<slug>.md` veya `content/komut/<komut>.md` oluştur
+1. `content/ogren/<slug>.md`, `content/komut/<komut>.md` veya
+   `content/yol-haritasi/<slug>.md` oluştur
 2. Frontmatter'ı doldur (aşağıdaki alanlar)
 3. `npm run build`
 4. Üretilen HTML'i de commit'le (CI drift'i kontrol ediyor)
@@ -62,9 +88,15 @@ Slug'lar Türkçe kelimelerden türetilir ama ASCII'ye indirilir
 
 ```yaml
 ---
-type: chapter | command      # zorunlu — hangi şablon
+type: chapter | command | stage   # zorunlu — hangi şablon
 chapter: 1                   # chapter'da zorunlu, command'de opsiyonel
 command: chmod               # sadece command
+stage: 2                     # sadece stage — 0 (hazırlık) … 6
+track: cloud-core            # sadece stage — curriculum.json track id'si
+weeks: "Hafta 5-8"           # sadece stage — takvimdeki yeri
+hours: 10                    # sadece stage — haftalık hedef saat
+outcome: "..."               # sadece stage — hub satırında görünen kazanım
+project: "..."               # sadece stage — aşamanın gerçek hayat projesi
 slug: terminal-ve-linux      # opsiyonel; yoksa başlıktan/komuttan türer
 title: "..."                 # 8-70 karakter — <title> ve h1
 description: "..."           # 70-165 karakter — meta description
@@ -97,6 +129,11 @@ komut varsa o link basılmaz — var olmayan sayfaya link vermek hem kullanıcı
 hem taramayı bozar.
 
 **`practiceQuest` gerçek olmalı.** Olmayan quest'e yönlendiren sayfa build'i kırar.
+
+**Aşamalar iskeletle tutarlı olmalı.** Bir `stage` numarası iki kez
+kullanılamaz, `track` değeri `ROADMAP_SPINE`'daki karşılığıyla aynı olmak
+zorunda ve iskelet `curriculum.tracks` sırasından kayamaz. Sessizce yanlış
+sırayı gösteren bir program, olmayan programdan kötüdür.
 
 ### Cevap sızıntısı kuralı
 
@@ -136,15 +173,19 @@ haftada yeniden yazılır.
 
 ## Yazma sırası
 
+0. **7 aşama sayfası** — ✅ yazıldı. Huninin en üstü: "nereden başlayacağımı
+   bilmiyorum" arayan kişi buraya düşüyor, buradan derslere ve terminale
+   dağılıyor.
 1. **8 bölüm dersi** — bağlam katmanı. Komut sayfaları bunlara bağlanacak.
 2. **En çok aranan 10-15 komut** — `chmod`, `grep`, `ssh`, `curl`, `docker`,
    `kubectl`, `terraform`, `git`… Pilot olarak ölç.
 3. **Kalan komutlar** — trafik verisi hangi sayfaların işe yaradığını
    gösterdikten sonra.
 
-Şablon olarak yazılmış iki sayfa:
+Şablon olarak yazılmış üç sayfa:
 [`content/ogren/terminal-ve-linux.md`](../content/ogren/terminal-ve-linux.md) ·
-[`content/komut/chmod.md`](../content/komut/chmod.md)
+[`content/komut/chmod.md`](../content/komut/chmod.md) ·
+[`content/yol-haritasi/aws-temelleri.md`](../content/yol-haritasi/aws-temelleri.md)
 
 ## Gerçekçi beklenti
 

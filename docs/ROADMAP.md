@@ -1,5 +1,10 @@
 # ☁️ CloudQuest — Cloud Engineering Çalışma Programı
 
+> 🌐 **Bu programın public sürümü sitede yayında:** `/yol-haritasi` — yedi
+> aşama sayfası (Hafta 0 hazırlık + 6 aşama), kaynağı
+> [`content/yol-haritasi/`](../content/yol-haritasi/). Bu belge repo içi
+> referans olarak kalıyor; okuyucuya gösterilen sürüm oradaki sayfalardır.
+
 > 6 aylık, haftalık planlı, "junior → job-ready" cloud engineer yol haritası.
 > Her bölüm (chapter) oyundaki bir bölümle birebir eşleşir. Konuyu **oku → oyunda quest'i çöz → gerçekte uygula** döngüsüyle ilerle.
 

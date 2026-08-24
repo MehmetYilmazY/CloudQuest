@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hafta 0: hiç terminal görmediysen buradan başla — CloudQuest</title>
+  <meta name="description" content="Cloud Engineer olmaya karar verdin ama nereden başlayacağını bilmiyorsun. Bu aşamada kurulumu, hesapları ve çalışma ritmini bir hafta içinde oturtuyorsun." />
+  <link rel="canonical" href="https://cloudquest.vercel.app/yol-haritasi/hafta-0-hazirlik" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#06070a" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta property="og:type" content="article" />
+  <meta property="og:locale" content="tr_TR" />
+  <meta property="og:site_name" content="CloudQuest" />
+  <meta property="og:url" content="https://cloudquest.vercel.app/yol-haritasi/hafta-0-hazirlik" />
+  <meta property="og:title" content="Hafta 0: hiç terminal görmediysen buradan başla" />
+  <meta property="og:description" content="Cloud Engineer olmaya karar verdin ama nereden başlayacağını bilmiyorsun. Bu aşamada kurulumu, hesapları ve çalışma ritmini bir hafta içinde oturtuyorsun." />
+  <meta property="og:image" content="https://cloudquest.vercel.app/og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E%E2%98%81%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/css/landing.css" />
+  <link rel="stylesheet" href="/css/lesson.css" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"CloudQuest","item":"https://cloudquest.vercel.app/"},{"@type":"ListItem","position":2,"name":"Yol haritası","item":"https://cloudquest.vercel.app/yol-haritasi"},{"@type":"ListItem","position":3,"name":"Hafta 0: hiç terminal görmediysen buradan başla","item":"https://cloudquest.vercel.app/yol-haritasi/hafta-0-hazirlik"}]},{"@type":"LearningResource","headline":"Hafta 0: hiç terminal görmediysen buradan başla","description":"Cloud Engineer olmaya karar verdin ama nereden başlayacağını bilmiyorsun. Bu aşamada kurulumu, hesapları ve çalışma ritmini bir hafta içinde oturtuyorsun.","inLanguage":"tr-TR","dateModified":"2026-08-24","url":"https://cloudquest.vercel.app/yol-haritasi/hafta-0-hazirlik","learningResourceType":"Syllabus","educationalLevel":"Beginner","timeRequired":"PT6H","publisher":{"@type":"Organization","name":"CloudQuest","url":"https://cloudquest.vercel.app"}}]}</script>
+</head>
+<body>
+  <a class="skip-link" href="#main">İçeriğe geç</a>
+  <canvas id="stars" aria-hidden="true"></canvas>
+  <div class="nebula" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="nav" id="nav">
+    <nav class="nav-inner" aria-label="Ana menü">
+      <a class="nav-logo" href="/">☁ CLOUDQUEST</a>
+      <div class="nav-links">
+        <a href="/yol-haritasi">Yol haritası</a>
+        <a href="/ogren">Öğren</a>
+        <a href="/komut">Komutlar</a>
+        <a href="/#mufredat">Müfredat</a>
+        <a href="/#sss">SSS</a>
+      </div>
+      <a class="btn btn-primary btn-sm" href="/app">Giriş yap</a>
+    </nav>
+  </header>
+
+  <nav class="crumbs" aria-label="Konum">
+    <div class="wrap">
+      <a href="/">CloudQuest</a><span class="crumb-sep">/</span><a href="/yol-haritasi">Yol haritası</a><span class="crumb-sep">/</span><span aria-current="page">Hafta 0: hiç terminal görmediysen buradan başla</span>
+    </div>
+  </nav>
+
+  <main id="main">
+    <article class="lesson">
+      <div class="wrap">
+        <p class="lesson-kicker">Yol haritası · Aşama 00 · Hafta 0</p>
+        <h1>Hafta 0: hiç terminal görmediysen buradan başla</h1>
+        <p class="lesson-standfirst">Cloud Engineer olmaya karar verdin ama nereden başlayacağını bilmiyorsun. Bu aşamada kurulumu, hesapları ve çalışma ritmini bir hafta içinde oturtuyorsun.</p>
+        <dl class="stage-meta">
+          <div><dt>Takvim</dt><dd>Hafta 0</dd></div>
+          <div><dt>Haftalık yük</dt><dd>~6 saat</dd></div>
+        </dl>
+        <div class="prose">
+<p>Çoğu insan bu yolda ilk haftada değil, ilk günde kaybediyor. Sebep zorluk
+değil: karar yorgunluğu. &quot;Hangi bulut sağlayıcı?&quot;, &quot;Linux mu kurayım?&quot;,
+&quot;Python mu Go mu?&quot; — henüz hiçbirini kullanmamışken cevaplaması imkânsız
+sorular. Hafta 0 bunları senin yerine kapatıyor.</p>
+<p>Bu aşamada hiçbir bulut kavramı öğrenmiyorsun. Tek işin, sonraki altı ay
+boyunca kullanacağın <strong>çalışma ortamını</strong> kurmak. Bir marangozun ilk günü
+masayı kurmakla geçer; ahşabı ikinci gün keser.</p>
+<h2>Bir kabuk edin</h2>
+<p>Cloud engineering Linux üzerinde yaşıyor. Windows kullanıyorsan Linux&#39;a
+geçmene gerek yok — <strong>WSL</strong> (Windows Subsystem for Linux) Windows&#39;un içine
+gerçek bir Ubuntu kuruyor. Microsoft Store&#39;dan Ubuntu&#39;yu kur, aç, kullanıcı
+adı ve şifre belirle. Bitti. macOS kullanıyorsan zaten bir Unix kabuğun var,
+Terminal&#39;i açman yeterli.</p>
+<p>Kurulumun çalıştığını nasıl anlarsın: kabuğa <code>pwd</code> yazdığında bir dizin yolu
+görüyorsan ortam hazır. Bu, altı ay boyunca binlerce kez yazacağın komutların
+ilki.</p>
+<h2>Üç hesap aç</h2>
+<ul>
+<li><strong>GitHub</strong> — kodun ve portföyün burada yaşayacak. İş görüşmesinde CV&#39;den
+önce bakılan yer bu. Kullanıcı adını gerçek adına yakın seç; altı ay sonra
+bunu paylaşacaksın.</li>
+<li><strong>AWS Free Tier</strong> — kredi kartı istiyor ama ilk 12 ay ücretsiz kotası var.
+Hesabı açtığın ilk gün <strong>fatura alarmı</strong> kur (5 dolarlık bir eşik yeterli).
+Bu adımı atlayanların hikâyesi hep aynı: ay sonunda beklenmeyen bir fatura.</li>
+<li><strong>Bir not defteri</strong> — Obsidian, Notion ya da düz metin dosyaları. Öğrendiğin
+her şeyi yazacaksın; unutmamak için değil, ne öğrendiğini görmek için.</li>
+</ul>
+<h2>Programı takvime yaz</h2>
+<p>Altı aylık plan bir niyet değil, bir randevu olmalı. Haftada ~10 saati şimdi
+takvimine yerleştir: hangi günler, hangi saatler. Boş bulduğun zamana
+çalışmayı planlarsan çalışmazsın — boş zaman her zaman başka bir şeyle
+doluyor.</p>
+<p>Önerilen bölünme:</p>
+<table>
+<thead>
+<tr>
+<th>Ne</th>
+<th>Süre</th>
+<th>Neden</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Okuma / izleme</td>
+<td>~2 saat</td>
+<td>Kavramı anlamak</td>
+</tr>
+<tr>
+<td>Terminalde tekrar</td>
+<td>~3 saat</td>
+<td>Parmakların da öğrenmesi için</td>
+</tr>
+<tr>
+<td>Gerçek bir şey kurmak</td>
+<td>~5 saat</td>
+<td>Bildiğini sanmakla bilmek arasındaki fark</td>
+</tr>
+</tbody></table>
+<p>Oranın tersine dönmemesine dikkat et. Video izlemek öğrenmek gibi hissettirir
+ama hissettirmekle bırakır: ertesi gün klavyenin başında hiçbir şey
+hatırlamazsın.</p>
+<h2>İngilizce hakkında</h2>
+<p>Bu alanın belgeleri İngilizce. Akıcı konuşman gerekmiyor, <strong>okuyabilmen</strong>
+gerekiyor — ve teknik İngilizce, günlük İngilizceden çok daha küçük bir kelime
+kümesi kullanıyor. Bir hata mesajını Google&#39;a yapıştırıp sonucu okuyabiliyorsan
+yeterli seviyedesin. Geri kalanı yol boyunca oturuyor.</p>
+<h2>Bu aşamayı bitirdiğini nasıl anlarsın</h2>
+<ul>
+<li>Kabuğu açıp bulunduğun dizini görebiliyorsun.</li>
+<li>GitHub&#39;a boş bir repo açtın ve içine bir dosya koydun.</li>
+<li>AWS hesabında fatura alarmı kurulu.</li>
+<li>Takviminde önümüzdeki dört haftanın çalışma blokları yazılı.</li>
+</ul>
+<p>Dördü tamamsa hazırlık bitti. Sıradaki aşamada asıl işe — terminale —
+giriyorsun.</p>
+
+        </div>
+
+<section class="stage-project">
+        <p class="practice-k">Aşama projesi</p>
+        <p>Kendi bilgisayarında bir Linux kabuğu aç, içinde bir klasör yapısı kur, ilk repoyu GitHub'a gönder ve altı aylık takvimi kendi ajandana yaz.</p>
+      </section>
+<aside class="practice">
+        <p class="practice-k">Şimdi uygula</p>
+        <h2>Cold Boot</h2>
+        <p>Bu dersteki komutları 4 adımlık bir görevde,
+           mentör eşliğinde sen yazıyorsun. Takılırsan doğrusu gösteriliyor.</p>
+        <a class="btn btn-primary" href="/app">Quest'i aç — ücretsiz</a>
+      </aside>
+<nav class="stage-nav" aria-label="Aşamalar arası gezinme">
+        
+        <a class="stage-step is-next" href="/yol-haritasi/temeller-linux-ve-ag">
+             <span>sonraki aşama →</span>
+             <b>Aşama 1: Linux, ağ ve Git temelleri (hafta 1-4)</b></a>
+      </nav>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <span>☁ CloudQuest · güncellendi 2026-08-24</span>
+      <nav class="footer-links" aria-label="Alt menü">
+        <a href="/yol-haritasi">Yol haritası</a>
+        <a href="/ogren">Öğren</a>
+        <a href="/komut">Komutlar</a>
+        <a href="/app">Giriş yap</a>
+        <a href="/">Ana sayfa</a>
+      </nav>
+    </div>
+  </footer>
+  <script src="/js/stars.js"></script>
+  <script src="/js/landing.js"></script>
+</body>
+</html>

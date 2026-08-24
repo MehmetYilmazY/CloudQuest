@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cloud Engineer yol haritası: sıfırdan 6 ayda — CloudQuest</title>
+  <meta name="description" content="Hiç terminal görmemiş biri için haftalara bölünmüş Cloud Engineer yol haritası: yedi aşama, her aşamada ne öğrenilir, hangi proje yapılır, ne kadar sürer." />
+  <link rel="canonical" href="https://cloudquest.vercel.app/yol-haritasi" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#06070a" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta property="og:type" content="article" />
+  <meta property="og:locale" content="tr_TR" />
+  <meta property="og:site_name" content="CloudQuest" />
+  <meta property="og:url" content="https://cloudquest.vercel.app/yol-haritasi" />
+  <meta property="og:title" content="Cloud Engineer yol haritası: sıfırdan 6 ayda" />
+  <meta property="og:description" content="Hiç terminal görmemiş biri için haftalara bölünmüş Cloud Engineer yol haritası: yedi aşama, her aşamada ne öğrenilir, hangi proje yapılır, ne kadar sürer." />
+  <meta property="og:image" content="https://cloudquest.vercel.app/og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E%E2%98%81%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/css/landing.css" />
+  <link rel="stylesheet" href="/css/lesson.css" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"CloudQuest","item":"https://cloudquest.vercel.app/"},{"@type":"ListItem","position":2,"name":"Yol haritası","item":"https://cloudquest.vercel.app/yol-haritasi"}]},{"@type":"CollectionPage","inLanguage":"tr-TR","url":"https://cloudquest.vercel.app/yol-haritasi"}]}</script>
+</head>
+<body>
+  <a class="skip-link" href="#main">İçeriğe geç</a>
+  <canvas id="stars" aria-hidden="true"></canvas>
+  <div class="nebula" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="nav" id="nav">
+    <nav class="nav-inner" aria-label="Ana menü">
+      <a class="nav-logo" href="/">☁ CLOUDQUEST</a>
+      <div class="nav-links">
+        <a href="/yol-haritasi">Yol haritası</a>
+        <a href="/ogren">Öğren</a>
+        <a href="/komut">Komutlar</a>
+        <a href="/#mufredat">Müfredat</a>
+        <a href="/#sss">SSS</a>
+      </div>
+      <a class="btn btn-primary btn-sm" href="/app">Giriş yap</a>
+    </nav>
+  </header>
+
+  <nav class="crumbs" aria-label="Konum">
+    <div class="wrap">
+      <a href="/">CloudQuest</a><span class="crumb-sep">/</span><span aria-current="page">Yol haritası</span>
+    </div>
+  </nav>
+
+  <main id="main">
+    <section class="hub">
+      <div class="wrap">
+        <p class="lesson-kicker">Yol haritası</p>
+        <h1>Sıfırdan Cloud Engineer: 6 aylık yol haritası</h1>
+        <p class="lesson-standfirst">Hiç terminal görmemiş biri için, haftalara bölünmüş bir program.
+           Yedi aşama, 8 müfredat bölümü, 30 quest, 115 uygulamalı adım.
+           Her aşamada aynı üç adım: <b>öğren → oyna → uygula</b>.</p>
+        <a class="hub-row" href="/yol-haritasi/hafta-0-hazirlik"><span class="hub-n">00</span>
+             <span class="hub-t">Hazırlık<em class="hub-weeks">Hafta 0</em></span>
+             <span class="hub-d">Çalışan bir Linux kabuğun, bir GitHub hesabın ve haftalık bir programın olur.</span></a>
+        <a class="hub-row" href="/yol-haritasi/temeller-linux-ve-ag"><span class="hub-n">01</span>
+             <span class="hub-t">Foundations<em class="hub-weeks">Hafta 1-4</em></span>
+             <span class="hub-d">Bir sunucuya bağlanıp içinde iş yapabilir, bir repoyu dallandırıp PR gönderebilirsin.</span></a>
+        <a class="hub-row" href="/yol-haritasi/aws-temelleri"><span class="hub-n">02</span>
+             <span class="hub-t">Cloud Core<em class="hub-weeks">Hafta 5-8</em></span>
+             <span class="hub-d">Kendi hesabında bir ağ kurup içine sunucu açabilir, erişimi dar yetkiyle verebilirsin.</span></a>
+        <a class="hub-row" href="/yol-haritasi/altyapiyi-kodla-terraform"><span class="hub-n">03</span>
+             <span class="hub-t">Infrastructure as Code<em class="hub-weeks">Hafta 9-12</em></span>
+             <span class="hub-d">Bir altyapıyı kodla kurup yıkabilir, aynısını ikinci bir ortamda tekrar üretebilirsin.</span></a>
+        <a class="hub-row" href="/yol-haritasi/konteynerler-docker-ve-kubernetes"><span class="hub-n">04</span>
+             <span class="hub-t">Containers<em class="hub-weeks">Hafta 13-17</em></span>
+             <span class="hub-d">Bir uygulamayı imaja paketleyip çalıştırabilir, çok servisli bir yığını ayağa kaldırabilirsin.</span></a>
+        <a class="hub-row" href="/yol-haritasi/otomasyon-ci-cd-ve-izleme"><span class="hub-n">05</span>
+             <span class="hub-t">Otomasyon<em class="hub-weeks">Hafta 18-22</em></span>
+             <span class="hub-d">Push'ta test edip dağıtan bir hattın ve çalışanı izleyen bir panelin olur.</span></a>
+        <a class="hub-row" href="/yol-haritasi/ustalik-guvenlik-maliyet-sertifika"><span class="hub-n">06</span>
+             <span class="hub-t">Ustalık<em class="hub-weeks">Hafta 23-26</em></span>
+             <span class="hub-d">Kurduğun sistemi güvenlik ve maliyet açısından savunabilir, portföyünü gösterebilirsin.</span></a>
+        <div class="hub-note">
+          <p><b>Haftalık hedef ~10 saat.</b> 2 saat okuma, 3 saat terminalde tekrar,
+             5 saat gerçek bir şey kurma. Sürdürülebilirlik hızdan önemli:
+             haftada 10 saat altı ay boyunca, ilk hafta 40 saat yapıp bırakmaktan
+             kat kat fazla götürür.</p>
+          <p>Aşamaları atlamak cazip gelecek — AWS konsolu terminalden daha
+             davetkâr görünüyor. Atlanan her aşama sonraki aşamada iki kat zaman
+             olarak geri geliyor; sıra tesadüfi değil.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <span>☁ CloudQuest</span>
+      <nav class="footer-links" aria-label="Alt menü">
+        <a href="/yol-haritasi">Yol haritası</a>
+        <a href="/ogren">Öğren</a>
+        <a href="/komut">Komutlar</a>
+        <a href="/app">Giriş yap</a>
+        <a href="/">Ana sayfa</a>
+      </nav>
+    </div>
+  </footer>
+  <script src="/js/stars.js"></script>
+  <script src="/js/landing.js"></script>
+</body>
+</html>

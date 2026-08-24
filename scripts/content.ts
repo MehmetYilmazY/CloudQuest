@@ -1,9 +1,16 @@
 /* =========================================================================
    CloudQuest — Eğitim sayfası üreteci
    -------------------------------------------------------------------------
-     content/ogren/*.md  ->  web/ogren/<slug>.html   (+ /ogren hub)
-     content/komut/*.md  ->  web/komut/<slug>.html   (+ /komut hub)
-                         ->  web/sitemap.xml         (elle yazılan yerine)
+     content/ogren/*.md        ->  web/ogren/<slug>.html        (+ /ogren hub)
+     content/komut/*.md        ->  web/komut/<slug>.html        (+ /komut hub)
+     content/yol-haritasi/*.md ->  web/yol-haritasi/<slug>.html (+ hub)
+                               ->  web/sitemap.xml   (elle yazılan yerine)
+
+   ÜÇ TÜR, ÜÇ SORU — bilerek ayrı sayfalar:
+     /ogren        "bu konu nedir?"      (kavram)
+     /komut        "bu komut ne yapar?"  (referans)
+     /yol-haritasi "sırayla ne yapayım?" (program, takvim, proje)
+   Aynı sayfaya sıkıştırılsalar üçü de yarım cevap olurdu.
 
    TASARIM KARARI — neden statik HTML üretiyoruz:
    Katman 2'de site Next.js'e taşınacak. O zaman bu üreteç çöpe gidecek;
@@ -22,7 +29,7 @@ import { join, dirname, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 import { marked } from "marked";
 import {
-  LessonFrontmatterSchema, lessonUrl, resolveSlug,
+  LessonFrontmatterSchema, lessonUrl, resolveSlug, ROADMAP_SPINE,
   type Lesson, type LessonFrontmatter,
 } from "../shared/content.schema.ts";
 import { validateCurriculum, allQuests } from "../shared/curriculum.validate.ts";
@@ -40,6 +47,16 @@ const green = (s: string) => `\x1b[32m${s}\x1b[0m`;
 const dim = (s: string) => `\x1b[2m${s}\x1b[0m`;
 
 export type ContentResult = { lessons: Lesson[]; written: number; errors: string[] };
+
+/** Sayfa türü -> content/ altındaki klasörü. Yanlış klasör build'i kırar. */
+const DIR_OF = { chapter: "ogren", command: "komut", stage: "yol-haritasi" } as const;
+
+/** Türlerin insan tarafı: menü adı, hub adresi, hub başlığı. */
+const KIND = {
+  chapter: { nav: "Öğren", url: "/ogren" },
+  command: { nav: "Komutlar", url: "/komut" },
+  stage: { nav: "Yol haritası", url: "/yol-haritasi" },
+} as const;
 
 /* =========================================================================
    1) OKUMA — frontmatter ayrıştırma
@@ -89,7 +106,7 @@ function readLessons(): { lessons: Lesson[]; errors: string[] } {
   const errors: string[] = [];
   if (!existsSync(CONTENT)) return { lessons, errors };
 
-  for (const dir of ["ogren", "komut"]) {
+  for (const dir of ["ogren", "komut", "yol-haritasi"]) {
     const abs = join(CONTENT, dir);
     if (!existsSync(abs)) continue;
 
@@ -105,7 +122,7 @@ function readLessons(): { lessons: Lesson[]; errors: string[] } {
           continue;
         }
         const fm = parsed.data;
-        const expectedDir = fm.type === "chapter" ? "ogren" : "komut";
+        const expectedDir = DIR_OF[fm.type];
         if (dir !== expectedDir) {
           errors.push(`${sourcePath}: type="${fm.type}" olan dosya content/${expectedDir}/ altında olmalı`);
           continue;
@@ -137,9 +154,41 @@ function auditLessons(
 
   const seenUrl = new Map<string, string>();
   const seenQuery = new Map<string, string>();
+  const seenStage = new Map<number, string>();
+
+  /* Aşama 1-6, curriculum.tracks ile aynı sırada olmalı. İskelet kayarsa
+     aşama sayfası yanlış bölümleri listeler — sessizce yanlış olan bir
+     program, olmayan programdan kötüdür. */
+  for (const s of ROADMAP_SPINE) {
+    if (!s.track) continue;
+    const track = curriculum.tracks[s.n - 1];
+    if (!track || track.id !== s.track) {
+      errors.push(
+        `ROADMAP_SPINE aşama ${s.n} track="${s.track}" diyor ama ` +
+        `curriculum.tracks[${s.n - 1}] = "${track?.id ?? "(yok)"}" — ` +
+        `shared/content.schema.ts içindeki iskeleti müfredatla hizala`
+      );
+    }
+  }
 
   for (const l of lessons) {
     const fm = l.frontmatter;
+
+    if (fm.type === "stage") {
+      const spine = ROADMAP_SPINE.find((s) => s.n === fm.stage);
+      if (!spine) {
+        errors.push(`${l.sourcePath}: stage ${fm.stage} iskelette yok`);
+      } else if ((spine.track ?? undefined) !== fm.track) {
+        errors.push(
+          `${l.sourcePath}: stage ${fm.stage} için track "${spine.track ?? "(yok)"}" ` +
+          `olmalı, "${fm.track ?? "(yok)"}" yazılmış`
+        );
+      }
+      if (seenStage.has(fm.stage)) {
+        errors.push(`${l.sourcePath}: stage ${fm.stage} zaten ${seenStage.get(fm.stage)} tarafından yazılmış`);
+      }
+      seenStage.set(fm.stage, l.sourcePath);
+    }
 
     if (seenUrl.has(l.url)) {
       errors.push(`URL çakışması ${l.url}: ${seenUrl.get(l.url)} ve ${l.sourcePath}`);
@@ -267,6 +316,7 @@ function page(o: PageOptions): string {
     <nav class="nav-inner" aria-label="Ana menü">
       <a class="nav-logo" href="/">☁ CLOUDQUEST</a>
       <div class="nav-links">
+        <a href="/yol-haritasi">Yol haritası</a>
         <a href="/ogren">Öğren</a>
         <a href="/komut">Komutlar</a>
         <a href="/#mufredat">Müfredat</a>
@@ -294,6 +344,7 @@ ${o.body}
     <div class="wrap footer-inner">
       <span>☁ CloudQuest${o.updated ? ` · güncellendi ${o.updated}` : ""}</span>
       <nav class="footer-links" aria-label="Alt menü">
+        <a href="/yol-haritasi">Yol haritası</a>
         <a href="/ogren">Öğren</a>
         <a href="/komut">Komutlar</a>
         <a href="/app">Giriş yap</a>
@@ -358,6 +409,92 @@ ${practiceCta(fm, fm.practiceQuest ? byId.get(fm.practiceQuest) ?? null : null)}
     </article>`;
 }
 
+/* =========================================================================
+   AŞAMA SAYFASI — "sırayla ne yapayım"
+   -------------------------------------------------------------------------
+   Bir aşama sayfasının üç işi var:
+     1. Takvimde nerede olduğunu söylemek (hafta, haftalık yük)
+     2. Hangi bölümleri kapsadığını MÜFREDATTAN okuyup göstermek
+     3. Okumakla bitmediğini hatırlatmak: proje + terminal
+   Kapsanan bölümler elle yazılmaz; track üzerinden curriculum.json'dan
+   gelir. Müfredata bir quest eklenince buradaki sayı da değişir.
+   ========================================================================= */
+function renderStagePage(l: Lesson, c: Curriculum, all: Lesson[], byId: Map<string, Quest>): string {
+  const fm = l.frontmatter as Extract<LessonFrontmatter, { type: "stage" }>;
+  const track = fm.track ? c.tracks.find((t) => t.id === fm.track) : undefined;
+  const chapterNs = track?.chapters ?? [];
+  const quests = c.quests.filter((q) => q.chapter !== undefined && chapterNs.includes(q.chapter));
+  const steps = quests.reduce((n, q) => n + q.objectives.length, 0);
+
+  const meta = [
+    ["Takvim", fm.weeks],
+    ...(fm.hours ? [["Haftalık yük", `~${fm.hours} saat`]] : []),
+    ...(chapterNs.length ? [["Müfredat bölümü", chapterNs.map((n) => String(n).padStart(2, "0")).join(" · ")]] : []),
+    ...(steps ? [["Uygulamalı adım", `${quests.length} quest · ${steps} adım`]] : []),
+  ] as Array<[string, string]>;
+
+  const metaBlock = `<dl class="stage-meta">
+          ${meta.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("\n          ")}
+        </dl>`;
+
+  // Kapsanan bölümler: dersi yazılmışsa link, yazılmamışsa düz metin.
+  // Var olmayan sayfaya link vermek hem okuyucuyu hem taramayı bozar.
+  const covers = chapterNs.length
+    ? `<section class="stage-covers">
+        <h2>Bu aşamada işlenen bölümler</h2>
+        ${chapterNs.map((n) => {
+          const ch = c.chapters.find((x) => x.n === n);
+          if (!ch) return "";
+          const lesson = all.find(
+            (x) => x.frontmatter.type === "chapter" &&
+                   (x.frontmatter as { chapter: number }).chapter === n && !x.frontmatter.draft
+          );
+          const inner =
+            `<span class="hub-n">${String(n).padStart(2, "0")}</span>
+             <span class="hub-t">${esc(ch.title)}</span><span class="hub-d">${esc(ch.desc)}</span>`;
+          return lesson
+            ? `<a class="hub-row" href="${lesson.url}">${inner}</a>`
+            : `<div class="hub-row is-soon">${inner}</div>`;
+        }).filter(Boolean).join("\n        ")}
+      </section>`
+    : "";
+
+  const projectBlock = `<section class="stage-project">
+        <p class="practice-k">Aşama projesi</p>
+        <p>${esc(fm.project)}</p>
+      </section>`;
+
+  // Programın en önemli özelliği sıra olduğu için ileri/geri bağlantı şart.
+  const stages = all
+    .filter((x) => x.frontmatter.type === "stage" && !x.frontmatter.draft)
+    .sort((a, b) => (a.frontmatter as { stage: number }).stage - (b.frontmatter as { stage: number }).stage);
+  const i = stages.findIndex((x) => x.url === l.url);
+  const link = (s: Lesson | undefined, dir: "prev" | "next") =>
+    s ? `<a class="stage-step is-${dir}" href="${s.url}">
+             <span>${dir === "prev" ? "← önceki aşama" : "sonraki aşama →"}</span>
+             <b>${esc(s.frontmatter.title)}</b></a>` : "";
+  const nav = `<nav class="stage-nav" aria-label="Aşamalar arası gezinme">
+        ${link(stages[i - 1], "prev")}
+        ${link(stages[i + 1], "next")}
+      </nav>`;
+
+  return `    <article class="lesson">
+      <div class="wrap">
+        <p class="lesson-kicker">Yol haritası · Aşama ${String(fm.stage).padStart(2, "0")} · ${esc(fm.weeks)}</p>
+        <h1>${esc(fm.title)}</h1>
+        <p class="lesson-standfirst">${esc(fm.description)}</p>
+        ${metaBlock}
+        <div class="prose">
+${marked.parse(l.body, { async: false })}
+        </div>
+${covers}
+${projectBlock}
+${practiceCta(fm, fm.practiceQuest ? byId.get(fm.practiceQuest) ?? null : null)}
+${nav}
+      </div>
+    </article>`;
+}
+
 function renderCommandPage(l: Lesson, byId: Map<string, Quest>, allLessons: Lesson[]): string {
   const fm = l.frontmatter as Extract<LessonFrontmatter, { type: "command" }>;
 
@@ -390,8 +527,48 @@ ${practiceCta(fm, fm.practiceQuest ? byId.get(fm.practiceQuest) ?? null : null)}
     </article>`;
 }
 
-function renderHub(kind: "chapter" | "command", lessons: Lesson[], c: Curriculum): string {
+function renderHub(kind: LessonFrontmatter["type"], lessons: Lesson[], c: Curriculum): string {
   const mine = lessons.filter((l) => l.frontmatter.type === kind && !l.frontmatter.draft);
+
+  if (kind === "stage") {
+    // Aşama satırları İSKELETTEN geliyor, yazılmış dosyalardan değil: okuyucu
+    // programın kaç aşama olduğunu, henüz yazılmamış olanlar dahil görmeli.
+    const rows = ROADMAP_SPINE.map((s) => {
+      const l = mine.find((x) => (x.frontmatter as { stage: number }).stage === s.n);
+      const n = `<span class="hub-n">${String(s.n).padStart(2, "0")}</span>`;
+      if (!l) {
+        return `<div class="hub-row is-soon">${n}
+             <span class="hub-t">${esc(s.label)}</span><span class="hub-d">yakında</span></div>`;
+      }
+      const fm = l.frontmatter as Extract<LessonFrontmatter, { type: "stage" }>;
+      return `<a class="hub-row" href="${l.url}">${n}
+             <span class="hub-t">${esc(s.label)}<em class="hub-weeks">${esc(fm.weeks)}</em></span>
+             <span class="hub-d">${esc(fm.outcome)}</span></a>`;
+    }).join("\n        ");
+
+    const totalQuests = c.quests.length;
+    const totalSteps = c.quests.reduce((n, q) => n + q.objectives.length, 0);
+
+    return `    <section class="hub">
+      <div class="wrap">
+        <p class="lesson-kicker">Yol haritası</p>
+        <h1>Sıfırdan Cloud Engineer: 6 aylık yol haritası</h1>
+        <p class="lesson-standfirst">Hiç terminal görmemiş biri için, haftalara bölünmüş bir program.
+           Yedi aşama, ${c.chapters.length} müfredat bölümü, ${totalQuests} quest, ${totalSteps} uygulamalı adım.
+           Her aşamada aynı üç adım: <b>öğren → oyna → uygula</b>.</p>
+        ${rows}
+        <div class="hub-note">
+          <p><b>Haftalık hedef ~10 saat.</b> 2 saat okuma, 3 saat terminalde tekrar,
+             5 saat gerçek bir şey kurma. Sürdürülebilirlik hızdan önemli:
+             haftada 10 saat altı ay boyunca, ilk hafta 40 saat yapıp bırakmaktan
+             kat kat fazla götürür.</p>
+          <p>Aşamaları atlamak cazip gelecek — AWS konsolu terminalden daha
+             davetkâr görünüyor. Atlanan her aşama sonraki aşamada iki kat zaman
+             olarak geri geliyor; sıra tesadüfi değil.</p>
+        </div>
+      </div>
+    </section>`;
+  }
 
   if (kind === "chapter") {
     const rows = c.chapters.map((ch) => {
@@ -438,6 +615,7 @@ function buildSitemap(lessons: Lesson[]): string {
   const today = lessons.map((l) => l.frontmatter.updated).sort().pop() ?? "2026-01-01";
   const urls: Array<{ loc: string; pri: string; mod?: string }> = [
     { loc: "/", pri: "1.0", mod: today },
+    { loc: "/yol-haritasi", pri: "0.9", mod: today },
     { loc: "/ogren", pri: "0.9", mod: today },
     { loc: "/komut", pri: "0.9", mod: today },
     { loc: "/tutorial", pri: "0.6" },
@@ -484,8 +662,10 @@ export function buildContent(curriculum: Curriculum, opts: { check?: boolean } =
 
   for (const l of lessons) {
     const fm = l.frontmatter;
-    const isChapter = fm.type === "chapter";
-    const body = isChapter ? renderChapterPage(l, curriculum, byId) : renderCommandPage(l, byId, lessons);
+    const body =
+      fm.type === "chapter" ? renderChapterPage(l, curriculum, byId)
+      : fm.type === "stage" ? renderStagePage(l, curriculum, lessons, byId)
+      : renderCommandPage(l, byId, lessons);
 
     const html = page({
       title: fm.title,
@@ -496,17 +676,24 @@ export function buildContent(curriculum: Curriculum, opts: { check?: boolean } =
       updated: fm.updated,
       breadcrumb: [
         { name: "CloudQuest", url: "/" },
-        isChapter ? { name: "Öğren", url: "/ogren" } : { name: "Komutlar", url: "/komut" },
-        { name: isChapter ? fm.title : (fm as { command: string }).command, url: l.url },
+        { name: KIND[fm.type].nav, url: KIND[fm.type].url },
+        { name: fm.type === "command" ? fm.command : fm.title, url: l.url },
       ],
       jsonLd: {
-        "@type": isChapter ? "LearningResource" : "TechArticle",
+        "@type": fm.type === "command" ? "TechArticle" : "LearningResource",
         headline: fm.title,
         description: fm.description,
         inLanguage: "tr-TR",
         dateModified: fm.updated,
         url: SITE + l.url,
-        ...(isChapter ? { learningResourceType: "Lesson", educationalLevel: "Beginner" } : {}),
+        ...(fm.type === "chapter" ? { learningResourceType: "Lesson", educationalLevel: "Beginner" } : {}),
+        ...(fm.type === "stage"
+          ? {
+              learningResourceType: "Syllabus",
+              educationalLevel: "Beginner",
+              timeRequired: fm.hours ? `PT${fm.hours}H` : undefined,
+            }
+          : {}),
         publisher: { "@type": "Organization", name: "CloudQuest", url: SITE },
       },
     });
@@ -514,18 +701,31 @@ export function buildContent(curriculum: Curriculum, opts: { check?: boolean } =
     write(join(WEB, l.url.slice(1) + ".html"), html, !!opts.check, `web${l.url}.html`, log);
   }
 
-  for (const kind of ["chapter", "command"] as const) {
-    const url = kind === "chapter" ? "/ogren" : "/komut";
+  const HUB_TEXT = {
+    chapter: {
+      title: "Cloud Engineering dersleri",
+      description: "Linux'tan Kubernetes'e, sekiz bölümlük Türkçe Cloud Engineering ders serisi. Her bölümün sonunda terminalde uygulama.",
+    },
+    command: {
+      title: "Komut sözlüğü",
+      description: "Bulut mühendisliğinde en çok kullanılan komutların Türkçe referansı: ne işe yarar, ne zaman kullanılır, en sık yapılan hatalar.",
+    },
+    stage: {
+      title: "Cloud Engineer yol haritası: sıfırdan 6 ayda",
+      description: "Hiç terminal görmemiş biri için haftalara bölünmüş Cloud Engineer yol haritası: yedi aşama, her aşamada ne öğrenilir, hangi proje yapılır, ne kadar sürer.",
+    },
+  } as const;
+
+  for (const kind of ["chapter", "command", "stage"] as const) {
+    const url = KIND[kind].url;
     const html = page({
-      title: kind === "chapter" ? "Cloud Engineering dersleri" : "Komut sözlüğü",
-      description: kind === "chapter"
-        ? "Linux'tan Kubernetes'e, sekiz bölümlük Türkçe Cloud Engineering ders serisi. Her bölümün sonunda terminalde uygulama."
-        : "Bulut mühendisliğinde en çok kullanılan komutların Türkçe referansı: ne işe yarar, ne zaman kullanılır, en sık yapılan hatalar.",
+      title: HUB_TEXT[kind].title,
+      description: HUB_TEXT[kind].description,
       url,
       body: renderHub(kind, lessons, curriculum),
       breadcrumb: [
         { name: "CloudQuest", url: "/" },
-        { name: kind === "chapter" ? "Öğren" : "Komutlar", url },
+        { name: KIND[kind].nav, url },
       ],
       jsonLd: { "@type": "CollectionPage", inLanguage: "tr-TR", url: SITE + url },
     });

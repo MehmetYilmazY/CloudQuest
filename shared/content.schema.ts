@@ -93,14 +93,49 @@ export const CommandLessonSchema = z
   })
   .strict();
 
+/* --- yol haritası aşaması ----------------------------------------------- */
+/**
+ * /yol-haritasi/<slug> — programın bir aşaması (ay / hafta bloğu).
+ *
+ * Ders sayfası "konu nedir" der; aşama sayfası **"şimdi ne yapacağım"** der.
+ * İkisi ayrı sayfa, çünkü ayrı soruyu cevaplıyorlar ve ayrı aranıyorlar:
+ * "linux terminal öğrenme" bir konu aramasıdır, "cloud engineer yol haritası"
+ * bir sıra ve takvim aramasıdır. Aynı sayfaya sıkıştırılırsa ikisi de yarım
+ * cevap alır.
+ *
+ * Aşamanın hangi bölümleri kapsadığı burada YAZILMAZ — `track` üzerinden
+ * curriculum.json'daki track'in `chapters` dizisinden okunur. Müfredat
+ * değişirse aşama sayfası kendiliğinden uyar.
+ */
+export const StageLessonSchema = z
+  .object({
+    type: z.literal("stage"),
+    /** Sıra: 0 = hazırlık, 1-6 = müfredat track'leri. İskeletle eşleşmeli. */
+    stage: z.number().int().min(0).max(6),
+    /** curriculum.json'daki track id'si. Hazırlık aşamasında yok. */
+    track: z.string().optional(),
+    /** Takvimdeki yeri — "Hafta 1-4" gibi. Yalnızca gösterim. */
+    weeks: z.string().min(3).max(40),
+    /** Haftalık hedef saat. Program gerçekçi dursun diye sayfada yazar. */
+    hours: z.number().int().min(1).max(40).optional(),
+    /** Hub satırında görünen "bunu bitirince ne yapabilirsin" cümlesi. */
+    outcome: z.string().min(20).max(160),
+    /** Aşamanın gerçek hayat projesi — okumakla bitmediğinin kanıtı. */
+    project: z.string().min(20).max(200),
+    ...BaseFrontmatter,
+  })
+  .strict();
+
 export const LessonFrontmatterSchema = z.discriminatedUnion("type", [
   ChapterLessonSchema,
   CommandLessonSchema,
+  StageLessonSchema,
 ]);
 
 export type LessonFrontmatter = z.infer<typeof LessonFrontmatterSchema>;
 export type ChapterLesson = z.infer<typeof ChapterLessonSchema>;
 export type CommandLesson = z.infer<typeof CommandLessonSchema>;
+export type StageLesson = z.infer<typeof StageLessonSchema>;
 
 /** Dosyadan okunmuş, gövdesiyle birlikte ders. */
 export type Lesson = {
@@ -112,7 +147,11 @@ export type Lesson = {
 };
 
 /** Ders türüne göre URL öneki. Tek yerde tanımlı; değişirse her yer uyar. */
-export const URL_PREFIX = { chapter: "/ogren", command: "/komut" } as const;
+export const URL_PREFIX = {
+  chapter: "/ogren",
+  command: "/komut",
+  stage: "/yol-haritasi",
+} as const;
 
 export function lessonUrl(fm: LessonFrontmatter, slug: string): string {
   return `${URL_PREFIX[fm.type]}/${slug}`;
@@ -124,3 +163,26 @@ export function resolveSlug(fm: LessonFrontmatter): string {
   if (fm.type === "command") return slugify(fm.command);
   return slugify(fm.title);
 }
+
+/* =========================================================================
+   YOL HARİTASININ İSKELETİ
+   -------------------------------------------------------------------------
+   Aşamaların SIRASI ve KİMLİĞİ burada; içerikleri content/yol-haritasi/*.md.
+
+   Neden ayrı bir liste var: hub sayfası henüz YAZILMAMIŞ aşamayı da "yakında"
+   diye göstermek zorunda — yoksa okuyucu programın üç aşamadan oluştuğunu
+   sanar. Bölüm hub'ı bu bilgiyi curriculum.chapters'tan alıyor; aşamaların
+   karşılığı ise curriculum.tracks, artı müfredatta karşılığı OLMAYAN tek
+   aşama: Hafta 0 (hazırlık — kurulum, hesaplar, çalışma ritmi).
+
+   1-6 arası aşamalar track'lerle aynı sırada olmalı; üreteç bunu denetler.
+   ========================================================================= */
+export const ROADMAP_SPINE = [
+  { n: 0, track: null, label: "Hazırlık" },
+  { n: 1, track: "fundamentals", label: "Foundations" },
+  { n: 2, track: "cloud-core", label: "Cloud Core" },
+  { n: 3, track: "iac", label: "Infrastructure as Code" },
+  { n: 4, track: "containers", label: "Containers" },
+  { n: 5, track: "automation", label: "Otomasyon" },
+  { n: 6, track: "mastery", label: "Ustalık" },
+] as const;

@@ -16,6 +16,11 @@
     { "source": "/kayit", "destination": "/app", "permanent": false },
     { "source": "/terminal", "destination": "/app", "permanent": false },
 
+    { "source": "/roadmap", "destination": "/yol-haritasi", "permanent": false },
+    { "source": "/yolharitasi", "destination": "/yol-haritasi", "permanent": false },
+    { "source": "/yol-haritası", "destination": "/yol-haritasi", "permanent": false },
+    { "source": "/program", "destination": "/yol-haritasi", "permanent": false },
+
     { "source": "/dersler", "destination": "/ogren", "permanent": false },
     { "source": "/egitim", "destination": "/ogren", "permanent": false },
     { "source": "/learn", "destination": "/ogren", "permanent": false },

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aşama 4: konteynerler — Docker ve Kubernetes (hafta 13-17) — CloudQuest</title>
+  <meta name="description" content="Uygulamayı paketleyip her yerde aynı şekilde çalıştırma aşaması. Docker'ın temel kavramları, imaj katmanları ve Kubernetes'e ne zaman geçilmeli." />
+  <link rel="canonical" href="https://cloudquest.vercel.app/yol-haritasi/konteynerler-docker-ve-kubernetes" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#06070a" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta property="og:type" content="article" />
+  <meta property="og:locale" content="tr_TR" />
+  <meta property="og:site_name" content="CloudQuest" />
+  <meta property="og:url" content="https://cloudquest.vercel.app/yol-haritasi/konteynerler-docker-ve-kubernetes" />
+  <meta property="og:title" content="Aşama 4: konteynerler — Docker ve Kubernetes (hafta 13-17)" />
+  <meta property="og:description" content="Uygulamayı paketleyip her yerde aynı şekilde çalıştırma aşaması. Docker'ın temel kavramları, imaj katmanları ve Kubernetes'e ne zaman geçilmeli." />
+  <meta property="og:image" content="https://cloudquest.vercel.app/og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E%E2%98%81%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/css/landing.css" />
+  <link rel="stylesheet" href="/css/lesson.css" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"CloudQuest","item":"https://cloudquest.vercel.app/"},{"@type":"ListItem","position":2,"name":"Yol haritası","item":"https://cloudquest.vercel.app/yol-haritasi"},{"@type":"ListItem","position":3,"name":"Aşama 4: konteynerler — Docker ve Kubernetes (hafta 13-17)","item":"https://cloudquest.vercel.app/yol-haritasi/konteynerler-docker-ve-kubernetes"}]},{"@type":"LearningResource","headline":"Aşama 4: konteynerler — Docker ve Kubernetes (hafta 13-17)","description":"Uygulamayı paketleyip her yerde aynı şekilde çalıştırma aşaması. Docker'ın temel kavramları, imaj katmanları ve Kubernetes'e ne zaman geçilmeli.","inLanguage":"tr-TR","dateModified":"2026-08-24","url":"https://cloudquest.vercel.app/yol-haritasi/konteynerler-docker-ve-kubernetes","learningResourceType":"Syllabus","educationalLevel":"Beginner","timeRequired":"PT10H","publisher":{"@type":"Organization","name":"CloudQuest","url":"https://cloudquest.vercel.app"}}]}</script>
+</head>
+<body>
+  <a class="skip-link" href="#main">İçeriğe geç</a>
+  <canvas id="stars" aria-hidden="true"></canvas>
+  <div class="nebula" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="nav" id="nav">
+    <nav class="nav-inner" aria-label="Ana menü">
+      <a class="nav-logo" href="/">☁ CLOUDQUEST</a>
+      <div class="nav-links">
+        <a href="/yol-haritasi">Yol haritası</a>
+        <a href="/ogren">Öğren</a>
+        <a href="/komut">Komutlar</a>
+        <a href="/#mufredat">Müfredat</a>
+        <a href="/#sss">SSS</a>
+      </div>
+      <a class="btn btn-primary btn-sm" href="/app">Giriş yap</a>
+    </nav>
+  </header>
+
+  <nav class="crumbs" aria-label="Konum">
+    <div class="wrap">
+      <a href="/">CloudQuest</a><span class="crumb-sep">/</span><a href="/yol-haritasi">Yol haritası</a><span class="crumb-sep">/</span><span aria-current="page">Aşama 4: konteynerler — Docker ve Kubernetes (hafta 13-17)</span>
+    </div>
+  </nav>
+
+  <main id="main">
+    <article class="lesson">
+      <div class="wrap">
+        <p class="lesson-kicker">Yol haritası · Aşama 04 · Hafta 13-17</p>
+        <h1>Aşama 4: konteynerler — Docker ve Kubernetes (hafta 13-17)</h1>
+        <p class="lesson-standfirst">Uygulamayı paketleyip her yerde aynı şekilde çalıştırma aşaması. Docker'ın temel kavramları, imaj katmanları ve Kubernetes'e ne zaman geçilmeli.</p>
+        <dl class="stage-meta">
+          <div><dt>Takvim</dt><dd>Hafta 13-17</dd></div>
+          <div><dt>Haftalık yük</dt><dd>~10 saat</dd></div>
+          <div><dt>Müfredat bölümü</dt><dd>05</dd></div>
+          <div><dt>Uygulamalı adım</dt><dd>4 quest · 16 adım</dd></div>
+        </dl>
+        <div class="prose">
+<p>Bu aşamanın çözdüğü sorunun adı var: &quot;benim makinemde çalışıyordu&quot;. Konteyner,
+uygulamayı çalışması için gereken her şeyle birlikte paketliyor — böylece
+senin dizüstünde, meslektaşının makinesinde ve üretim sunucusunda aynı şey
+çalışıyor.</p>
+<p>Beş hafta ayrılmasının sebebi konunun zorluğu değil, iki katmanlı olması:
+önce paketleme (Docker), sonra çok sayıda paketi yönetme (Kubernetes). İkisini
+aynı hafta öğrenmeye çalışmak, ikisini de yarım öğrenmenin en hızlı yolu.</p>
+<h2>Hafta 13-14 — Docker</h2>
+<p>Üç kavramı ayırt etmekle başlıyorsun: <strong>imaj</strong> (kalıp), <strong>konteyner</strong> (o
+kalıptan çalışan örnek) ve <strong>kayıt</strong> (imajların durduğu depo). Yeni
+başlayanların kafası tam burada karışıyor; ayrımı bir kez oturttuğunda geri
+kalanı kolay.</p>
+<p>Sonra kendi imajını yazıyorsun. Öğrenilecek asıl şey sözdizimi değil,
+<strong>katman</strong> fikri: imaj üst üste binen katmanlardan oluşuyor ve her katman
+önbelleğe alınıyor. Katmanların sırasını doğru kurduğunda dakikalar süren
+derleme saniyelere iniyor — bu, ileride pipeline&#39;ının hızını belirleyen bilgi.</p>
+<p>Bu iki haftada ayrıca öğreniyorsun: veri konteyner içinde tutulmaz (konteyner
+ölünce veri de ölüyor), konteynerler birbirine ağ üzerinden konuşuyor,
+ve gizli değerler imaja gömülmez.</p>
+<h2>Hafta 15 — Çok servisli yığın</h2>
+<p>Gerçek uygulamalar tek parça değil: bir uygulama, bir veritabanı, belki bir
+önbellek. Bunları tek bir tanım dosyasıyla birlikte ayağa kaldırmak, yerel
+geliştirmenin standardı. Bu haftanın sonunda tek komutla açılıp kapanan bir
+yığının olacak.</p>
+<p>Burada durup soluklanmanı öneririz. Çoğu junior pozisyonun beklediği
+konteyner bilgisi tam olarak bu noktada bitiyor. Kubernetes bir üst basamak —
+ve gerekliliği duruma bağlı.</p>
+<h2>Hafta 16-17 — Kubernetes</h2>
+<p>Kubernetes, &quot;yüzlerce konteyneri kim, nerede, kaç kopya çalıştıracak&quot;
+sorusunun cevabı. Karmaşık görünüyor çünkü karmaşık; ama öğrenmesi
+gereken çekirdek küme küçük:</p>
+<ul>
+<li><strong>Pod</strong> — çalışan en küçük birim.</li>
+<li><strong>Deployment</strong> — kaç kopya, hangi imaj, güncelleme nasıl yapılacak.</li>
+<li><strong>Service</strong> — bu podlara nasıl ulaşılır (podlar gelip gidiyor, adresleri
+kalıcı değil).</li>
+<li><strong>ConfigMap / Secret</strong> — yapılandırma ve gizli değerler.</li>
+<li><strong>Ingress</strong> — dışarıdan gelen trafiğin kapısı.</li>
+</ul>
+<p>Bunları bulutta değil, <strong>yerelde</strong> öğren (kind ya da minikube). Yönetilen bir
+küme öğrenirken ayda ciddi para yazıyor ve yerel küme aynı kavramları
+öğretiyor.</p>
+<h2>Sık yapılan hata</h2>
+<p>En yaygın hata, Docker&#39;ı atlayıp doğrudan Kubernetes&#39;e girmek. İş
+ilanlarında Kubernetes daha çok geçiyor, dolayısıyla cazip. Ama Kubernetes
+konteyner çalıştıran bir sistem — konteynerin ne olduğunu bilmeden onu
+yönetmeyi öğrenmek, direksiyonu tanımadan trafiği öğrenmeye benziyor.</p>
+<p>İkinci yaygın hata: her şeyi Kubernetes&#39;e taşımak. Küçük bir uygulama için
+Kubernetes, taşıdığı karmaşıklıkla getirdiği faydadan fazlasını götürüyor.
+&quot;Buna gerek var mı&quot; sorusunu sorabilmek de bu aşamanın çıktısı.</p>
+<h2>Bu aşamayı bitirdiğini nasıl anlarsın</h2>
+<ul>
+<li>Bir uygulamayı kendi imajına paketleyip çalıştırdın.</li>
+<li>İmajını neden daha küçük ve daha hızlı yapabildiğini açıklayabiliyorsun.</li>
+<li>Çok servisli bir yığını tek tanımla ayağa kaldırıyorsun.</li>
+<li>Yerel bir kümede çalışan bir uygulamaya tarayıcıdan erişebildin.</li>
+</ul>
+
+        </div>
+<section class="stage-covers">
+        <h2>Bu aşamada işlenen bölümler</h2>
+        <div class="hub-row is-soon"><span class="hub-n">05</span>
+             <span class="hub-t">Containers</span><span class="hub-d">Docker ile paketle ve dagit.</span></div>
+      </section>
+<section class="stage-project">
+        <p class="practice-k">Aşama projesi</p>
+        <p>Bir uygulamayı kendi imajına paketle, veritabanıyla birlikte çok servisli olarak ayağa kaldır; sonra aynı uygulamayı yerel bir Kubernetes kümesine dağıt.</p>
+      </section>
+<aside class="practice">
+        <p class="practice-k">Şimdi uygula</p>
+        <h2>Konteyner Doğuşu</h2>
+        <p>Bu dersteki komutları 4 adımlık bir görevde,
+           mentör eşliğinde sen yazıyorsun. Takılırsan doğrusu gösteriliyor.</p>
+        <a class="btn btn-primary" href="/app">Quest'i aç — ücretsiz</a>
+      </aside>
+<nav class="stage-nav" aria-label="Aşamalar arası gezinme">
+        <a class="stage-step is-prev" href="/yol-haritasi/altyapiyi-kodla-terraform">
+             <span>← önceki aşama</span>
+             <b>Aşama 3: altyapıyı kodla — Terraform (hafta 9-12)</b></a>
+        <a class="stage-step is-next" href="/yol-haritasi/otomasyon-ci-cd-ve-izleme">
+             <span>sonraki aşama →</span>
+             <b>Aşama 5: CI/CD ve gözlemlenebilirlik (hafta 18-22)</b></a>
+      </nav>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <span>☁ CloudQuest · güncellendi 2026-08-24</span>
+      <nav class="footer-links" aria-label="Alt menü">
+        <a href="/yol-haritasi">Yol haritası</a>
+        <a href="/ogren">Öğren</a>
+        <a href="/komut">Komutlar</a>
+        <a href="/app">Giriş yap</a>
+        <a href="/">Ana sayfa</a>
+      </nav>
+    </div>
+  </footer>
+  <script src="/js/stars.js"></script>
+  <script src="/js/landing.js"></script>
+</body>
+</html>
