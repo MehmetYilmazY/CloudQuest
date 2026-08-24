@@ -17,8 +17,9 @@ var CQApi = (function () {
     var cfg = window.CQ_CONFIG || {};
     if (cfg.FUNCTIONS_URL) return cfg.FUNCTIONS_URL;
     if (!cfg.SUPABASE_URL) return null;
-    // https://<ref>.supabase.co -> https://<ref>.functions.supabase.co
-    return cfg.SUPABASE_URL.replace(".supabase.co", ".functions.supabase.co") + "/game";
+    // Supabase'in kanonik biçimi: <proje-url>/functions/v1/<fonksiyon-adi>
+    // (supabase-js'in functions.invoke() çağrısı da bunu kullanır.)
+    return cfg.SUPABASE_URL.replace(/\/+$/, "") + "/functions/v1/game";
   }
 
   /** Oturum token'ı: Auth katmanı tutuyor (ve gerekirse yeniliyor). */
@@ -54,7 +55,13 @@ var CQApi = (function () {
       .then(function (res) {
         return res.json().catch(function () { return {}; }).then(function (data) {
           if (!res.ok) {
-            var err = new Error(data.error || ("Sunucu hatası (" + res.status + ")"));
+            // 404 = fonksiyon o isimle yayında değil. En sık yapılan hata bu
+            // olduğu için mesajı tahmine bırakmıyoruz.
+            var msg = res.status === 404
+              ? "Oyun sunucusu bulunamadı. `game` fonksiyonu deploy edilmemiş " +
+                "(npx supabase functions deploy game)."
+              : (data.error || ("Sunucu hatası (" + res.status + ")"));
+            var err = new Error(msg);
             err.status = res.status;
             err.data = data;
             throw err;
@@ -70,14 +77,21 @@ var CQApi = (function () {
   }
 
   return {
-    /** Quest'i başlat; sunucunun bildiği adımı döndürür (yarım kaldıysa oradan). */
-    start: function (questId) { return call("start", { questId: questId }); },
+    /**
+     * Quest'i tamamla ve ödülü al. Quest başına TEK istek.
+     * Komut kontrolü tarayıcıda yapıldığı için sunucuya sadece bu geliyor.
+     */
+    complete: function (questId, attempts) {
+      return call("complete", { questId: questId, attempts: attempts || [] });
+    },
 
-    /** Komutu doğrula. Dönen: {ok, success?, objIndex?, questComplete?, award?, progress?, hint?} */
-    verify: function (questId, command) { return call("verify", { questId: questId, command: command }); },
-
-    /** İpucunu satın al (ücretsiz hak varsa ondan düşer). */
-    hint: function (questId) { return call("hint", { questId: questId }); },
+    /**
+     * İpucu metnini getir. `free` true ise 3 yanlış sonrası güvenlik ağıdır
+     * (bedelsiz); false ise sunucu krediden ya da ücretsiz haktan düşer.
+     */
+    hint: function (questId, objIndex, free) {
+      return call("hint", { questId: questId, objIndex: objIndex, free: !!free });
+    },
 
     /** Shop'tan satın al. */
     purchase: function (itemId) { return call("purchase", { itemId: itemId }); },

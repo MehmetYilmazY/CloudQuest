@@ -12,3 +12,6 @@ node_modules/
 
 # ui-ux-pro-max skill (yerel arac, 2.8MB)
 .claude/
+
+# Supabase CLI gecici dosyalari (proje ref, oturum)
+supabase/.temp/

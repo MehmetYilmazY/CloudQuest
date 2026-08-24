@@ -9,6 +9,7 @@ import assert from "node:assert/strict";
 import { match, tokenize, segments } from "./parser.ts";
 import { validateCurriculum, allQuests } from "./curriculum.validate.ts";
 import { readFileSync } from "node:fs";
+import { createContext, runInContext } from "node:vm";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -119,4 +120,47 @@ test("müfredat: boş girdi hiçbir objective'i geçmez", () => {
     });
   }
   assert.deepEqual(leaks, [], `\n${leaks.join("\n")}`);
+});
+
+/* =========================================================================
+   TARAYICI <-> SUNUCU PARİTESİ
+   -------------------------------------------------------------------------
+   Parser artık iki yerde çalışıyor: tarayıcıda anlık kontrol, sunucuda ödül
+   verilirken son söz. İkisi farklı karar verirse oyuncu "oyun doğru dedi
+   ama XP gelmedi" durumuna düşer — mümkün olan en kötü hata.
+
+   web/js/parser.js bu dosyadan ÜRETİLİYOR (scripts/build.ts), ama üretim
+   adımı bozulabilir. Bu test üretilen dosyayı gerçekten çalıştırıp aynı
+   sonucu verdiğini doğruluyor.
+   ========================================================================= */
+test("parite: üretilen tarayıcı parser'ı sunucuyla aynı kararı verir", () => {
+  const generated = readFileSync(join(ROOT, "web", "js", "parser.js"), "utf8");
+
+  const ctx: { CQParser?: { match(raw: string, e: unknown): boolean } } = {};
+  createContext(ctx);
+  runInContext(generated, ctx);
+  const browser = ctx.CQParser;
+  assert.ok(browser && typeof browser.match === "function", "web/js/parser.js CQParser.match sunmalı");
+
+  const raw = JSON.parse(readFileSync(join(ROOT, "data", "curriculum.json"), "utf8"));
+  const res = validateCurriculum(raw);
+  assert.equal(res.ok, true);
+  if (!res.ok) return;
+
+  // Her objective icin: dogru cevap, bos girdi ve birkac bozuk girdi.
+  const probes = ["", "asdf", "help", "ls -la", "sudo rm -rf /"];
+  const mismatches: string[] = [];
+
+  for (const q of allQuests(res.data)) {
+    q.objectives.forEach((o, i) => {
+      for (const input of [o.hint, ...probes]) {
+        const server = match(input, o.expect);
+        const client = browser!.match(input, o.expect);
+        if (server !== client) {
+          mismatches.push(`${q.id}[${i + 1}] "${input}" → sunucu:${server} tarayıcı:${client}`);
+        }
+      }
+    });
+  }
+  assert.deepEqual(mismatches, [], `\n${mismatches.join("\n")}`);
 });

@@ -1,29 +1,31 @@
 /* =========================================================================
    CloudQuest — `game` Edge Function  (Katman 1: sunucu otoritesi)
    -------------------------------------------------------------------------
-   Oyunun "hakem"i burasıdır. İstemci artık şunları YAPAMAZ:
-     • doğru cevabı bilmek        -> expect/hint bu tarafta kalır
-     • adım atlamak               -> sırayı quest_progress tutar
-     • kendine XP/credit yazmak   -> ödülü bu fonksiyon verir
-     • ipucunu bedava almak       -> bedel burada tahsil edilir
+   ÖDÜL OTORİTESİ. Komut kontrolü artık TARAYICIDA yapılıyor (anlık geri
+   bildirim için); burası ilerlemenin YAZILDIĞI tek yer.
+
+   İstemcinin hâlâ yapamadığı şey: kendine XP/level/credit/rozet yazmak.
+   profiles üzerinde kolon bazlı GRANT duruyor, o kolonlara yalnızca bu
+   fonksiyon (service_role ile) dokunabiliyor.
+
+   Neyi KAYBETTİĞİMİZİ de yazalım, sonradan şaşırmayalım: sunucu adımları
+   görmediği için "quest'i bitirdim" iddiası istemciden geliyor ve
+   doğrulanamıyor. Kararlı biri quest'i oynamadan ödülünü alabilir.
+   Bilinçli takas — bkz. docs/LAYER-1-SERVER-AUTHORITY.md.
 
    Eylemler (POST body: { action, ... }):
-     start    { questId }                      -> quest'i başlat / kaldığın adım
-     verify   { questId, command }             -> komutu doğrula, gerekirse ödüllendir
-     hint     { questId }                      -> ipucunu satın al veya ücretsiz al
-     purchase { itemId }                       -> shop'tan satın al
-     reset    {}                               -> ilerlemeyi sıfırla
+     complete  { questId, attempts? }        -> quest ödülü (quest başına TEK istek)
+     hint      { questId, objIndex, free? }  -> ipucu metni
+     purchase  { itemId }                    -> shop'tan satın al
+     milestone { key }                       -> quest dışı rozet (rehber / test)
+     reset     {}                            -> ilerlemeyi sıfırla
 
    Kimlik: Authorization: Bearer <supabase access token> (verify_jwt açık).
    Yazma:  service_role istemcisi (RLS'i baypas eder) — anahtar yalnızca
            sunucu ortamında bulunur, tarayıcıya ASLA gitmez.
    ========================================================================= */
 import { createClient, type SupabaseClient } from "jsr:@supabase/supabase-js@2";
-import { match, type Expect } from "../_shared/parser.ts";
-import {
-  applyAward, xpToNext, ANSWER_COST, MAX_WRONG_BEFORE_ANSWER,
-  type Progress,
-} from "../_shared/progression.ts";
+import { applyAward, xpToNext, ANSWER_COST, type Progress } from "../_shared/progression.ts";
 import curriculum from "../_shared/curriculum.json" with { type: "json" };
 
 /* ----------------------------------------------------------------- tipler */
@@ -126,9 +128,22 @@ Deno.serve(async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
   if (req.method !== "POST") return fail("sadece POST", 405);
 
+  /* Supabase iki anahtar adlandırması kullanıyor: eski projelerde
+     SERVICE_ROLE/ANON, yeni API anahtar sistemine geçmiş projelerde
+     SECRET/PUBLISHABLE. İkisini de kabul ediyoruz ki hangi projede
+     deploy edilirse edilsin çalışsın. */
   const url = Deno.env.get("SUPABASE_URL");
-  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  if (!url || !serviceKey) return fail("sunucu yapilandirilmamis", 500);
+  const serviceKey =
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? Deno.env.get("SUPABASE_SECRET_KEY");
+  if (!url || !serviceKey) {
+    // Hangi değişkenin eksik olduğunu söyle: "sunucu hatasi" demek
+    // saatlerce log okutuyor.
+    console.error(
+      "eksik ortam degiskeni:",
+      !url ? "SUPABASE_URL" : "SUPABASE_SERVICE_ROLE_KEY / SUPABASE_SECRET_KEY"
+    );
+    return fail("sunucu yapilandirilmamis", 500);
+  }
 
   // 1) Kimlik: JWT'den kullanıcıyı çöz. İstemcinin gönderdiği "userId"e ASLA güvenilmez.
   const token = req.headers.get("Authorization")?.replace(/^Bearer\s+/i, "");
@@ -146,8 +161,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
   try {
     switch (action) {
-      case "start":    return await handleStart(db, userId, body);
-      case "verify":   return await handleVerify(db, userId, body);
+      case "complete": return await handleComplete(db, userId, body);
       case "hint":     return await handleHint(db, userId, body);
       case "purchase": return await handlePurchase(db, userId, body);
       case "milestone": return await handleMilestone(db, userId, body);
@@ -159,10 +173,19 @@ Deno.serve(async (req: Request): Promise<Response> => {
     return fail("sunucu hatasi", 500);
   }
 });
-
-/* ------------------------------------------------------------- start ---- */
-/** Quest'i başlatır (veya yarım kalmışsa kaldığı adımı döndürür). */
-async function handleStart(db: SupabaseClient, userId: string, body: Record<string, unknown>) {
+/* ---------------------------------------------------------- complete ---- */
+/**
+ * Quest tamamlandı: ödülü ver. QUEST BAŞINA TEK İSTEK.
+ *
+ * Komut kontrolü tarayıcıda yapıldığı için sunucu adımları görmüyor; bu
+ * çağrının "gerçekten çözdüm" iddiası istemciden geliyor. Yine de sunucu
+ * iki şeyi doğruluyor:
+ *   • quest'in kilidi açık mı (requires zinciri)
+ *   • daha önce ödül alınmış mı (completed_at atomik olarak işaretlenir)
+ * Ve XP/level/credits hesabını istemciye bırakmıyor — profiles'ta kolon
+ * bazlı GRANT durduğu için konsoldan "level 99" hâlâ mümkün değil.
+ */
+async function handleComplete(db: SupabaseClient, userId: string, body: Record<string, unknown>) {
   const questId = String(body.questId ?? "");
   const quest = QUESTS.get(questId);
   if (!quest) return fail("quest bulunamadi", 404);
@@ -170,124 +193,41 @@ async function handleStart(db: SupabaseClient, userId: string, body: Record<stri
   const profile = await loadProfile(db, userId);
   if (!isUnlocked(quest, profile.completed ?? [])) return fail("bu quest henuz kilitli", 403);
 
-  const { data: existing } = await db
-    .from("quest_progress").select("*")
-    .eq("user_id", userId).eq("quest_id", questId).maybeSingle();
-
-  if (existing?.completed_at) {
-    return json({ questId, objIndex: 0, total: quest.objectives.length, alreadyCompleted: true });
-  }
-
-  let objIndex = existing?.obj_index ?? 0;
-  if (!existing) {
-    await db.from("quest_progress").insert({ user_id: userId, quest_id: questId, obj_index: 0 });
-    objIndex = 0;
-  }
-
-  return json({
-    questId,
-    objIndex,
-    total: quest.objectives.length,
-    wrongCount: existing?.wrong_count ?? 0,
-    alreadyCompleted: false,
-  });
-}
-
-/* ------------------------------------------------------------ verify ---- */
-/**
- * Komutu doğrular. Doğruysa adımı ilerletir; son adımsa ödülü verir.
- * Ödül çift verilemez: completed_at'i atomik olarak "NULL iken" işaretleriz.
- */
-async function handleVerify(db: SupabaseClient, userId: string, body: Record<string, unknown>) {
-  const questId = String(body.questId ?? "");
-  const command = String(body.command ?? "").slice(0, 2000);
-  const quest = QUESTS.get(questId);
-  if (!quest) return fail("quest bulunamadi", 404);
-
-  const { data: prog } = await db
-    .from("quest_progress").select("*")
-    .eq("user_id", userId).eq("quest_id", questId).maybeSingle();
-  if (!prog) return fail("once quest'i baslat", 409);
-  if (prog.completed_at) return fail("bu quest zaten tamamlandi", 409);
-
-  const objIndex: number = prog.obj_index;
-  const objective = quest.objectives[objIndex];
-  if (!objective) return fail("gecersiz adim", 409);
-
-  const ok = match(command, objective.expect as Expect);
-
-  // Telemetri: doğru da yanlış da kaydedilir. Bilerek await ediliyor —
-  // isolate istek biter bitmez donabilir, "ateşle ve unut" kayıp yazma demek.
-  const { error: attemptErr } = await db
-    .from("attempts")
-    .insert({ user_id: userId, quest_id: questId, obj_index: objIndex, command, ok });
-  if (attemptErr) console.error("attempt yazilamadi:", attemptErr);   // oyunu bloklamaz
-
-  /* --- yanlış: sayaç artar, 3'ten sonra ücretsiz ipucu --------------------*/
-  if (!ok) {
-    const wrongCount = (prog.wrong_count ?? 0) + 1;
-    await db.from("quest_progress").update({ wrong_count: wrongCount })
-      .eq("user_id", userId).eq("quest_id", questId);
-
-    const freeHint = wrongCount >= MAX_WRONG_BEFORE_ANSWER;
-    if (freeHint) {
-      // Güvenlik ağı: cevabı bedava göster ve sayacı sıfırla.
-      await db.from("quest_progress").update({ wrong_count: 0 })
-        .eq("user_id", userId).eq("quest_id", questId);
-    }
-    return json({
-      ok: false,
-      wrongCount: freeHint ? 0 : wrongCount,
-      remaining: Math.max(0, MAX_WRONG_BEFORE_ANSWER - wrongCount),
-      hint: freeHint ? objective.hint : undefined,   // ücretsiz güvenlik ağı
-    });
-  }
-
-  /* --- doğru: adımı ilerlet ---------------------------------------------*/
-  const nextIndex = objIndex + 1;
-  const isLast = nextIndex >= quest.objectives.length;
-
-  if (!isLast) {
-    await db.from("quest_progress")
-      .update({ obj_index: nextIndex, wrong_count: 0 })
-      .eq("user_id", userId).eq("quest_id", questId);
-    return json({
-      ok: true,
-      success: objective.success,
-      objIndex: nextIndex,
-      total: quest.objectives.length,
-      questComplete: false,
-    });
-  }
-
-  /* --- son adım: ödül. completed_at yarışı atomik olarak çözer ------------*/
-  const { data: claimed } = await db
+  /* Ödülü yalnızca İLK istek alır: completed_at NULL iken işaretleniyor.
+     Çift tıklama, sekme yenileme veya kötü niyetli tekrar — hepsi burada
+     kesiliyor. */
+  const { data: claimed, error: claimErr } = await db
     .from("quest_progress")
-    .update({ obj_index: nextIndex, wrong_count: 0, completed_at: new Date().toISOString() })
-    .eq("user_id", userId).eq("quest_id", questId)
-    .is("completed_at", null)          // <- ödülü yalnızca İLK istek alır
+    .upsert(
+      { user_id: userId, quest_id: questId, obj_index: quest.objectives.length,
+        completed_at: new Date().toISOString() },
+      { onConflict: "user_id,quest_id", ignoreDuplicates: false }
+    )
+    .is("completed_at", null)
     .select("quest_id");
 
-  if (!claimed || claimed.length === 0) {
-    return json({ ok: true, success: objective.success, questComplete: true, award: null });
+  if (claimErr) {
+    console.error("quest_progress claim hatasi:", claimErr);
+    return fail("ilerleme yazilamadi", 500);
   }
+  if (!claimed || claimed.length === 0) {
+    return json({ ok: true, alreadyCompleted: true });
+  }
+
+  await recordAttempts(db, userId, questId, body.attempts);
 
   // İyimser kilitle yaz; paralel istek araya girdiyse bir kez daha dene.
   for (let attempt = 0; attempt < 3; attempt++) {
-    const profile = await loadProfile(db, userId);
-    const before = toProgress(profile);
+    const fresh = attempt === 0 ? profile : await loadProfile(db, userId);
+    const before = toProgress(fresh);
     const { next, leveledUp, levelsGained, newBadge } = applyAward(before, {
       xp: quest.xp, credits: quest.credits, badge: quest.badge, questId: quest.id,
     });
     if (await writeProgress(db, userId, before, next)) {
       return json({
         ok: true,
-        success: objective.success,
-        questComplete: true,
-        award: {
-          xp: quest.xp, credits: quest.credits,
-          badge: newBadge, leveledUp, levelsGained,
-        },
+        alreadyCompleted: false,
+        award: { xp: quest.xp, credits: quest.credits, badge: newBadge, leveledUp, levelsGained },
         progress: publicProgress(next),
       });
     }
@@ -295,29 +235,73 @@ async function handleVerify(db: SupabaseClient, userId: string, body: Record<str
   return fail("ilerleme yazilamadi, tekrar dene", 503);
 }
 
+/**
+ * Deneme telemetrisi. Artık her komutta ayrı istek gelmediği için istemci
+ * denemeleri quest boyunca biriktirip burada TOPLU gönderiyor — ek istek
+ * maliyeti sıfır, "oyuncular hangi adımda takılıyor" verisi korunuyor.
+ *
+ * Veri istemciden geldiği için kesin doğru değil; ürün analitiği için
+ * yeterli, anti-cheat kanıtı olarak kullanılamaz.
+ */
+async function recordAttempts(
+  db: SupabaseClient, userId: string, questId: string, raw: unknown
+): Promise<void> {
+  if (!Array.isArray(raw) || raw.length === 0) return;
+
+  const rows = raw
+    .slice(0, 200)                                   // şişirme koruması
+    .filter((a): a is Record<string, unknown> => !!a && typeof a === "object")
+    .map((a) => ({
+      user_id: userId,
+      quest_id: questId,
+      obj_index: Number(a.objIndex) || 0,
+      command: String(a.command ?? "").slice(0, 500),
+      ok: !!a.ok,
+    }))
+    .filter((r) => r.command.length > 0);
+
+  if (!rows.length) return;
+  const { error } = await db.from("attempts").insert(rows);
+  if (error) console.error("attempts yazilamadi:", error);   // oyunu bloklamaz
+}
+
 /* -------------------------------------------------------------- hint ---- */
 /**
- * İpucunu (doğru komutu) verir. Bedel önce tahsil edilir:
- *   • ücretsiz hakkı varsa haktan düşer
- *   • yoksa ANSWER_COST kadar kredi düşer
- * İkisi de atomik UPDATE ... WHERE ile yapılır; bakiye negatife düşemez.
+ * İpucu metnini (doğru komutu) döndürür. `hint` public bundle'da olmadığı
+ * için buradan isteniyor.
+ *
+ * ⚠ DÜRÜST SINIR: `free` bayrağı istemciden geliyor ve sunucu artık yanlış
+ * deneme sayısını bilmiyor (komut kontrolü tarayıcıda). Yani kredi bedelini
+ * atlamak teknik olarak mümkün. Kredi ekonomisi bu kararla birlikte
+ * "yumuşak" bir sınır hâline geldi — zaten `expect` spec'i bundle'da
+ * olduğundan cevap türetilebilir durumda. Ekonomiyi tekrar bağlayıcı
+ * yapmak istersek adım takibinin sunucuya dönmesi gerekir.
  */
 async function handleHint(db: SupabaseClient, userId: string, body: Record<string, unknown>) {
   const questId = String(body.questId ?? "");
   const quest = QUESTS.get(questId);
   if (!quest) return fail("quest bulunamadi", 404);
 
-  const { data: prog } = await db
-    .from("quest_progress").select("*")
-    .eq("user_id", userId).eq("quest_id", questId).maybeSingle();
-  if (!prog || prog.completed_at) return fail("aktif quest yok", 409);
+  const objIndex = Number(body.objIndex);
+  const objective = quest.objectives[objIndex];
+  if (!objective) return fail("gecersiz adim", 400);
 
-  const objective = quest.objectives[prog.obj_index];
-  if (!objective) return fail("gecersiz adim", 409);
+  // Kaç ipucu kullanıldığı yine kayda geçsin (içerik zorluk analizi için).
+  const bumpHint = () =>
+    db.from("quest_progress").upsert(
+      { user_id: userId, quest_id: questId, hints_used: 1 },
+      { onConflict: "user_id,quest_id", ignoreDuplicates: true }
+    );
+
+  // 3 yanlış sonrası güvenlik ağı: bedelsiz.
+  if (body.free === true) {
+    await bumpHint();
+    return json({ hint: objective.hint, paidWith: "free-safety-net" });
+  }
 
   const profile = await loadProfile(db, userId);
 
-  // 1) Ücretsiz hak
+  // 1) Ücretsiz ipucu hakkı (shop'tan alınmış)
   if ((profile.free_hints ?? 0) > 0) {
     const { data: spent } = await db
       .from("profiles")
@@ -326,9 +310,7 @@ async function handleHint(db: SupabaseClient, userId: string, body: Record<strin
       .eq("free_hints", profile.free_hints)     // atomik: aradan başka istek geçmesin
       .select("free_hints");
     if (spent && spent.length > 0) {
-      await db.from("quest_progress")
-        .update({ hints_used: (prog.hints_used ?? 0) + 1 })
-        .eq("user_id", userId).eq("quest_id", questId);
+      await bumpHint();
       return json({ hint: objective.hint, paidWith: "free", freeHints: spent[0].free_hints });
     }
   }
@@ -345,10 +327,7 @@ async function handleHint(db: SupabaseClient, userId: string, body: Record<strin
     .select("credits");
   if (!paid || paid.length === 0) return fail("odeme yapilamadi, tekrar dene", 409);
 
-  await db.from("quest_progress")
-    .update({ hints_used: (prog.hints_used ?? 0) + 1 })
-    .eq("user_id", userId).eq("quest_id", questId);
-
+  await bumpHint();
   return json({ hint: objective.hint, paidWith: "credits", credits: paid[0].credits });
 }
 
@@ -422,7 +401,9 @@ async function handleMilestone(db: SupabaseClient, userId: string, body: Record<
 /** İlerlemeyi sıfırlar. İş Postgres'teki reset_progress() fonksiyonunda. */
 async function handleReset(db: SupabaseClient, userId: string, token: string, url: string) {
   // Kullanıcının KENDİ token'ıyla çağırıyoruz: fonksiyon auth.uid()'e bakıyor.
-  const asUser = createClient(url, Deno.env.get("SUPABASE_ANON_KEY") ?? "", {
+  const anonKey =
+    Deno.env.get("SUPABASE_ANON_KEY") ?? Deno.env.get("SUPABASE_PUBLISHABLE_KEY") ?? "";
+  const asUser = createClient(url, anonKey, {
     auth: { persistSession: false },
     global: { headers: { Authorization: `Bearer ${token}` } },
   });

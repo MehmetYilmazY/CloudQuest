@@ -4,11 +4,13 @@
      data/curriculum.json
         ├─> web/js/content.generated.js                (PUBLIC — tarayıcıya)
         └─> supabase/functions/_shared/curriculum.json (SECRET — sunucuya)
+     shared/parser.ts
+        └─> web/js/parser.js                           (tarayıcı parser'ı)
 
-   PUBLIC bundle'da CEVAP YOKTUR: her objective'ten `expect` (doğrulama
-   spec'i) ve `hint` (doğru komut) çıkarılır. Doğrulama artık Edge
-   Function'da yapıldığı için tarayıcının bunları bilmesine gerek yok.
-   `success` metni de çıkarılır — doğru cevaptan sonra sunucu döndürür.
+   PUBLIC bundle'da `hint` (doğru komutun metni) YOKTUR. `expect` ve
+   `success` VARDIR: komut kontrolü tarayıcıda yapılıyor, çünkü her komutta
+   sunucuya gidip beklemek terminalin anlık hissini bozuyordu. İpucu metni
+   istendiğinde sunucudan çekilir; ödülü de sunucu verir.
 
    Kullanım:
      npm run build            derle
@@ -18,6 +20,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { stripTypeScriptTypes } from "node:module";
 import { validateCurriculum } from "../shared/curriculum.validate.ts";
 import { buildContent } from "./content.ts";
 import type { Curriculum, Quest, Objective } from "../shared/curriculum.schema.ts";
@@ -52,7 +55,18 @@ function sceneVerb(o: Objective): string {
   return o.hint.trim().split(/\s+/)[0].toLowerCase();
 }
 
-/** Bir quest'in public kopyası: cevap taşıyan alanlar düşürülür. */
+/**
+ * Bir quest'in public kopyası.
+ *
+ * KARAR (anlık geri bildirim): komut doğrulaması tarayıcıda yapılıyor, bu
+ * yüzden `expect` spec'i ve doğru cevabın çıktısı (`success`) bundle'a
+ * giriyor. Her tuşta sunucuya gidip 200ms beklemek oyunun en iyi yanını —
+ * terminalin anlık hissini — bozuyordu.
+ *
+ * `hint` (doğru komutun METNİ) hâlâ DIŞARIDA: ipucu istendiğinde ya da üç
+ * yanlıştan sonra sunucudan çekiliyor. Nadir bir çağrı olduğu için gecikme
+ * hissedilmiyor, ama kopyala-yapıştır cevap listesi de bundle'da durmuyor.
+ */
 function publicQuest(q: Quest): unknown {
   return {
     ...q,
@@ -60,15 +74,52 @@ function publicQuest(q: Quest): unknown {
       task: o.task,
       teach: o.teach,
       verb: sceneVerb(o),
-      // expect / hint / success KASITLI OLARAK YOK — sunucuda kalır.
+      expect: o.expect,     // tarayıcı anlık doğrulama için okur
+      success: o.success,   // doğru cevaptan sonra gösterilen çıktı
+      // hint KASITLI OLARAK YOK — sunucuda kalır.
     })),
   };
+}
+
+/**
+ * Tarayıcı parser'ını `shared/parser.ts`'ten üretir.
+ *
+ * Parser artık iki yerde çalışıyor: tarayıcıda (anlık kontrol) ve sunucuda
+ * (ödül verilirken son doğrulama). İki elle yazılmış kopya tutmak, birinin
+ * diğerinden ayrışıp "oyun doğru dedi, sunucu yanlış dedi" durumunu
+ * yaratırdı — mümkün olan en kötü hata. Bu yüzden tek kaynak korunuyor:
+ * TS tipleri Node'un resmî ayıklayıcısıyla sökülüp IIFE'ye sarılıyor.
+ * shared/parser.test.ts üretilen dosyayı da ayrıca test ediyor.
+ */
+function browserParser(): string {
+  const src = readFileSync(join(ROOT, "shared", "parser.ts"), "utf8");
+  const stripped = stripTypeScriptTypes(src, { mode: "strip" })
+    .replace(/^export\s+/gm, "")            // export -> yerel tanım
+    .replace(/^\s*type .*$/gm, "")          // kalan tip satırları
+    .split("\n")
+    .map((l) => (l.trim() ? "  " + l : l))  // IIFE içine gir
+    .join("\n");
+
+  return `/* ======================================================================
+   AUTO-GENERATED from shared/parser.ts — DO NOT EDIT.
+   Uret: npm run build
+
+   Ayni parser sunucuda da calisiyor (supabase/functions/_shared/parser.ts).
+   Kaynagi tek: shared/parser.ts. Buradaki bir degisiklik bir sonraki
+   build'de silinir; kurali degistirmek istiyorsan kaynagi duzenle.
+   ====================================================================== */
+var CQParser = (function () {
+  "use strict";
+${stripped}
+  return { match: match, tokenize: tokenize, segments: segments };
+})();
+`;
 }
 
 function toPublic(c: Curriculum): unknown {
   return {
     _meta: {
-      note: "AUTO-GENERATED. Cevap anahtari (expect/hint/success) BU DOSYADA YOKTUR; dogrulama supabase/functions/verify icinde yapilir.",
+      note: "AUTO-GENERATED. Komut kontrolu tarayicida (expect burada). Ipucu metni (hint) sunucuda; odul supabase/functions/game tarafindan verilir.",
     },
     chapters: c.chapters,
     tracks: c.tracks,
@@ -123,10 +174,10 @@ const publicBundle = `/* =======================================================
    AUTO-GENERATED from data/curriculum.json — DO NOT EDIT.
    Uret: npm run build
 
-   DIKKAT: Bu dosyada CEVAP ANAHTARI YOKTUR. Her objective'in 'expect'
-   spec'i ve 'hint' (dogru komut) metni SUNUCUDA tutulur; dogrulama
-   supabase/functions/verify icinde yapilir. Buraya elle cevap eklemek
-   Katman 1'in tum guvenlik modelini gecersiz kilar.
+   Komut kontrolu TARAYICIDA yapilir (anlik geri bildirim), bu yuzden
+   'expect' spec'leri ve 'success' ciktilari burada. 'hint' (dogru komutun
+   metni) BURADA DEGIL — sunucudan istenir. Odulu de sunucu verir
+   (supabase/functions/game).
    ====================================================================== */
 const CQ_DATA = ${publicJson};
 const CHAPTERS = CQ_DATA.chapters;
@@ -143,6 +194,7 @@ const secretBundle = JSON.stringify(data, null, 1) + "\n";
 console.log("");
 writeIfNeeded(PUBLIC_DST, publicBundle, "web/js/content.generated.js (public)");
 writeIfNeeded(SECRET_DST, secretBundle, "supabase/functions/_shared/curriculum.json (secret)");
+writeIfNeeded(join(ROOT, "web", "js", "parser.js"), browserParser(), "web/js/parser.js (uretilmis)");
 
 /* Paylaşılan çekirdeği Edge Function klasörüne kopyala.
    Deno, supabase/functions dışındaki klasörleri bundle edemediği için
@@ -163,7 +215,7 @@ for (const file of ["parser.ts", "progression.ts"]) {
 }
 
 /* Son kontrol: public bundle'a kaza eseri cevap sızdı mı? */
-for (const needle of ['"expect"', '"hint"', '"success"']) {
+for (const needle of ['"hint"']) {
   if (publicBundle.includes(needle)) {
     fail(`SIZINTI: public bundle ${needle} alanı içeriyor.`, [
       "scripts/build.ts içindeki publicQuest() bu alanı düşürmeli.",

@@ -1,5 +1,38 @@
 # Katman 1 — Güven & Temel
 
+> ## ⚠ SONRADAN DEĞİŞTİ: doğrulama tarayıcıya geri alındı
+>
+> Bu belge sunucu tarafı doğrulamayı anlatıyor. **Komut kontrolü artık
+> tarayıcıda yapılıyor** — her komutta sunucuya gidip ~200ms beklemek
+> terminalin anlık hissini bozuyordu ve o his ürünün en iyi yanıydı.
+>
+> **Şu an geçerli olan:**
+>
+> | Konu | Durum |
+> |---|---|
+> | Komut kontrolü | Tarayıcıda, anlık (`web/js/parser.js`) |
+> | `expect` spec'leri | Public bundle'da — **cevaplar türetilebilir** |
+> | `hint` (cevap metni) | Sunucuda; istendiğinde çekilir |
+> | XP / level / credits / rozet | **Sunucu yazar** (kolon bazlı GRANT duruyor) |
+> | Quest ödülü | Sunucu, quest başına tek istek (`complete`) |
+> | Adım sırası / atlama koruması | **Yok** — istemci "bitirdim" diyebilir |
+> | Kredi ekonomisi | **Yumuşak** — ipucu bedeli atlanabilir |
+> | Deneme telemetrisi | Toplu gönderiliyor; doğrulanmamış veri |
+>
+> Yani: konsoldan `level 99` **hâlâ yazılamıyor** (GRANT sayesinde), ama
+> kararlı biri quest'i oynamadan ödülünü alabilir ve cevapları okuyabilir.
+>
+> **Neden kabul edildi:** paywall'a daha çok var; o gelene kadar hile
+> yapmanın kime ne zararı olacağı belirsiz, oysa gecikmenin zararı her
+> komutta hissediliyordu. Katman 2'ye (ödeme) geçerken bu karar yeniden
+> ele alınmalı — ücretli içeriğin cevap anahtarı bundle'da duramaz.
+>
+> Geri almak istersen: `scripts/build.ts` içindeki `publicQuest()` fonksiyonundan
+> `expect`/`success` alanlarını çıkar, `game.js`'te `handleQuestInput`'u
+> `CQApi.verify()` çağıracak şekilde döndür, Edge Function'a `verify` +
+> `start` eylemlerini geri ekle. Git geçmişinde `54cae4f` commit'inde duruyor.
+
+
 Bu belge, CloudQuest'in "oynanabilir demo"dan "satılabilir ürün"e geçişindeki
 ilk katmanı anlatır: **ilerleme artık sahtelenemez, cevap anahtarı tarayıcıda
 değil.**

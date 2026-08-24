@@ -74,11 +74,15 @@ segmentlere ayrılır, quote-farkında tokenize edilir, baştaki `sudo` atılır
 her objective'in bildirimsel `expect` spec'i (`{cmd, need, anyOf}`) ile eşleşir.
 Böylece flag sırası, fazladan flag ve pipe kullanıcıyı yanlış cevaba düşürmez.
 
-Parser'ın **tek kaynağı** [`shared/parser.ts`](shared/parser.ts) ve **sunucuda**
-çalışır ([`supabase/functions/game`](supabase/functions/game/index.ts)).
-`web/js/parser.js` artık yalnızca sahne panelini çizmek için tokenize eder —
-doğru/yanlış kararı vermez. Terminal sürümü kendi `CQ-Match` fonksiyonlarını
-kullanmaya devam eder (yerel, çevrimdışı).
+Parser'ın **tek kaynağı** [`shared/parser.ts`](shared/parser.ts). Buradan iki
+çıktı üretilir: tarayıcı için [`web/js/parser.js`](web/js/parser.js) (anlık
+kontrol) ve sunucu için `supabase/functions/_shared/parser.ts`. İkisinin aynı
+kararı verdiğini `npm test` doğrular — 211 objective × 6 girdi.
+
+Komut kontrolü **tarayıcıda** yapılır (anlık geri bildirim için): `expect`
+spec'leri bundle'da, `hint` metni değil. **Ödülü sunucu verir** — quest bitince
+tek istek ([`supabase/functions/game`](supabase/functions/game/index.ts)).
+Takasın sınırları: [docs/LAYER-1-SERVER-AUTHORITY.md](docs/LAYER-1-SERVER-AUTHORITY.md)
 
 **Ekonomi kuralları** ([`shared/progression.ts`](shared/progression.ts)) de sunucuda:
 XP, level, rank, credits ve rozetleri yalnızca Edge Function yazabilir.

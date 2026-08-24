@@ -34,6 +34,7 @@
   let player = null;
   let mode = "menu";           // 'menu' | 'quest'
   let activeQuest = null, objIndex = 0, wrongCount = 0;
+  let questAttempts = [];            // quest boyunca biriken denemeler (bitiste toplu gonderilir)
   const history = []; let histPos = -1;
 
   /* ---------------- Rank & XP (SADECE GÖSTERİM) ----------------
@@ -391,19 +392,14 @@
     if (st === "done")   { print("   ✅ Bu quest zaten tamamlandı.", "hintline"); return; }
     if (st === "locked") { print("   🔒 Kilitli. Önce tamamla: " + q.requires.join(", "), "err"); return; }
 
-    /* Sunucu quest'i açar ve KAÇINCI adımda olduğumuzu söyler. Yarım
-       bırakılmış bir quest'e dönünce kaldığın yerden devam edersin —
-       bu bilgi artık tarayıcıda değil, quest_progress tablosunda. */
-    print("   … sunucuya bağlanılıyor", "muted");
-    CQApi.start(q.id).then(function (res) {
-      beginQuestUi(q, res.objIndex || 0);
-    }).catch(function (e) {
-      serverError(e, "Quest başlatılamadı");
-    });
+    /* Quest anında açılır: adım takibi tarayıcıda. Sunucuya yalnızca
+       quest bittiğinde tek bir istek gider (ödül için). */
+    beginQuestUi(q, 0);
   }
 
   function beginQuestUi(q, startIndex) {
-    activeQuest = q; objIndex = startIndex || 0; wrongCount = 0; mode = "quest"; refreshPrompt();
+    activeQuest = q; objIndex = startIndex || 0; wrongCount = 0; questAttempts = [];
+    mode = "quest"; refreshPrompt();
     sceneQuest(q);                       // sağdaki sahneyi bu questin dünyasına kur
     clearScreen(); rule();
     print("   ▶ QUEST: " + q.title + "   [" + q.id + "]", "questhead"); rule();
@@ -421,52 +417,75 @@
     print("   🎯 " + obj.task, "task");
     print("   💡 " + obj.teach, "teach");
   }
-  /* Doğrulama sunucuda olduğu için bu akış artık asenkron. Cevap gelene
-     kadar girdi kilitlenir; yoksa oyuncu aynı komutu iki kez göndererek
-     iki kez ödül almayı deneyebilirdi (sunucu da engelliyor, ama UI'ın
-     tutarlı kalması için burada da kilitliyoruz). */
-  var verifyInFlight = false;
+  /* Komut kontrolü TARAYICIDA, anında. Terminalin en iyi yanı gecikmesiz
+     olması; her komutta sunucuya gidip 200ms beklemek o hissi öldürüyordu.
 
+     Bunun bedeli: `expect` spec'leri bundle'da, yani kararlı biri cevapları
+     okuyabilir. Kabul edilen bir takas (bkz. docs/LAYER-1-SERVER-AUTHORITY).
+     Ödül hâlâ sunucudan geliyor — quest bitince tek istek. */
   function handleQuestInput(cmd) {
     var lower = cmd.toLowerCase();
-    if (/^(abandon|exit|back|çık|cik)$/.test(lower)) { print("   ↩  Quest'ten çıkıldı (ilerlemen sunucuda duruyor).", "hintline"); backToMenu(); return; }
+    if (/^(abandon|exit|back|çık|cik)$/.test(lower)) { print("   ↩  Quest'ten çıkıldı (ilerleme kaydedilmedi).", "hintline"); backToMenu(); return; }
     if (/^(hint|ipucu)$/.test(lower)) { revealHint(); return; }
     if (/^(task|görev|gorev|look)$/.test(lower)) { print("   🎯 " + activeQuest.objectives[objIndex].task, "task"); return; }
     if (cmd.trim() === "") return;
-    if (verifyInFlight) { print("   … önceki komut hâlâ kontrol ediliyor", "muted"); return; }
 
-    var quest = activeQuest;
-    verifyInFlight = true;
-    CQApi.verify(quest.id, cmd)
-      .then(function (res) {
-        // Yanıt gelirken oyuncu quest'ten çıkmış olabilir.
-        if (mode !== "quest" || activeQuest !== quest) return;
-        if (res.ok) onCorrect(cmd, res);
-        else onWrong(res);
-      })
-      .catch(function (e) { serverError(e, "Komut doğrulanamadı"); })
-      .finally(function () { verifyInFlight = false; inputEl.focus(); });
+    var obj = activeQuest.objectives[objIndex];
+    var ok = CQParser.match(cmd, obj.expect);
+
+    /* Telemetri: her deneme quest boyunca biriktirilip bitişte TEK istekle
+       gönderiliyor. Ayrı istek atmadığımız için maliyeti sıfır, ama
+       "oyuncular hangi adımda takılıyor" verisi korunuyor. */
+    if (questAttempts.length < 200) {
+      questAttempts.push({ objIndex: objIndex, command: cmd.slice(0, 500), ok: ok });
+    }
+
+    if (ok) onCorrect(cmd, obj);
+    else onWrong();
   }
 
-  function onCorrect(cmd, res) {
+  function onCorrect(cmd, obj) {
     sceneApply(cmd);                      // doğru komut: sahnede sonucunu göster
-    print("   ✔ " + res.success, "ok");
-    wrongCount = 0;
-    if (res.questComplete) { finishQuest(res); return; }
-    objIndex = res.objIndex;              // sıradaki adımı SUNUCU söyler
-    blank(); showObjective();
+    print("   ✔ " + obj.success, "ok");
+    wrongCount = 0; objIndex++;
+    if (objIndex >= activeQuest.objectives.length) finishQuest();
+    else { blank(); showObjective(); }
   }
 
-  function onWrong(res) {
-    wrongCount = res.wrongCount || 0;
-    if (res.hint) {
-      // 3 yanlış sonrası ücretsiz güvenlik ağı — bedeli sunucu değerlendirdi.
+  function onWrong() {
+    wrongCount++;
+    if (wrongCount >= MAX_WRONG_BEFORE_ANSWER) {
+      // Güvenlik ağı: cevabı ücretsiz göster. Metin bundle'da olmadığı için
+      // sunucudan çekiliyor — nadir bir çağrı, gecikmesi hissedilmiyor.
       print("   ✖ Tam olmadı. Yeni başlayan modunda yardım: doğru komut ↓", "err");
-      print("   💬 İpucu — şunu yaz:  " + res.hint, "hintline");
+      wrongCount = 0;
+      fetchHint(activeQuest, objIndex, true, function (hint) {
+        print("   💬 İpucu — şunu yaz:  " + hint, "hintline");
+      });
       return;
     }
-    print("   ✖ Tam olmadı. Tekrar dene — " + res.remaining +
+    print("   ✖ Tam olmadı. Tekrar dene — " + (MAX_WRONG_BEFORE_ANSWER - wrongCount) +
           " denemede daha bilemezsen cevabı ücretsiz gösteririm.", "err");
+  }
+
+  /* İpucu metnini sunucudan çeker. `free` true ise bedel alınmaz
+     (3 yanlış sonrası güvenlik ağı); false ise sunucu krediden düşer. */
+  function fetchHint(quest, step, free, onGot) {
+    CQApi.hint(quest.id, step, free).then(function (res) {
+      if (mode !== "quest" || activeQuest !== quest) return;
+      if (res.paidWith === "free") {
+        Auth.applyServerProgress({ freeHints: res.freeHints });
+        print("   🧠 Ücretsiz ipucu hakkı kullanıldı (kalan: " + res.freeHints + ").", "hintline");
+      } else if (res.paidWith === "credits") {
+        Auth.applyServerProgress({ credits: res.credits });
+        print("   💠 -" + ANSWER_COST + " kredi (kalan: " + res.credits + ").", "credit");
+      }
+      updateHud();
+      onGot(res.hint);
+    }).catch(function (e) {
+      if (e.status === 402) { print("   ❌ Yetersiz kredi.", "err"); return; }
+      serverError(e, "İpucu alınamadı");
+    });
   }
   /** Elle istenen ipucu: ücreti sunucu tahsil eder, cevabı sunucu verir. */
   function revealHint() {
@@ -475,12 +494,22 @@
     });
   }
 
-  function finishQuest(res) {
+  function finishQuest() {
     var q = activeQuest;
     blank(); rule(); narrate(q.complete, "mentor"); blank();
     if (typeof FX !== "undefined") FX.burstCenter({ count: 30 });   // quest tamamlandı kutlaması
     showQuestBeat(q.id, "complete");
-    showAward(res && res.award, res && res.progress);               // ödül SUNUCUDAN
+
+    /* Ödülü sunucu verir — quest başına TEK istek. İstemci kendi XP'sini
+       yazamaz (profiles'ta kolon bazlı GRANT duruyor), o yüzden konsoldan
+       "level 99" hâlâ mümkün değil. */
+    CQApi.complete(q.id, questAttempts).then(function (res) {
+      if (res.alreadyCompleted) return;
+      showAward(res.award, res.progress);
+    }).catch(function (e) {
+      serverError(e, "Ödül kaydedilemedi");
+      print("   Quest'i bitirdin ama XP kaydedilmedi. Bağlantı gelince tekrar dene.", "hintline");
+    });
     rule();
     var track = trackOfChapter(q.chapter);
     if (track && trackQuests(track).slice(-1)[0].id === q.id) showActOutro(track);   // perde kapanışı
@@ -614,21 +643,7 @@
       if (!ok) return;
       // Onay beklenirken oyuncu ilerlemiş olabilir; hâlâ aynı adımda mıyız?
       if (mode !== "quest" || activeQuest !== quest || objIndex !== step) return;
-
-      CQApi.hint(quest.id).then(function (res) {
-        if (res.paidWith === "free") {
-          Auth.applyServerProgress({ freeHints: res.freeHints });
-          print("   🧠 Ücretsiz ipucu kullanıldı (kalan: " + res.freeHints + ").", "hintline");
-        } else {
-          Auth.applyServerProgress({ credits: res.credits });
-          print("   💠 -" + ANSWER_COST + " kredi (kalan: " + res.credits + ").", "credit");
-        }
-        updateHud();
-        if (mode === "quest" && activeQuest === quest && objIndex === step) onGranted(res.hint);
-      }).catch(function (e) {
-        if (e.status === 402) { print("   ❌ Yetersiz kredi.", "err"); return; }
-        serverError(e, "İpucu alınamadı");
-      });
+      fetchHint(quest, step, false, onGranted);   // bedeli sunucu tahsil eder
     });
   }
   // Tab: cevabı doğrudan giriş kutusuna yazar.

@@ -15,7 +15,8 @@
     "typecheck": "tsc --noEmit",
     "ci": "npm run validate && npm test && npm run build:check && npm run check:links",
     "content": "node --experimental-strip-types scripts/content.ts",
-    "check:links": "node --experimental-strip-types scripts/check-links.ts"
+    "check:links": "node --experimental-strip-types scripts/check-links.ts",
+    "deploy": "npm run build && npx supabase functions deploy game"
   },
   "devDependencies": {
     "@types/node": "^22.15.3",
