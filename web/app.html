@@ -4,10 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CloudQuest — Cloud Engineering RPG</title>
-  <meta name="description" content="Cloud Engineer olma yolculuğunu oynayarak öğren: canlı terminal, story mode, questler ve XP." />
+  <meta name="description" content="Cloud Engineer olma yolculuğunu oynayarak öğren: canlı terminal, story mode, questler ve XP." data-i18n-attr="content:meta.app.desc" />
   <meta name="color-scheme" content="dark" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E%E2%98%81%EF%B8%8F%3C/text%3E%3C/svg%3E" />
   <link rel="stylesheet" href="css/style.css" />
+  <!-- i18n, icerik ve arayuz metinlerinden ONCE: dogru dil bundle'ini secer. -->
+  <script src="js/strings.generated.js"></script>
+  <script src="js/i18n.js"></script>
 </head>
 <body>
   <canvas id="stars" aria-hidden="true"></canvas>
@@ -42,42 +45,43 @@
       </div>
 
       <div class="auth-logo">☁ CLOUDQUEST</div>
-      <div class="auth-sub">Cloud Engineer olma yolculuğuna giriş yap</div>
+      <div class="auth-sub" data-i18n="page.auth.sub">Cloud Engineer olma yolculuğuna giriş yap</div>
+      <div class="lang-switch-wrap" data-lang-switch></div>
 
       <div class="auth-tabs" role="tablist">
-        <button class="auth-tab active" id="tab-login" type="button" role="tab" aria-selected="true">Giriş</button>
-        <button class="auth-tab" id="tab-register" type="button" role="tab" aria-selected="false">Kayıt Ol</button>
+        <button class="auth-tab active" id="tab-login" type="button" role="tab" aria-selected="true" data-i18n="page.auth.login">Giriş</button>
+        <button class="auth-tab" id="tab-register" type="button" role="tab" aria-selected="false" data-i18n="page.auth.register">Kayıt Ol</button>
       </div>
 
       <!-- LOGIN -->
       <form class="auth-form" id="form-login" novalidate>
-        <label for="login-email">E-posta</label>
+        <label for="login-email" data-i18n="page.auth.email">E-posta</label>
         <input type="email" id="login-email" autocomplete="username" placeholder="engineer@cloud.dev" />
-        <label for="login-pass">Şifre</label>
+        <label for="login-pass" data-i18n="page.auth.password">Şifre</label>
         <input type="password" id="login-pass" autocomplete="current-password" placeholder="••••••••" />
         <div class="auth-err" id="login-err" role="status" aria-live="polite"></div>
-        <button type="submit" class="auth-submit">Giriş yap</button>
-        <a href="#" class="forgot-link" id="forgot-link">Şifremi unuttum</a>
+        <button type="submit" class="auth-submit" data-i18n="page.auth.signin">Giriş yap</button>
+        <a href="#" class="forgot-link" id="forgot-link" data-i18n="page.auth.forgot">Şifremi unuttum</a>
       </form>
 
       <!-- REGISTER -->
       <form class="auth-form hidden" id="form-register" novalidate>
-        <label for="reg-name">Görünen ad</label>
+        <label for="reg-name" data-i18n="page.auth.displayName">Görünen ad</label>
         <input type="text" id="reg-name" maxlength="24" placeholder="engineer" />
-        <label for="reg-email">E-posta</label>
+        <label for="reg-email" data-i18n="page.auth.email">E-posta</label>
         <input type="email" id="reg-email" autocomplete="username" placeholder="engineer@cloud.dev" />
-        <label for="reg-pass">Şifre <span class="hint-inline">(en az 6 karakter)</span></label>
+        <label for="reg-pass" data-i18n-html="page.auth.passwordMin">Şifre <span class="hint-inline">(en az 6 karakter)</span></label>
         <input type="password" id="reg-pass" autocomplete="new-password" placeholder="••••••••" />
-        <label>Avatar seç</label>
+        <label data-i18n="page.auth.pickAvatar">Avatar seç</label>
         <div class="avatar-picker" id="reg-avatars"></div>
         <div class="auth-err" id="reg-err" role="status" aria-live="polite"></div>
-        <button type="submit" class="auth-submit">Hesap oluştur</button>
+        <button type="submit" class="auth-submit" data-i18n="page.auth.createAccount">Hesap oluştur</button>
       </form>
 
       <div class="auth-foot">
-        <a href="tutorial.html">Terminal 101 — hiç terminal kullanmadıysan</a>
-        <a href="quiz.html">Uygunluk testi — bu iş bana uygun mu?</a>
-        <a href="index.html">← Ana sayfa</a>
+        <a href="tutorial.html" data-i18n="page.auth.foot1">Terminal 101 — hiç terminal kullanmadıysan</a>
+        <a href="quiz.html" data-i18n="page.auth.foot2">Uygunluk testi — bu iş bana uygun mu?</a>
+        <a href="index.html" data-i18n="page.auth.foot3">← Ana sayfa</a>
       </div>
 
     </div>
@@ -92,7 +96,7 @@
       <div class="profile-head">
         <div class="profile-avatar-wrap">
           <div class="profile-avatar" id="profile-avatar"></div>
-          <button class="avatar-edit-btn" id="avatar-edit-btn" type="button">🎭 Değiştir</button>
+          <button class="avatar-edit-btn" id="avatar-edit-btn" type="button" data-i18n="page.profile.change">🎭 Değiştir</button>
         </div>
         <div class="profile-id">
           <div class="profile-name" id="profile-name">engineer</div>
@@ -104,31 +108,31 @@
       <div class="profile-stats" id="profile-stats"></div>
 
       <div class="profile-section">
-        <div class="profile-label">Cloud Engineer hazırlığı</div>
+        <div class="profile-label" data-i18n="page.profile.readiness">Cloud Engineer hazırlığı</div>
         <div class="ready-bar"><div class="ready-fill" id="ready-fill"></div></div>
         <div class="ready-text" id="ready-text">%0</div>
       </div>
 
       <div class="profile-section">
-        <div class="profile-label">🏅 Rozetler</div>
+        <div class="profile-label" data-i18n="page.profile.badges">🏅 Rozetler</div>
         <div class="badge-grid" id="badge-grid"></div>
       </div>
 
       <div class="profile-section">
-        <div class="profile-label">🏆 Tamamlanan modüller</div>
+        <div class="profile-label" data-i18n="page.profile.modulesDone">🏆 Tamamlanan modüller</div>
         <div class="modules-row" id="modules-row"></div>
       </div>
 
       <div class="profile-section">
-        <div class="profile-label">🎯 Şu anki modül — <span id="cur-module-name">Fundamentals</span> <span class="hint-inline" id="cur-module-pct">%0</span></div>
+        <div class="profile-label"><span data-i18n="page.profile.currentModule">🎯 Şu anki modül</span> — <span id="cur-module-name">Fundamentals</span> <span class="hint-inline" id="cur-module-pct">%0</span></div>
         <div class="module-mini-bar"><div class="module-mini-fill" id="cur-module-fill"></div></div>
         <div class="trainings" id="trainings"></div>
       </div>
 
       <div class="profile-actions">
-        <button class="btn-ghost" id="btn-logout" type="button">⎋ Çıkış Yap</button>
-        <button class="btn-ghost" id="btn-share" type="button">🎴 Kartı Paylaş</button>
-        <button class="btn-neon" id="btn-close-2" type="button">Terminale Dön</button>
+        <button class="btn-ghost" id="btn-logout" type="button" data-i18n="page.profile.signout">⎋ Çıkış Yap</button>
+        <button class="btn-ghost" id="btn-share" type="button" data-i18n="page.profile.share">🎴 Kartı Paylaş</button>
+        <button class="btn-neon" id="btn-close-2" type="button" data-i18n="page.profile.backToTerminal">Terminale Dön</button>
       </div>
     </div>
   </div>
@@ -145,46 +149,47 @@
             <div class="home-uname" id="home-uname">engineer</div>
             <div class="home-urank" id="home-urank">Intern ☁️</div>
           </div>
-          <button class="btn-ghost" id="home-logout" type="button">⎋ Çıkış</button>
+          <div class="lang-switch-wrap" data-lang-switch></div>
+          <button class="btn-ghost" id="home-logout" type="button" data-i18n="page.home.signout">⎋ Çıkış</button>
         </div>
       </header>
 
       <section class="home-hero">
-        <h1 class="home-title">Bugün ne öğreniyoruz, <span id="home-hero-name">engineer</span>?</h1>
-        <p class="home-sub">Bir görev hattı seç ve canlı terminale dal. Her quest seni bir adım daha job-ready yapar.</p>
+        <h1 class="home-title"><span data-i18n="page.home.title">Bugün ne öğreniyoruz,</span> <span id="home-hero-name">engineer</span>?</h1>
+        <p class="home-sub" data-i18n="page.home.sub">Bir görev hattı seç ve canlı terminale dal. Her quest seni bir adım daha job-ready yapar.</p>
       </section>
 
       <section class="home-section" id="sec-guide">
         <button class="guide-banner" id="guide-banner" type="button">
           <span class="gb-icon">🧭</span>
           <span class="gb-text">
-            <b>Yeni misin? 6 dakikada temelleri öğren</b>
-            <em>Bulut nedir, ne öğrenilir, hangi sırayla — kaydırarak, sıkılmadan. Sonunda rozet.</em>
+            <b data-i18n="page.home.guideTitle">Yeni misin? 6 dakikada temelleri öğren</b>
+            <em data-i18n="page.home.guideDesc">Bulut nedir, ne öğrenilir, hangi sırayla — kaydırarak, sıkılmadan. Sonunda rozet.</em>
           </span>
-          <span class="gb-go" id="gb-go">Başla →</span>
+          <span class="gb-go" id="gb-go" data-i18n="page.home.guideGo">Başla →</span>
         </button>
         <a class="guide-banner gb-alt" href="tutorial.html">
           <span class="gb-icon">⌨️</span>
           <span class="gb-text">
-            <b>Hiç terminal kullanmadın mı? Terminal 101</b>
-            <em>Komut nedir, prompt ne der — çalışan bir alıştırma terminalinde adım adım. Sıfır bilgi yeterli.</em>
+            <b data-i18n="page.home.termTitle">Hiç terminal kullanmadın mı? Terminal 101</b>
+            <em data-i18n="page.home.termDesc">Komut nedir, prompt ne der — çalışan bir alıştırma terminalinde adım adım. Sıfır bilgi yeterli.</em>
           </span>
-          <span class="gb-go">Öğren →</span>
+          <span class="gb-go" data-i18n="page.home.termGo">Öğren →</span>
         </a>
         <a class="quiz-chip" href="quiz.html">
           <span class="qc-icon">🧪</span>
-          <b>Bu iş bana uygun mu?</b>
-          <em>10 soruluk dürüst test</em>
+          <b data-i18n="page.home.quizTitle">Bu iş bana uygun mu?</b>
+          <em data-i18n="page.home.quizDesc">10 soruluk dürüst test</em>
           <span class="qc-go">→</span>
         </a>
       </section>
 
       <section class="home-section" id="sec-story">
-        <div class="home-section-label">🎯 ANA YOLCULUĞUN</div>
+        <div class="home-section-label" data-i18n="page.home.storyLabel">🎯 ANA YOLCULUĞUN</div>
         <div class="story-card" id="story-card">
           <div class="story-main">
             <div class="story-title">Cloud Engineer: Story Mode</div>
-            <div class="story-desc">8 bölüm · Linux'tan Security &amp; Cost'a — mentör Nova eşliğinde job-ready yolculuk.</div>
+            <div class="story-desc" data-i18n-html="page.home.storyDesc">8 bölüm · Linux'tan Security &amp; Cost'a — mentör Nova eşliğinde job-ready yolculuk.</div>
             <div class="story-chips" id="story-chips"></div>
           </div>
           <div class="story-side">
@@ -197,13 +202,13 @@
               </svg>
               <div class="story-ring-pct" id="story-ring-pct">%0</div>
             </div>
-            <button class="btn-neon" id="story-continue" type="button">▶ Devam Et</button>
+            <button class="btn-neon" id="story-continue" type="button" data-i18n="home.continue">▶ Devam Et</button>
           </div>
         </div>
       </section>
 
       <section class="home-section" id="sec-labs">
-        <div class="home-section-label">🔮 ADVANCED LABS <span class="hint-inline">— seç &amp; keşfet</span></div>
+        <div class="home-section-label" data-i18n-html="page.home.labsLabel">🔮 ADVANCED LABS <span class="hint-inline">— seç &amp; keşfet</span></div>
         <div class="lab-grid" id="lab-grid"></div>
       </section>
     </div>
@@ -217,12 +222,12 @@
     <div class="grid-bg"></div>
     <div class="share-card-box">
       <button class="profile-close" id="share-close" type="button" aria-label="kapat">✕</button>
-      <div class="modal-title">🎴 Başarı Kartın</div>
-      <div class="modal-sub">İndirip LinkedIn'de paylaşabilirsin.</div>
+      <div class="modal-title" data-i18n="page.share.title">🎴 Başarı Kartın</div>
+      <div class="modal-sub" data-i18n="page.share.sub">İndirip LinkedIn'de paylaşabilirsin.</div>
       <div class="share-preview" id="share-preview"></div>
       <div class="share-actions">
-        <button class="btn-ghost" id="share-copy" type="button">📋 Panoya Kopyala</button>
-        <button class="btn-neon" id="share-download" type="button">⬇ PNG İndir</button>
+        <button class="btn-ghost" id="share-copy" type="button" data-i18n="page.share.copy">📋 Panoya Kopyala</button>
+        <button class="btn-neon" id="share-download" type="button" data-i18n="page.share.download">⬇ PNG İndir</button>
       </div>
     </div>
   </div>
@@ -232,10 +237,10 @@
     <div class="grid-bg"></div>
     <div class="avatar-modal-card">
       <button class="profile-close" id="avatar-modal-close" type="button" aria-label="kapat">✕</button>
-      <div class="modal-title">🎭 Avatar Seç</div>
-      <div class="modal-sub">Karakterini seç — anında uygulanır.</div>
+      <div class="modal-title" data-i18n="page.avatar.title">🎭 Avatar Seç</div>
+      <div class="modal-sub" data-i18n="page.avatar.sub">Karakterini seç — anında uygulanır.</div>
       <div class="avatar-picker" id="modal-avatars"></div>
-      <button class="btn-neon" id="avatar-modal-done" type="button">Tamam</button>
+      <button class="btn-neon" id="avatar-modal-done" type="button" data-i18n="dlg.ok">Tamam</button>
     </div>
   </div>
 
@@ -243,7 +248,7 @@
   <div class="app hidden" id="app">
     <aside class="hud">
       <div class="hud-logo">☁️ CloudQuest</div>
-      <div class="hud-sub">Cloud Engineer olma yolculuğu</div>
+      <div class="hud-sub" data-i18n="page.hud.sub">Cloud Engineer olma yolculuğu</div>
 
       <div class="hud-card">
         <div class="hud-avatar" id="hud-avatar"></div>
@@ -257,28 +262,29 @@
         <div class="hud-row"><span>Credits</span><strong id="hud-credits">60 💠</strong></div>
         <div class="hud-row"><span>Quests</span><strong id="hud-quests">0 / 0</strong></div>
 
-        <button class="btn-profile" id="btn-profile" type="button">👤 PROFİL</button>
+        <button class="btn-profile" id="btn-profile" type="button" data-i18n="page.hud.profile">👤 PROFİL</button>
       </div>
 
       <div class="hud-block">
-        <div class="hud-label">🏅 Rozetler</div>
+        <div class="hud-label" data-i18n="page.profile.badges">🏅 Rozetler</div>
         <div class="hud-badges" id="hud-badges">—</div>
       </div>
 
       <div class="hud-block hud-help">
-        <div class="hud-label">Hızlı komutlar</div>
-        <ul>
+        <div class="hud-label" data-i18n="page.hud.quick">Hızlı komutlar</div>
+        <ul data-i18n-html="page.hud.quickList">
           <li><code>quests</code> — görev listesi</li>
           <li><code>quest c1q1</code> — göreve başla</li>
           <li><code>map</code> — ilerleme haritası</li>
           <li><code>profile</code> — profil sayfan</li>
           <li><code>help</code> — tüm komutlar</li>
         </ul>
-        <div class="hud-tip">Quest içinde <kbd>Tab</kbd> = doğru komutu yazar (25 💠, onay ister).<br>3 kez yanlış denersen ücretsiz gösterilir.</div>
+        <div class="hud-tip" data-i18n-html="page.hud.tip">Quest içinde <kbd>Tab</kbd> = doğru komutu yazar (25 💠, onay ister).<br>3 kez yanlış denersen ücretsiz gösterilir.</div>
       </div>
 
       <div class="hud-foot">
-        <span id="hud-account">—</span> · <a href="#" id="hud-home">ana sayfa</a> · <a href="#" id="hud-logout">çıkış</a>
+        <span id="hud-account">—</span> · <a href="#" id="hud-home" data-i18n="page.hud.home">ana sayfa</a> · <a href="#" id="hud-logout" data-i18n="page.hud.logout">çıkış</a>
+        · <span class="lang-switch-wrap" data-lang-switch></span>
       </div>
     </aside>
 
@@ -287,13 +293,15 @@
         <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
         <span class="term-title">cloudquest — live terminal</span>
         <button class="term-btn" id="scene-toggle" type="button"
-                title="Sahne panelini aç/kapat">🗺️ sahne</button>
+                title="Sahne panelini aç/kapat"
+                data-i18n="page.term.sceneBtn" data-i18n-attr="title:page.term.sceneBtnTitle">🗺️ sahne</button>
       </div>
       <div class="screen" id="screen"></div>
       <div class="input-line">
         <span class="prompt" id="prompt">engineer@cloudquest:~$</span>
         <input id="cmd" type="text" autocomplete="off" autocorrect="off"
-               autocapitalize="off" spellcheck="false" aria-label="komut girişi" />
+               autocapitalize="off" spellcheck="false" aria-label="komut girişi"
+               data-i18n-attr="aria-label:page.term.inputLabel" />
       </div>
     </main>
 

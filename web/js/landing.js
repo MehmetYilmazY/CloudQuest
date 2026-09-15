@@ -14,6 +14,8 @@
 (function () {
   "use strict";
 
+  var P = I18N.phrase;
+
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var $ = function (id) { return document.getElementById(id); };
 
@@ -55,18 +57,18 @@
      TERMİNAL — gerçek quest c1q1 akışı
      ======================================================================= */
   var SCRIPT = [
-    { cls: "c-mentor", text: "[Nova]: Bu prod sunucusunda yön bulmayı öğrenelim." },
-    { cls: "c-info",   text: "görev 1/4 — nerede olduğunu öğren" },
+    { cls: "c-mentor", text: P("[Nova]: Bu prod sunucusunda yön bulmayı öğrenelim.") },
+    { cls: "c-info",   text: P("görev 1/4 — nerede olduğunu öğren") },
     { cmd: "pwd" },
-    { cls: "c-ok",     text: "/home/engineer dizinindesin." },
-    { cls: "c-info",   text: "görev 2/4 — dosyaları listele" },
+    { cls: "c-ok",     text: P("/home/engineer dizinindesin.") },
+    { cls: "c-info",   text: P("görev 2/4 — dosyaları listele") },
     { cmd: "ls -la" },
     { cls: "c-ok",     text: "deploy/   logs/   README.md" },
-    { cls: "c-info",   text: "görev 3/4 — deploy.sh'ı çalıştırılabilir yap" },
+    { cls: "c-info",   text: P("görev 3/4 — deploy.sh'ı çalıştırılabilir yap") },
     { cmd: "chmod +x deploy/deploy.sh" },
-    { cls: "c-ok",     text: "artık çalıştırılabilir." },
-    { cls: "c-xp",     text: "+60 XP   +15 kredi   rozet: First Login" },
-    { cls: "c-mentor", text: "[Nova]: Terminal artık düşmanın değil, aletin." }
+    { cls: "c-ok",     text: P("artık çalıştırılabilir.") },
+    { cls: "c-xp",     text: P("+60 XP   +15 kredi   rozet: First Login") },
+    { cls: "c-mentor", text: P("[Nova]: Terminal artık düşmanın değil, aletin.") }
   ];
 
   var termBody = $("termBody");

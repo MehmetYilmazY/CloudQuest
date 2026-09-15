@@ -13,6 +13,13 @@
 var Guide = (function () {
   "use strict";
 
+  /* Rehber içeriği Türkçe yazılı; çevirisi ÇİZİM anında uygulanıyor.
+     Görsel bloklar tek parça HTML olarak çevriliyor — metin ile düzen
+     birbirine geçmiş durumda ve parçalara bölmek dizilimi dile bağlı
+     hâle getirirdi. Karşılığı olmayan blok Türkçe kalır, bozulmaz. */
+  var P = I18N.phrase;
+  var T = I18N.t;
+
   const BADGE = "🧭 Yol Bulucu";
 
   const SECTIONS = [
@@ -138,18 +145,18 @@ var Guide = (function () {
   function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 
   function sectionHTML(s, i, total) {
-    var titleHtml = esc(s.title).replace(/\n/g, "<br>");
-    var lines = (s.lines || []).map(function (l) { return '<p class="g-line">' + esc(l) + "</p>"; }).join("");
+    var titleHtml = esc(P(s.title)).replace(/\n/g, "<br>");
+    var lines = (s.lines || []).map(function (l) { return '<p class="g-line">' + esc(P(l)) + "</p>"; }).join("");
     return '' +
       '<section class="g-section' + (s.hero ? " g-hero" : "") + (s.finish ? " g-final" : "") + '" data-idx="' + i + '">' +
         '<div class="g-inner">' +
-          '<div class="g-kicker reveal">' + esc(s.kicker) + "</div>" +
+          '<div class="g-kicker reveal">' + esc(P(s.kicker)) + "</div>" +
           '<h2 class="g-title reveal">' + titleHtml + "</h2>" +
           (lines ? '<div class="reveal">' + lines + "</div>" : "") +
-          (s.visual ? '<div class="g-visual reveal">' + s.visual + "</div>" : "") +
-          (s.note ? '<div class="g-note reveal">' + s.note + "</div>" : "") +
+          (s.visual ? '<div class="g-visual reveal">' + P(s.visual) + "</div>" : "") +
+          (s.note ? '<div class="g-note reveal">' + P(s.note) + "</div>" : "") +
           (s.hero ? '<div class="g-scrollhint reveal">↓</div>' : "") +
-          (s.finish ? '<button class="btn-neon g-cta reveal" id="guide-finish">🚀 Oyuna Başla</button>' : "") +
+          (s.finish ? '<button class="btn-neon g-cta reveal" id="guide-finish">' + T("guide.cta") + "</button>" : "") +
         "</div>" +
       "</section>";
   }
@@ -162,7 +169,7 @@ var Guide = (function () {
     container.innerHTML =
       '<div class="g-progress"><div class="g-progress-fill" id="g-progress-fill"></div></div>' +
       '<div class="g-counter" id="g-counter">1 / ' + SECTIONS.length + "</div>" +
-      '<button class="g-close" id="guide-close" aria-label="kapat">✕</button>' +
+      '<button class="g-close" id="guide-close" aria-label="' + T("guide.close") + '">✕</button>' +
       '<div class="g-scroll" id="g-scroll">' +
         SECTIONS.map(function (s, i) { return sectionHTML(s, i, SECTIONS.length); }).join("") +
       "</div>";

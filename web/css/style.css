@@ -1163,3 +1163,41 @@ body.scene-off .term-btn { color: var(--muted); border-color: var(--border); bac
   .story-card { flex-direction: column; align-items: stretch; }
   .story-side { flex-direction: row; justify-content: space-between; }
 }
+
+/* =========================================================================
+   DİL ANAHTARI (TR | EN)
+   -------------------------------------------------------------------------
+   Üç yerde birden duruyor: giriş kartı, ana sayfa üst çubuğu ve terminal
+   HUD'ının altı. Sebep basit — oyuncu dili genelde ilk gördüğü ekranda
+   değiştirmek ister, ama oyunun ortasında fikir değiştirirse terminali
+   bırakıp çıkmak zorunda kalmasın.
+   ========================================================================= */
+.lang-switch {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid rgba(34, 211, 238, .22);
+  border-radius: 999px;
+  background: rgba(8, 18, 32, .6);
+  vertical-align: middle;
+}
+.lang-opt {
+  font: 600 11px/1 ui-monospace, "SFMono-Regular", Menlo, monospace;
+  letter-spacing: .06em;
+  color: #6d829b;
+  background: none;
+  border: 0;
+  border-radius: 999px;
+  padding: 5px 9px;
+  cursor: pointer;
+  transition: color .15s, background .15s;
+}
+.lang-opt:hover { color: #a9bed6; }
+.lang-opt.active {
+  color: #04121d;
+  background: linear-gradient(135deg, #22d3ee, #34d399);
+}
+.lang-opt:focus-visible { outline: 2px solid #22d3ee; outline-offset: 2px; }
+
+/* Giriş kartında başlığın altında ortalanır. */
+.auth-card .lang-switch-wrap { text-align: center; margin: 2px 0 14px; }

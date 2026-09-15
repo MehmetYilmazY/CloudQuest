@@ -12,17 +12,30 @@ var Tutorial = (function () {
 
   const BADGE = "⌨️ Terminal Rookie";
 
+  var P = I18N.phrase;
+  var T = I18N.t;
+
+  /* Sanal dosya sisteminin ADLARI da dile bağlı: İngilizce oynayan biri
+     "cd belgeler" yazmak zorunda kalmasın. Adlar TEK yerde tanımlı; hem
+     dosya sistemi hem adım kontrolleri buradan besleniyor. İkisi ayrışırsa
+     öğretici çözülemez hâle gelir — bu yüzden elle tekrarlanmıyor. */
+  var N = I18N.lang === "tr"
+    ? { docs: "belgeler", dl: "indirilenler", hello: "merhaba.txt",
+        notes: "notlar.txt", plan: "plan.txt", setup: "kurulum.sh", projects: "projeler" }
+    : { docs: "documents", dl: "downloads", hello: "hello.txt",
+        notes: "notes.txt", plan: "plan.txt", setup: "setup.sh", projects: "projects" };
+
   /* ---------------- sanal dosya sistemi ---------------- */
   function freshFS() {
-    return {
-      "/home/engineer": { type: "dir", children: ["belgeler", "indirilenler", "merhaba.txt"] },
-      "/home/engineer/belgeler": { type: "dir", children: ["notlar.txt", "plan.txt"] },
-      "/home/engineer/indirilenler": { type: "dir", children: ["kurulum.sh"] },
-      "/home/engineer/merhaba.txt": { type: "file", body: "Merhaba! Bu bir metin dosyası.\nTerminalden okundun. 👋" },
-      "/home/engineer/belgeler/notlar.txt": { type: "file", body: "- terminal öğren\n- bulut öğren\n- işi kap" },
-      "/home/engineer/belgeler/plan.txt": { type: "file", body: "Hafta 1: Linux\nHafta 2: Ağ + Git\nHafta 3: AWS" },
-      "/home/engineer/indirilenler/kurulum.sh": { type: "file", body: "#!/bin/bash\necho 'kurulum basladi'" }
-    };
+    var fs = {};
+    fs["/home/engineer"] = { type: "dir", children: [N.docs, N.dl, N.hello] };
+    fs["/home/engineer/" + N.docs] = { type: "dir", children: [N.notes, N.plan] };
+    fs["/home/engineer/" + N.dl] = { type: "dir", children: [N.setup] };
+    fs["/home/engineer/" + N.hello] = { type: "file", body: P("Merhaba! Bu bir metin dosyası.\nTerminalden okundun. 👋") };
+    fs["/home/engineer/" + N.docs + "/" + N.notes] = { type: "file", body: P("- terminal öğren\n- bulut öğren\n- işi kap") };
+    fs["/home/engineer/" + N.docs + "/" + N.plan] = { type: "file", body: P("Hafta 1: Linux\nHafta 2: Ağ + Git\nHafta 3: AWS") };
+    fs["/home/engineer/" + N.dl + "/" + N.setup] = { type: "file", body: "#!/bin/bash\necho 'setup started'" };
+    return fs;
   }
 
   let FS = freshFS();
@@ -52,7 +65,7 @@ var Tutorial = (function () {
       case "ls": {
         var target = resolve(args[0]);
         var node = FS[target];
-        if (!node) return { out: "ls: '" + (args[0] || "") + "': Böyle bir dosya ya da dizin yok", err: true };
+        if (!node) return { out: T("tut.ls.nofile", { name: args[0] || "" }), err: true };
         if (node.type === "file") return { out: args[0] };
         if (flags.indexOf("l") !== -1) {
           return { out: node.children.map(function (c) {
@@ -67,30 +80,30 @@ var Tutorial = (function () {
       }
       case "cd": {
         var dest = resolve(args[0]);
-        if (!FS[dest]) return { out: "cd: " + (args[0] || "") + ": Böyle bir dizin yok", err: true };
-        if (FS[dest].type !== "dir") return { out: "cd: " + args[0] + ": Bu bir dizin değil", err: true };
+        if (!FS[dest]) return { out: T("tut.cd.nodir", { name: args[0] || "" }), err: true };
+        if (FS[dest].type !== "dir") return { out: T("tut.cd.notdir", { name: args[0] }), err: true };
         cwd = dest; return { out: "" };
       }
       case "cat": {
-        if (!args[0]) return { out: "cat: hangi dosya? Örnek: cat merhaba.txt", err: true };
+        if (!args[0]) return { out: T("tut.cat.which", { example: N.hello }), err: true };
         var f = resolve(args[0]);
-        if (!FS[f]) return { out: "cat: " + args[0] + ": Böyle bir dosya yok", err: true };
-        if (FS[f].type === "dir") return { out: "cat: " + args[0] + ": Bu bir dizin", err: true };
+        if (!FS[f]) return { out: T("tut.cat.nofile", { name: args[0] }), err: true };
+        if (FS[f].type === "dir") return { out: T("tut.cat.isdir", { name: args[0] }), err: true };
         return { out: FS[f].body };
       }
       case "mkdir": {
-        if (!args[0]) return { out: "mkdir: klasör adı gerekli. Örnek: mkdir projeler", err: true };
+        if (!args[0]) return { out: T("tut.mkdir.needName", { example: N.projects }), err: true };
         var np = resolve(args[0]);
-        if (FS[np]) return { out: "mkdir: '" + args[0] + "' zaten var", err: true };
+        if (FS[np]) return { out: T("tut.mkdir.exists", { name: args[0] }), err: true };
         FS[np] = { type: "dir", children: [] };
         FS[cwd].children.push(args[0]);
         return { out: "" };
       }
       case "echo": return { out: t.slice(4).trim().replace(/^["']|["']$/g, "") };
       case "clear": return { clear: true };
-      case "help": return { out: "Kullanabileceğin komutlar:\n  pwd   nerdeyim\n  ls    listele  (ls -l detaylı)\n  cd    klasör değiştir\n  cat   dosya oku\n  mkdir klasör oluştur\n  echo  ekrana yaz\n  clear ekranı temizle" };
+      case "help": return { out: T("tut.help") };
       default:
-        return { out: cmd + ": komut bulunamadı. 'help' yazıp listeye bakabilirsin.", err: true };
+        return { out: T("tut.unknown", { cmd: cmd }), err: true };
     }
   }
 
@@ -102,12 +115,13 @@ var Tutorial = (function () {
             "Tıklamak yerine yazıyorsun — daha hızlı, tekrarlanabilir ve otomatikleştirilebilir.",
       diagram:
         '<div class="t-anatomy">' +
-          '<div class="t-anno"><span class="t-tag">1 · PROMPT</span><span class="t-desc">Terminal “hazırım” diyor</span></div>' +
-          '<div class="t-line"><b class="t-p">engineer@cloudquest:~$</b> <span class="t-c">ls</span> <span class="t-f">-l</span> <span class="t-a">belgeler</span></div>' +
+          '<div class="t-anno"><span class="t-tag">1 · PROMPT</span><span class="t-desc">' +
+            T("tut.anat.prompt") + "</span></div>" +
+          '<div class="t-line"><b class="t-p">engineer@cloudquest:~$</b> <span class="t-c">ls</span> <span class="t-f">-l</span> <span class="t-a">' + N.docs + "</span></div>" +
           '<div class="t-anno2">' +
-            '<span class="t-tag t-tc">2 · KOMUT</span>' +
+            '<span class="t-tag t-tc">2 · ' + T("tut.anat.command") + "</span>" +
             '<span class="t-tag t-tf">3 · FLAG</span>' +
-            '<span class="t-tag t-ta">4 · ARGÜMAN</span>' +
+            '<span class="t-tag t-ta">4 · ' + T("tut.anat.argument") + "</span>" +
           "</div>" +
         "</div>",
       note: "<b>Komut</b> = ne yapılacak · <b>Flag</b> = nasıl yapılacak (ayar) · <b>Argüman</b> = neye yapılacak"
@@ -117,10 +131,10 @@ var Tutorial = (function () {
       body: "Satır başındaki yazı sana <b>kim olduğunu ve nerede olduğunu</b> söyler.",
       diagram:
         '<div class="t-prompt-explain">' +
-          '<div class="t-pe"><b>engineer</b><span>kullanıcı adın</span></div>' +
-          '<div class="t-pe"><b>@cloudquest</b><span>hangi makinedesin</span></div>' +
-          '<div class="t-pe"><b>:~</b><span>hangi klasördesin (~ = ev)</span></div>' +
-          '<div class="t-pe"><b>$</b><span>“komutunu bekliyorum”</span></div>' +
+          '<div class="t-pe"><b>engineer</b><span>' + T("tut.prompt.user") + "</span></div>" +
+          '<div class="t-pe"><b>@cloudquest</b><span>' + T("tut.prompt.host") + "</span></div>" +
+          '<div class="t-pe"><b>:~</b><span>' + T("tut.prompt.cwd") + "</span></div>" +
+          '<div class="t-pe"><b>$</b><span>' + T("tut.prompt.dollar") + "</span></div>" +
         "</div>",
       note: "Sen sadece <b>$</b> işaretinden sonrasını yazarsın."
     },
@@ -144,14 +158,14 @@ var Tutorial = (function () {
     },
     {
       title: "Bir klasöre gir",
-      body: "<code>cd</code> (<i>change directory</i>) klasör değiştirir.<br>Şimdi <b>belgeler</b> klasörüne gir.",
-      task: { hint: "cd belgeler", check: function (c) { return /^\s*cd\s+belgeler\/?\s*$/.test(c); },
-              why: "Prompt'un değiştiğine dikkat et: ~ yerine ~/belgeler yazıyor." }
+      body: P("<code>cd</code> (<i>change directory</i>) klasör değiştirir.<br>Şimdi <b>{dir}</b> klasörüne gir.").replace("{dir}", N.docs),
+      task: { hint: "cd " + N.docs, check: function (c) { return new RegExp("^\\s*cd\\s+" + N.docs + "/?\\s*$").test(c); },
+              why: P("Prompt'un değiştiğine dikkat et: ~ yerine ~/{dir} yazıyor.").replace("{dir}", N.docs) }
     },
     {
       title: "Dosya oku",
-      body: "<code>cat</code> bir dosyanın içeriğini ekrana basar.<br><b>notlar.txt</b> dosyasını oku.",
-      task: { hint: "cat notlar.txt", check: function (c) { return /^\s*cat\s+notlar\.txt\s*$/.test(c); },
+      body: P("<code>cat</code> bir dosyanın içeriğini ekrana basar.<br><b>{file}</b> dosyasını oku.").replace("{file}", N.notes),
+      task: { hint: "cat " + N.notes, check: function (c) { return new RegExp("^\\s*cat\\s+" + N.notes.replace(".", "\\.") + "\\s*$").test(c); },
               why: "Sunucuda log ve config dosyalarını böyle okursun." }
     },
     {
@@ -162,8 +176,8 @@ var Tutorial = (function () {
     },
     {
       title: "Bir şey oluştur",
-      body: "<code>mkdir</code> yeni klasör açar. Kendine bir <b>projeler</b> klasörü oluştur.",
-      task: { hint: "mkdir projeler", check: function (c) { return /^\s*mkdir\s+projeler\s*$/.test(c); },
+      body: P("<code>mkdir</code> yeni klasör açar. Kendine bir <b>{dir}</b> klasörü oluştur.").replace("{dir}", N.projects),
+      task: { hint: "mkdir " + N.projects, check: function (c) { return new RegExp("^\\s*mkdir\\s+" + N.projects + "\\s*$").test(c); },
               why: "Sonra 'ls' ile kontrol edebilirsin — gerçekten oluştu." }
     },
     {
@@ -201,14 +215,14 @@ var Tutorial = (function () {
   function renderLesson() {
     var l = LESSONS[step];
     stepsEl.innerHTML =
-      '<div class="t-kicker">ADIM ' + (step + 1) + " / " + LESSONS.length + "</div>" +
-      "<h2>" + l.title + "</h2>" +
-      "<p>" + l.body + "</p>" +
+      '<div class="t-kicker">' + T("tut.step", { n: step + 1, total: LESSONS.length }) + "</div>" +
+      "<h2>" + P(l.title) + "</h2>" +
+      "<p>" + P(l.body) + "</p>" +
       (l.diagram || "") +
-      (l.note ? '<div class="t-note">' + l.note + "</div>" : "") +
+      (l.note ? '<div class="t-note">' + P(l.note) + "</div>" : "") +
       (l.task
-        ? '<div class="t-task">Şunu yaz: <code>' + l.task.hint + "</code></div>"
-        : '<button class="btn-neon t-next" id="t-next">Anladım, devam →</button>');
+        ? '<div class="t-task">' + T("tut.typeThis") + " <code>" + l.task.hint + "</code></div>"
+        : '<button class="btn-neon t-next" id="t-next">' + T("tut.gotIt") + "</button>");
     progEl.style.width = Math.round(step / LESSONS.length * 100) + "%";
     cntEl.textContent = (step + 1) + " / " + LESSONS.length;
     var nb = document.getElementById("t-next");
@@ -227,19 +241,18 @@ var Tutorial = (function () {
     progEl.style.width = "100%";
     cntEl.textContent = LESSONS.length + " / " + LESSONS.length;
     stepsEl.innerHTML =
-      '<div class="t-kicker">TAMAMLANDI</div>' +
-      "<h2>Artık terminal konuşuyorsun 🎉</h2>" +
-      "<p>Komut, flag, argüman, klasör gezme, dosya okuma — hepsi tamam.<br>" +
-      "Bunlar bulut mühendisliğinin <b>tamamının</b> üzerine kurulduğu temeldir.</p>" +
+      '<div class="t-kicker">' + T("tut.doneKicker") + "</div>" +
+      "<h2>" + T("tut.doneTitle") + "</h2>" +
+      "<p>" + T("tut.doneBody") + "</p>" +
       '<div class="t-badge">' + BADGE + "</div>" +
       '<div class="t-actions">' +
-        '<a class="btn-neon" href="app.html">🚀 Oyuna başla</a>' +
-        '<button class="btn-ghost" id="t-restart" type="button">↻ Baştan al</button>' +
+        '<a class="btn-neon" href="app.html">' + T("tut.playCta") + "</a>" +
+        '<button class="btn-ghost" id="t-restart" type="button">' + T("tut.restart") + "</button>" +
       "</div>";
     var rb = document.getElementById("t-restart");
     if (rb) rb.onclick = restart;
     print("", "");
-    print("✔ Öğreticiyi tamamladın. Serbest kullanmaya devam edebilirsin.", "t-ok");
+    print(T("tut.freeplay"), "t-ok");
     if (typeof FX !== "undefined") FX.burstCenter({ count: 36 });
     if (onFinish) onFinish(BADGE);
   }
@@ -247,7 +260,7 @@ var Tutorial = (function () {
   function restart() {
     FS = freshFS(); cwd = "/home/engineer"; step = 0; done = false;
     outEl.innerHTML = "";
-    print("Terminal sıfırlandı. Baştan başlıyoruz.", "t-dim");
+    print(T("tut.reset"), "t-dim");
     renderLesson();
   }
 
@@ -260,7 +273,7 @@ var Tutorial = (function () {
 
     var l = LESSONS[step];
     if (!done && l && l.task && l.task.check(raw)) {
-      print("✔ Doğru! " + l.task.why, "t-ok");
+      print(T("tut.correct") + " " + P(l.task.why), "t-ok");
       setTimeout(advance, 400);
     }
   }
@@ -278,8 +291,8 @@ var Tutorial = (function () {
       console.error("Tutorial: gerekli DOM öğeleri bulunamadı"); return;
     }
 
-    print("CloudQuest Terminal 101 — güvenli alıştırma ortamı.", "t-dim");
-    print("Buradaki hiçbir komut gerçek bilgisayarına dokunmaz. Rahat ol.", "t-dim");
+    print(T("tut.intro1"), "t-dim");
+    print(T("tut.intro2"), "t-dim");
     print("", "");
     renderLesson();
 

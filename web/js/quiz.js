@@ -15,6 +15,12 @@
 var Quiz = (function () {
   "use strict";
 
+  /* Soru bankası tek dilde (Türkçe) yazılı; çevirisi ÇİZİM anında
+     uygulanıyor (bkz. i18n.js/phrase). Böylece puanlama tablosu ile metin
+     birbirinden ayrı kalıyor: yeni bir dil eklemek soruların yapısına
+     dokunmuyor. */
+  var P = I18N.phrase;
+
   const BADGE = "🧪 Kendini Tanı";
 
   const DIMS = {
@@ -156,14 +162,14 @@ var Quiz = (function () {
     el("q-counter").textContent = (idx + 1) + " / " + Q.length;
     el("q-stage").innerHTML =
       '<div class="q-card">' +
-        '<div class="q-kicker">SORU ' + (idx + 1) + "</div>" +
-        "<h2>" + esc(item.q) + "</h2>" +
+        '<div class="q-kicker">' + esc(I18N.t("quiz.question", { n: idx + 1 })) + "</div>" +
+        "<h2>" + esc(P(item.q)) + "</h2>" +
         '<div class="q-opts">' +
           item.a.map(function (o, i) {
-            return '<button class="q-opt" data-i="' + i + '" type="button"><span></span>' + esc(o.t) + "</button>";
+            return '<button class="q-opt" data-i="' + i + '" type="button"><span></span>' + esc(P(o.t)) + "</button>";
           }).join("") +
         "</div>" +
-        (idx > 0 ? '<button class="q-back" id="q-back" type="button">← önceki</button>' : "") +
+        (idx > 0 ? '<button class="q-back" id="q-back" type="button">' + esc(I18N.t("quiz.back")) + "</button>" : "") +
       "</div>";
 
     el("q-stage").querySelectorAll(".q-opt").forEach(function (b) {
@@ -210,27 +216,28 @@ var Quiz = (function () {
     var bars = Object.keys(DIMS).map(function (k) {
       var p = pctDims[k];
       var cls = p >= 70 ? "hi" : (p >= 45 ? "mid" : "lo");
-      return '<div class="q-bar"><div class="q-bar-top"><span>' + DIMS[k].icon + " " + DIMS[k].label +
-             '</span><b>%' + p + "</b></div>" +
+      return '<div class="q-bar"><div class="q-bar-top"><span>' + DIMS[k].icon + " " + esc(P(DIMS[k].label)) +
+             "</span><b>" + esc(I18N.t("common.pct", { n: p })) + "</b></div>" +
              '<div class="q-bar-track"><i class="' + cls + '" style="width:' + p + '%"></i></div></div>';
     }).join("");
 
     el("q-stage").innerHTML =
       '<div class="q-result q-' + v.tier + '">' +
-        '<div class="q-score"><div class="q-score-num">%' + pct + "</div><span>uyum</span></div>" +
-        "<h2>" + v.title + "</h2>" +
-        "<p>" + v.body + "</p>" +
+        '<div class="q-score"><div class="q-score-num">' + esc(I18N.t("common.pct", { n: pct })) +
+          "</div><span>" + esc(I18N.t("quiz.fit")) + "</span></div>" +
+        "<h2>" + esc(P(v.title)) + "</h2>" +
+        "<p>" + P(v.body) + "</p>" +
         '<div class="q-bars">' + bars + "</div>" +
         (alts.length
-          ? '<div class="q-alts"><b>Bunlar da sana uyabilir:</b><ul><li>' + alts.join("</li><li>") + "</li></ul></div>"
+          ? '<div class="q-alts"><b>' + esc(I18N.t("quiz.altsTitle")) + "</b><ul><li>" +
+            alts.map(P).join("</li><li>") + "</li></ul></div>"
           : "") +
-        '<div class="q-disclaimer">Bu test bir kehanet değil, bir ayna. Düşük çıkan boyutlar ' +
-          "<b>geliştirilebilir</b> — önemli olan neye gireceğini bilerek başlamak.</div>" +
+        '<div class="q-disclaimer">' + I18N.t("quiz.disclaimer") + "</div>" +
         '<div class="q-actions">' +
           (pct >= 42
-            ? '<a class="btn-neon" href="app.html">🚀 Başlamaya hazırım</a>'
-            : '<a class="btn-neon" href="tutorial.html">⌨️ Önce Terminal 101\'i dene</a>') +
-          '<button class="btn-ghost" id="q-retry" type="button">↻ Testi tekrarla</button>' +
+            ? '<a class="btn-neon" href="app.html">' + esc(I18N.t("quiz.ctaReady")) + "</a>"
+            : '<a class="btn-neon" href="tutorial.html">' + esc(I18N.t("quiz.ctaTerminal")) + "</a>") +
+          '<button class="btn-ghost" id="q-retry" type="button">' + esc(I18N.t("quiz.retry")) + "</button>" +
         "</div>" +
       "</div>";
 

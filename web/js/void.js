@@ -25,13 +25,13 @@
   /* Nerede kaybolduğuna göre en yakın limanı öner. */
   if (hintEl) {
     var suggestion = null;
-    if (/^\/komut\//.test(path))      suggestion = { url: "/komut", label: "komut sözlüğü" };
-    else if (/^\/ogren\//.test(path)) suggestion = { url: "/ogren", label: "ders sayfaları" };
-    else if (/^\/(app|oyun|login|giris)/i.test(path)) suggestion = { url: "/app", label: "terminal" };
+    if (/^\/komut\//.test(path))      suggestion = { url: "/komut", label: I18N.t("void.commands") };
+    else if (/^\/ogren\//.test(path)) suggestion = { url: "/ogren", label: I18N.t("void.lessons") };
+    else if (/^\/(app|oyun|login|giris)/i.test(path)) suggestion = { url: "/app", label: I18N.t("void.terminal") };
 
     if (suggestion) {
       hintEl.innerHTML =
-        "Buraya yakın bir yer arıyorsan: " +
+        I18N.t("void.near") + " " +
         '<a href="' + suggestion.url + '">' + suggestion.label + "</a>.";
       hintEl.hidden = false;
     }

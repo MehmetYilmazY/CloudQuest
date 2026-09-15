@@ -134,7 +134,7 @@ var ShareCard = (function () {
     /* --- ilerleme çubuğu --- */
     var PX = AX, PY = 396, PW = W - 2 * AX, PH = 22;
     ctx.font = "16px " + MONO; ctx.fillStyle = C.muted;
-    ctx.fillText("CLOUD ENGINEER HAZIRLIĞI", PX, PY - 28);
+    ctx.fillText(I18N.t("card.readiness"), PX, PY - 28);
     ctx.textAlign = "right";
     ctx.font = "700 20px " + MONO; ctx.fillStyle = s.pct === 100 ? C.green : C.neon;
     ctx.fillText("%" + s.pct, PX + PW, PY - 30);
@@ -175,7 +175,7 @@ var ShareCard = (function () {
     }
     if (badges.length === 0) {
       ctx.fillStyle = C.muted; ctx.font = "18px " + MONO;
-      ctx.fillText("(henüz rozet yok)", PX, 480);
+      ctx.fillText(I18N.t("status.nobadge"), PX, 480);
     }
 
     /* --- alt bilgi --- */
@@ -183,7 +183,7 @@ var ShareCard = (function () {
     ctx.fillText("cloud-quest.vercel.app", PX, H - 62);
     ctx.textAlign = "right";
     ctx.fillStyle = "rgba(192,132,252,0.9)";
-    ctx.fillText("terminalde öğren · oynayarak ilerle", PX + PW, H - 62);
+    ctx.fillText(I18N.t("card.tagline"), PX + PW, H - 62);
     ctx.textAlign = "left";
 
     return cv;
