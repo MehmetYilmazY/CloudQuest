@@ -72,7 +72,72 @@ function json(body: unknown, status = 200): Response {
     headers: { ...CORS, "Content-Type": "application/json" },
   });
 }
-const fail = (message: string, status = 400) => json({ error: message }, status);
+
+/* ------------------------------------------------------------ HATA DİLİ
+   İstemci her istekte `lang` gönderiyor (web/js/api.js). Hata metinlerini
+   burada çeviriyoruz çünkü bunlar doğrudan oyuncunun ekranına basılıyor;
+   istemcide kod->metin tablosu tutmak, sunucunun yeni bir hata kodu
+   eklediği anda "bilinmeyen hata" gösterirdi.
+
+   Karşılığı olmayan dil Türkçeye düşer: yarım çeviri, boş mesajdan iyidir. */
+type ErrKey =
+  | "method" | "unconfigured" | "login" | "session" | "json" | "server"
+  | "questNotFound" | "questLocked" | "writeFailed" | "writeRetry"
+  | "badStep" | "noCredit" | "payFailed" | "itemNotFound" | "alreadyOwned"
+  | "purchaseRetry" | "badgeUnknown" | "badgeRetry" | "resetFailed";
+
+const MESSAGES: Record<"tr" | "en", Record<ErrKey, string>> = {
+  tr: {
+    method: "sadece POST",
+    unconfigured: "sunucu yapilandirilmamis",
+    login: "giris gerekli",
+    session: "gecersiz oturum",
+    json: "gecersiz JSON",
+    server: "sunucu hatasi",
+    questNotFound: "quest bulunamadi",
+    questLocked: "bu quest henuz kilitli",
+    writeFailed: "ilerleme yazilamadi",
+    writeRetry: "ilerleme yazilamadi, tekrar dene",
+    badStep: "gecersiz adim",
+    noCredit: "yetersiz kredi",
+    payFailed: "odeme yapilamadi, tekrar dene",
+    itemNotFound: "urun bulunamadi",
+    alreadyOwned: "bu unvana zaten sahipsin",
+    purchaseRetry: "satin alma yazilamadi, tekrar dene",
+    badgeUnknown: "bilinmeyen rozet",
+    badgeRetry: "rozet yazilamadi, tekrar dene",
+    resetFailed: "sifirlanamadi",
+  },
+  en: {
+    method: "POST only",
+    unconfigured: "server is not configured",
+    login: "sign-in required",
+    session: "invalid session",
+    json: "invalid JSON",
+    server: "server error",
+    questNotFound: "quest not found",
+    questLocked: "this quest is still locked",
+    writeFailed: "could not save progress",
+    writeRetry: "could not save progress, try again",
+    badStep: "invalid step",
+    noCredit: "not enough credits",
+    payFailed: "payment failed, try again",
+    itemNotFound: "item not found",
+    alreadyOwned: "you already have this title",
+    purchaseRetry: "could not save the purchase, try again",
+    badgeUnknown: "unknown badge",
+    badgeRetry: "could not save the badge, try again",
+    resetFailed: "could not reset",
+  },
+};
+
+/* İstek başına tek değer; handler'lara parametre geçirmemek için modül
+   düzeyinde tutuluyor. Edge Function her isteği ayrı çalıştırdığı için
+   istekler arası sızıntı yok. */
+let LANG: "tr" | "en" = "tr";
+const msg = (key: ErrKey) => MESSAGES[LANG][key] ?? MESSAGES.tr[key];
+
+const fail = (key: ErrKey, status = 400) => json({ error: msg(key), code: key }, status);
 
 /* ------------------------------------------------------- profil yardımcı */
 type ProfileRow = {
@@ -126,7 +191,7 @@ function isUnlocked(q: Quest, completed: string[]): boolean {
 /* ==================================================================== ana */
 Deno.serve(async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
-  if (req.method !== "POST") return fail("sadece POST", 405);
+  if (req.method !== "POST") return fail("method", 405);
 
   /* Supabase iki anahtar adlandırması kullanıyor: eski projelerde
      SERVICE_ROLE/ANON, yeni API anahtar sistemine geçmiş projelerde
@@ -142,21 +207,22 @@ Deno.serve(async (req: Request): Promise<Response> => {
       "eksik ortam degiskeni:",
       !url ? "SUPABASE_URL" : "SUPABASE_SERVICE_ROLE_KEY / SUPABASE_SECRET_KEY"
     );
-    return fail("sunucu yapilandirilmamis", 500);
+    return fail("unconfigured", 500);
   }
 
   // 1) Kimlik: JWT'den kullanıcıyı çöz. İstemcinin gönderdiği "userId"e ASLA güvenilmez.
   const token = req.headers.get("Authorization")?.replace(/^Bearer\s+/i, "");
-  if (!token) return fail("giris gerekli", 401);
+  if (!token) return fail("login", 401);
 
   const db = createClient(url, serviceKey, { auth: { persistSession: false } });
   const { data: userData, error: userErr } = await db.auth.getUser(token);
-  if (userErr || !userData?.user) return fail("gecersiz oturum", 401);
+  if (userErr || !userData?.user) return fail("session", 401);
   const userId = userData.user.id;
 
   // 2) Gövde
   let body: Record<string, unknown>;
-  try { body = await req.json(); } catch { return fail("gecersiz JSON"); }
+  try { body = await req.json(); } catch { return fail("json"); }
+  LANG = body.lang === "en" ? "en" : "tr";
   const action = String(body.action ?? "");
 
   try {
@@ -166,11 +232,11 @@ Deno.serve(async (req: Request): Promise<Response> => {
       case "purchase": return await handlePurchase(db, userId, body);
       case "milestone": return await handleMilestone(db, userId, body);
       case "reset":    return await handleReset(db, userId, token, url);
-      default:         return fail(`bilinmeyen action: ${action}`);
+      default:         return json({ error: `unknown action: ${action}`, code: "action" }, 400);
     }
   } catch (e) {
     console.error("game function hatasi:", e);
-    return fail("sunucu hatasi", 500);
+    return fail("server", 500);
   }
 });
 /* ---------------------------------------------------------- complete ---- */
@@ -188,10 +254,10 @@ Deno.serve(async (req: Request): Promise<Response> => {
 async function handleComplete(db: SupabaseClient, userId: string, body: Record<string, unknown>) {
   const questId = String(body.questId ?? "");
   const quest = QUESTS.get(questId);
-  if (!quest) return fail("quest bulunamadi", 404);
+  if (!quest) return fail("questNotFound", 404);
 
   const profile = await loadProfile(db, userId);
-  if (!isUnlocked(quest, profile.completed ?? [])) return fail("bu quest henuz kilitli", 403);
+  if (!isUnlocked(quest, profile.completed ?? [])) return fail("questLocked", 403);
 
   /* Ödülü yalnızca İLK istek alır: completed_at NULL iken işaretleniyor.
      Çift tıklama, sekme yenileme veya kötü niyetli tekrar — hepsi burada
@@ -208,7 +274,7 @@ async function handleComplete(db: SupabaseClient, userId: string, body: Record<s
 
   if (claimErr) {
     console.error("quest_progress claim hatasi:", claimErr);
-    return fail("ilerleme yazilamadi", 500);
+    return fail("writeFailed", 500);
   }
   if (!claimed || claimed.length === 0) {
     return json({ ok: true, alreadyCompleted: true });
@@ -232,7 +298,7 @@ async function handleComplete(db: SupabaseClient, userId: string, body: Record<s
       });
     }
   }
-  return fail("ilerleme yazilamadi, tekrar dene", 503);
+  return fail("writeRetry", 503);
 }
 
 /**
@@ -280,11 +346,11 @@ async function recordAttempts(
 async function handleHint(db: SupabaseClient, userId: string, body: Record<string, unknown>) {
   const questId = String(body.questId ?? "");
   const quest = QUESTS.get(questId);
-  if (!quest) return fail("quest bulunamadi", 404);
+  if (!quest) return fail("questNotFound", 404);
 
   const objIndex = Number(body.objIndex);
   const objective = quest.objectives[objIndex];
-  if (!objective) return fail("gecersiz adim", 400);
+  if (!objective) return fail("badStep", 400);
 
   // Kaç ipucu kullanıldığı yine kayda geçsin (içerik zorluk analizi için).
   const bumpHint = () =>
@@ -317,7 +383,7 @@ async function handleHint(db: SupabaseClient, userId: string, body: Record<strin
 
   // 2) Kredi ile
   if ((profile.credits ?? 0) < ANSWER_COST) {
-    return json({ error: "yetersiz kredi", cost: ANSWER_COST, credits: profile.credits }, 402);
+    return json({ error: msg("noCredit"), code: "noCredit", cost: ANSWER_COST, credits: profile.credits }, 402);
   }
   const { data: paid } = await db
     .from("profiles")
@@ -325,7 +391,7 @@ async function handleHint(db: SupabaseClient, userId: string, body: Record<strin
     .eq("id", userId)
     .eq("credits", profile.credits)             // atomik
     .select("credits");
-  if (!paid || paid.length === 0) return fail("odeme yapilamadi, tekrar dene", 409);
+  if (!paid || paid.length === 0) return fail("payFailed", 409);
 
   await bumpHint();
   return json({ hint: objective.hint, paidWith: "credits", credits: paid[0].credits });
@@ -335,17 +401,17 @@ async function handleHint(db: SupabaseClient, userId: string, body: Record<strin
 /** Shop satın alımı. Fiyat ve etki sunucudaki müfredattan okunur. */
 async function handlePurchase(db: SupabaseClient, userId: string, body: Record<string, unknown>) {
   const item = SHOP.get(Number(body.itemId));
-  if (!item) return fail("urun bulunamadi", 404);
+  if (!item) return fail("itemNotFound", 404);
 
   for (let attempt = 0; attempt < 3; attempt++) {
     const profile = await loadProfile(db, userId);
     const before = toProgress(profile);
 
     if (before.credits < item.cost) {
-      return json({ error: "yetersiz kredi", cost: item.cost, credits: before.credits }, 402);
+      return json({ error: msg("noCredit"), code: "noCredit", cost: item.cost, credits: before.credits }, 402);
     }
     if (item.effect.badge && before.badges.includes(item.effect.badge)) {
-      return json({ error: "bu unvana zaten sahipsin" }, 409);
+      return json({ error: msg("alreadyOwned"), code: "alreadyOwned" }, 409);
     }
 
     // Önce bedeli düş, sonra etkiyi uygula — ikisi de aynı yazmada.
@@ -364,14 +430,14 @@ async function handlePurchase(db: SupabaseClient, userId: string, body: Record<s
       });
     }
   }
-  return fail("satin alma yazilamadi, tekrar dene", 503);
+  return fail("purchaseRetry", 503);
 }
 
 /* --------------------------------------------------------- milestone ---- */
 /** Quest dışı rozet (rehber turu / uyum testi). Bir kez ödüllendirilir. */
 async function handleMilestone(db: SupabaseClient, userId: string, body: Record<string, unknown>) {
   const milestone = MILESTONES[String(body.key ?? "")];
-  if (!milestone) return fail("bilinmeyen rozet", 404);
+  if (!milestone) return fail("badgeUnknown", 404);
 
   for (let attempt = 0; attempt < 3; attempt++) {
     const profile = await loadProfile(db, userId);
@@ -394,7 +460,7 @@ async function handleMilestone(db: SupabaseClient, userId: string, body: Record<
       });
     }
   }
-  return fail("rozet yazilamadi, tekrar dene", 503);
+  return fail("badgeRetry", 503);
 }
 
 /* ------------------------------------------------------------- reset ---- */
@@ -408,7 +474,7 @@ async function handleReset(db: SupabaseClient, userId: string, token: string, ur
     global: { headers: { Authorization: `Bearer ${token}` } },
   });
   const { error } = await asUser.rpc("reset_progress");
-  if (error) return fail("sifirlanamadi: " + error.message, 500);
+  if (error) return json({ error: msg("resetFailed") + ": " + error.message, code: "resetFailed" }, 500);
 
   const profile = await loadProfile(db, userId);
   return json({ ok: true, progress: publicProgress(toProgress(profile)) });
