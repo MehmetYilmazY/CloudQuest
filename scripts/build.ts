@@ -22,7 +22,8 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { stripTypeScriptTypes } from "node:module";
 import { validateCurriculum } from "../shared/curriculum.validate.ts";
-import { buildContent } from "./content.ts";
+import { buildContent, SITE } from "./content.ts";
+import { buildEnglishPages } from "./i18n-html.ts";
 import {
   ALL_LANGS, SOURCE_LANG, TARGET_LANGS, curriculumMapPath, readLocaleMap,
   localizeCurriculum, curriculumEntries, coverage, uiMapPath, type Lang,
@@ -307,6 +308,15 @@ for (const needle of ['"hint"']) {
    ve "şimdi uygula" bağlantısını oradan çekiyor. */
 console.log("");
 const content = buildContent(data, { check: CHECK });
+
+/* Pazarlama sayfasının İngilizce ikizi: arama motoru JavaScript çalıştırmadan
+   da İngilizce içeriği görebilsin (bkz. scripts/i18n-html.ts). */
+const missingHtml = buildEnglishPages(uiMaps.en, SITE, (path, body, label) =>
+  writeIfNeeded(path, body, label)
+);
+if (missingHtml.length) {
+  console.log(dim(`  ! EN sayfada ${missingHtml.length} anahtar eksik: ${missingHtml.slice(0, 5).join(", ")}`));
+}
 if (content.errors.length) fail("Eğitim içeriği doğrulaması başarısız", content.errors);
 console.log(dim(`  — ${content.lessons.length} ders sayfası`));
 

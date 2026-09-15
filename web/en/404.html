@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title data-i18n="title.404">404 — nothing at these coordinates · CloudQuest</title>
+  <meta name="description" content="Aradığın sayfa bulunamadı. Ana sayfaya, ders sayfalarına veya terminale dönebilirsin." />
+
+  <!-- 404 sayfası indekslenmez: arama sonucunda çıkması hem kullanıcıyı hem
+       sitenin kalite sinyalini bozar. Vercel bu dosyayı 404 durum koduyla
+       servis eder (statik dağıtımda /404.html otomatik olarak kullanılır). -->
+  <meta name="robots" content="noindex, follow" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#06070a" />
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E%E2%98%81%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/css/landing.css" />
+  <link rel="stylesheet" href="/css/void.css" />
+  <!-- i18n, diger scriptlerden ONCE: dogru dil bundle'ini secer. -->
+  <script src="/js/strings.generated.js"></script>
+  <script src="/js/i18n.js"></script>
+
+  <link rel="alternate" hreflang="tr" href="https://cloudquest.vercel.app/404" />
+  <link rel="alternate" hreflang="en" href="https://cloudquest.vercel.app/en/404" />
+  <link rel="alternate" hreflang="x-default" href="https://cloudquest.vercel.app/404" />
+
+  <link rel="canonical" href="https://cloudquest.vercel.app/en/404" />
+  <link rel="alternate" hreflang="tr" href="https://cloudquest.vercel.app/404" />
+  <link rel="alternate" hreflang="en" href="https://cloudquest.vercel.app/en/404" />
+  <link rel="alternate" hreflang="x-default" href="https://cloudquest.vercel.app/404" />
+</head>
+
+<body>
+  <a class="skip-link" href="#main" data-i18n="nav.skip">Skip to content</a>
+
+  <canvas id="stars" aria-hidden="true"></canvas>
+  <div class="nebula" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="nav" id="nav">
+    <nav class="nav-inner" aria-label="Main menu" data-i18n-attr="aria-label:nav.main">
+      <a class="nav-logo" href="/">☁ CLOUDQUEST</a>
+      <div class="nav-links">
+        <a href="/yol-haritasi" data-i18n="nav.roadmap">Roadmap</a>
+        <a href="/ogren" data-i18n="nav.learn">Learn</a>
+        <a href="/komut" data-i18n="nav.commands">Commands</a>
+        <a href="/#mufredat" data-i18n="nav.curriculum">Curriculum</a>
+        <a href="/#sss" data-i18n="nav.faq">FAQ</a>
+      </div>
+      <span class="lang-switch-wrap" data-lang-switch></span>
+      <a class="btn btn-primary btn-sm" href="/app" data-i18n="nav.signin">Sign in</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="void">
+      <div class="wrap">
+        <p class="void-kicker"><i aria-hidden="true"></i> <span data-i18n="void.kicker">No signal</span></p>
+
+        <div class="void-code" aria-hidden="true">404</div>
+
+        <h1 data-i18n="void.title">There's nothing at these coordinates.</h1>
+        <p class="void-lead" data-i18n="void.lead">The page you wanted either moved, never existed, or a letter slipped in the address. All three are fixable — here are your routes.</p>
+
+        <dl class="void-tel">
+          <div>
+            <dt data-i18n="void.path">requested path</dt>
+            <dd id="void-path">—</dd>
+          </div>
+          <div>
+            <dt data-i18n="void.status">status</dt>
+            <dd class="bad">404 · NOT_FOUND</dd>
+          </div>
+          <div>
+            <dt data-i18n="void.server">server</dt>
+            <dd class="ok" data-i18n="void.serverOk">up · it isn't your fault</dd>
+          </div>
+        </dl>
+
+        <p class="void-nova" data-i18n-html="void.nova"><b>[Nova]:</b> Don't panic. You landed in the wrong directory — the terminal's <code>cd ..</code> logic applies here too. Step up a level and find the right path from there.</p>
+
+        <div class="void-cta">
+          <a class="btn btn-primary" href="/" data-i18n="nav.home">Home</a>
+          <a class="btn btn-ghost" href="/ogren" data-i18n="void.lessons">the lesson pages</a>
+          <a class="btn btn-ghost" href="/komut" data-i18n="void.commands">the command reference</a>
+          <a class="btn btn-ghost" href="/app" data-i18n="void.enterTerminal">Enter the terminal</a>
+        </div>
+
+        <p class="void-hint" id="void-hint" hidden></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <span>☁ CloudQuest</span>
+      <nav class="footer-links" aria-label="Footer menu" data-i18n-attr="aria-label:nav.footer">
+        <a href="/ogren" data-i18n="nav.learn">Learn</a>
+        <a href="/komut" data-i18n="nav.commands">Commands</a>
+        <a href="/tutorial">Terminal 101</a>
+        <a href="/" data-i18n="nav.home">Home</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="/js/stars.js"></script>
+  <script src="/js/void.js"></script>
+</body>
+</html>

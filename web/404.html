@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>404 — Bu koordinatlarda bir şey yok · CloudQuest</title>
+  <title data-i18n="title.404">404 — Bu koordinatlarda bir şey yok · CloudQuest</title>
   <meta name="description" content="Aradığın sayfa bulunamadı. Ana sayfaya, ders sayfalarına veya terminale dönebilirsin." />
 
   <!-- 404 sayfası indekslenmez: arama sonucunda çıkması hem kullanıcıyı hem
@@ -16,68 +16,76 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E%E2%98%81%EF%B8%8F%3C/text%3E%3C/svg%3E" />
   <link rel="stylesheet" href="/css/landing.css" />
   <link rel="stylesheet" href="/css/void.css" />
+  <!-- i18n, diger scriptlerden ONCE: dogru dil bundle'ini secer. -->
+  <script src="/js/strings.generated.js"></script>
+  <script src="/js/i18n.js"></script>
+
+  <link rel="alternate" hreflang="tr" href="https://cloudquest.vercel.app/404" />
+  <link rel="alternate" hreflang="en" href="https://cloudquest.vercel.app/en/404" />
+  <link rel="alternate" hreflang="x-default" href="https://cloudquest.vercel.app/404" />
 </head>
 
 <body>
-  <a class="skip-link" href="#main">İçeriğe geç</a>
+  <a class="skip-link" href="#main" data-i18n="nav.skip">İçeriğe geç</a>
 
   <canvas id="stars" aria-hidden="true"></canvas>
   <div class="nebula" aria-hidden="true"></div>
   <div class="grain" aria-hidden="true"></div>
 
   <header class="nav" id="nav">
-    <nav class="nav-inner" aria-label="Ana menü">
+    <nav class="nav-inner" aria-label="Ana menü" data-i18n-attr="aria-label:nav.main">
       <a class="nav-logo" href="/">☁ CLOUDQUEST</a>
       <div class="nav-links">
-        <a href="/yol-haritasi">Yol haritası</a>
-        <a href="/ogren">Öğren</a>
-        <a href="/komut">Komutlar</a>
-        <a href="/#mufredat">Müfredat</a>
-        <a href="/#sss">SSS</a>
+        <a href="/yol-haritasi" data-i18n="nav.roadmap">Yol haritası</a>
+        <a href="/ogren" data-i18n="nav.learn">Öğren</a>
+        <a href="/komut" data-i18n="nav.commands">Komutlar</a>
+        <a href="/#mufredat" data-i18n="nav.curriculum">Müfredat</a>
+        <a href="/#sss" data-i18n="nav.faq">SSS</a>
       </div>
-      <a class="btn btn-primary btn-sm" href="/app">Giriş yap</a>
+      <span class="lang-switch-wrap" data-lang-switch></span>
+      <a class="btn btn-primary btn-sm" href="/app" data-i18n="nav.signin">Giriş yap</a>
     </nav>
   </header>
 
   <main id="main">
     <section class="void">
       <div class="wrap">
-        <p class="void-kicker"><i aria-hidden="true"></i> Sinyal yok</p>
+        <p class="void-kicker"><i aria-hidden="true"></i> <span data-i18n="void.kicker">Sinyal yok</span></p>
 
         <div class="void-code" aria-hidden="true">404</div>
 
-        <h1>Bu koordinatlarda bir şey yok.</h1>
-        <p class="void-lead">
+        <h1 data-i18n="void.title">Bu koordinatlarda bir şey yok.</h1>
+        <p class="void-lead" data-i18n="void.lead">
           İstediğin sayfa ya taşındı, ya hiç var olmadı, ya da adreste bir harf kaydı.
           Üçü de düzeltilebilir — aşağıda rotalar var.
         </p>
 
         <dl class="void-tel">
           <div>
-            <dt>istenen yol</dt>
+            <dt data-i18n="void.path">istenen yol</dt>
             <dd id="void-path">—</dd>
           </div>
           <div>
-            <dt>durum</dt>
+            <dt data-i18n="void.status">durum</dt>
             <dd class="bad">404 · NOT_FOUND</dd>
           </div>
           <div>
-            <dt>sunucu</dt>
-            <dd class="ok">ayakta · sorun sende değil</dd>
+            <dt data-i18n="void.server">sunucu</dt>
+            <dd class="ok" data-i18n="void.serverOk">ayakta · sorun sende değil</dd>
           </div>
         </dl>
 
-        <p class="void-nova">
+        <p class="void-nova" data-i18n-html="void.nova">
           <b>[Nova]:</b> Panik yok. Yanlış dizine düşmüşsün — terminaldeki
           <code>cd ..</code> mantığı burada da geçerli. Bir üst seviyeye çık,
           oradan doğru yolu bulursun.
         </p>
 
         <div class="void-cta">
-          <a class="btn btn-primary" href="/">Ana sayfa</a>
-          <a class="btn btn-ghost" href="/ogren">Ders sayfaları</a>
-          <a class="btn btn-ghost" href="/komut">Komut sözlüğü</a>
-          <a class="btn btn-ghost" href="/app">Terminale gir</a>
+          <a class="btn btn-primary" href="/" data-i18n="nav.home">Ana sayfa</a>
+          <a class="btn btn-ghost" href="/ogren" data-i18n="void.lessons">Ders sayfaları</a>
+          <a class="btn btn-ghost" href="/komut" data-i18n="void.commands">Komut sözlüğü</a>
+          <a class="btn btn-ghost" href="/app" data-i18n="void.enterTerminal">Terminale gir</a>
         </div>
 
         <p class="void-hint" id="void-hint" hidden></p>
@@ -88,11 +96,11 @@
   <footer class="footer">
     <div class="wrap footer-inner">
       <span>☁ CloudQuest</span>
-      <nav class="footer-links" aria-label="Alt menü">
-        <a href="/ogren">Öğren</a>
-        <a href="/komut">Komutlar</a>
+      <nav class="footer-links" aria-label="Alt menü" data-i18n-attr="aria-label:nav.footer">
+        <a href="/ogren" data-i18n="nav.learn">Öğren</a>
+        <a href="/komut" data-i18n="nav.commands">Komutlar</a>
         <a href="/tutorial">Terminal 101</a>
-        <a href="/">Ana sayfa</a>
+        <a href="/" data-i18n="nav.home">Ana sayfa</a>
       </nav>
     </div>
   </footer>

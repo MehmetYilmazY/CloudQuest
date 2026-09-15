@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- ===================================================================
+       SEO — arama motoru bu sayfayı görür, app.html'i değil.
+       ⚠ ALAN ADINI DEĞİŞTİR: aşağıdaki tüm https://cloudquest.vercel.app
+         adreslerini kendi alan adınla değiştir (sitemap.xml + robots.txt de).
+       =================================================================== -->
+  <title data-i18n="title.index">CloudQuest — learn to become a Cloud Engineer by playing</title>
+  <meta name="description" content="From zero to Cloud Engineer: a live terminal, 54 quests, 211 hands-on tasks. Learn Linux, AWS, Terraform, Docker and Kubernetes by typing real commands. Genuinely beginner level." data-i18n-attr="content:meta.index.desc" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#06070a" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="CloudQuest" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:url" content="https://cloudquest.vercel.app/" />
+  <meta property="og:title" content="CloudQuest — learn to become a Cloud Engineer by playing" data-i18n-attr="content:title.index" />
+  <meta property="og:description" content="A live terminal, 54 quests, 211 tasks. From Linux to Kubernetes — not theory, hands on the keyboard." data-i18n-attr="content:og.index.desc" />
+  <meta property="og:image" content="https://cloudquest.vercel.app/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="CloudQuest — learn to become a Cloud Engineer by playing" data-i18n-attr="content:title.index" />
+  <meta name="twitter:description" content="A live terminal, 54 quests, 211 tasks. Not theory — muscle memory." data-i18n-attr="content:tw.index.desc" />
+  <meta name="twitter:image" content="https://cloudquest.vercel.app/og.png" />
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E%E2%98%81%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../css/landing.css" />
+  <!-- i18n, diger scriptlerden ONCE: dogru dil bundle'ini secer. -->
+  <script src="../js/strings.generated.js"></script>
+  <script src="../js/i18n.js"></script>
+
+  <!-- Yapısal veri de çevrilir: arama sonucundaki özet, sayfanın diliyle
+       aynı olmalı. EN kopyası derleme anında i18n-html.ts ile yazılır. -->
+  <script type="application/ld+json" data-i18n-html="ld.index">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://cloudquest.vercel.app/en/#website",
+        "url": "https://cloudquest.vercel.app/en/",
+        "name": "CloudQuest",
+        "description": "An interactive platform that teaches cloud engineering by playing.",
+        "inLanguage": "en"
+      },
+      {
+        "@type": "Course",
+        "name": "CloudQuest — Cloud Engineering RPG",
+        "description": "An interactive 8-chapter programme that teaches Linux, networking, Git, AWS, Terraform, Docker, CI/CD, observability and security by typing real commands in a live terminal.",
+        "inLanguage": "en",
+        "url": "https://cloudquest.vercel.app/en/",
+        "provider": { "@type": "Organization", "name": "CloudQuest", "url": "https://cloudquest.vercel.app/" },
+        "teaches": ["Linux", "Terminal", "Networking", "Git", "AWS", "Terraform", "Docker", "Kubernetes", "CI/CD", "Cloud Security"],
+        "educationalLevel": "Beginner",
+        "hasCourseInstance": { "@type": "CourseInstance", "courseMode": "online", "courseWorkload": "PT40H" }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "I have never used a terminal — can I still start?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes. CloudQuest is designed for absolute beginners. The first task is typing 'pwd'. Your mentor Nova tells you what to type at every step, and after three wrong attempts shows you the correct command for free. There is also a Terminal 101 tour before you sign in." }
+          },
+          {
+            "@type": "Question",
+            "name": "Do I need a real AWS account? Will I have to pay?",
+            "acceptedAnswer": { "@type": "Answer", "text": "No. You type the commands in CloudQuest's own terminal; no credit card or cloud account is required. Trying what you learn on a real AWS Free Tier account is recommended but not required." }
+          },
+          {
+            "@type": "Question",
+            "name": "How long does it take to become a Cloud Engineer?",
+            "acceptedAnswer": { "@type": "Answer", "text": "The curriculum is built around a six-month programme: 8 chapters, 54 quests, 211 hands-on tasks. For someone putting in a few hours a week, 4-6 months is a reasonable range. The game builds muscle memory; interview preparation should be backed by real projects." }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I lose my progress, and does it move between devices?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Your progress is stored on the server and syncs across all your devices with your account. Verification also happens on the server, so the XP and badges you earn are real: nobody can grant themselves a level from the browser console." }
+          },
+          {
+            "@type": "Question",
+            "name": "What topics does it cover?",
+            "acceptedAnswer": { "@type": "Answer", "text": "8 chapters: Terminal and Linux, Networking and Git, AWS Core (IAM, EC2, VPC, S3), Infrastructure as Code (Terraform), Containers (Docker), CI/CD, Observability, and Security and Cost. Plus 6 advanced labs: Network Ops, Scripting, Docker Deep Dive, Terraform Pro, Ansible and Kubernetes." }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <link rel="alternate" hreflang="tr" href="https://cloudquest.vercel.app/" />
+  <link rel="alternate" hreflang="en" href="https://cloudquest.vercel.app/en/" />
+  <link rel="alternate" hreflang="x-default" href="https://cloudquest.vercel.app/" />
+
+  <link rel="canonical" href="https://cloudquest.vercel.app/en/" />
+  <link rel="alternate" hreflang="tr" href="https://cloudquest.vercel.app/" />
+  <link rel="alternate" hreflang="en" href="https://cloudquest.vercel.app/en/" />
+  <link rel="alternate" hreflang="x-default" href="https://cloudquest.vercel.app/" />
+</head>
+
+<body>
+  <a class="skip-link" href="#main" data-i18n="nav.skip">Skip to content</a>
+  <canvas id="stars" aria-hidden="true"></canvas>
+  <div class="nebula" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="nav" id="nav">
+    <nav class="nav-inner" aria-label="Main menu" data-i18n-attr="aria-label:nav.main">
+      <a class="nav-logo" href="#main">☁ CLOUDQUEST</a>
+      <div class="nav-links">
+        <a href="/yol-haritasi" data-i18n="nav.roadmap">Roadmap</a>
+        <a href="/ogren" data-i18n="nav.learn">Learn</a>
+        <a href="/komut" data-i18n="nav.commands">Commands</a>
+        <a href="#neden" data-i18n="nav.why">Why</a>
+        <a href="#mufredat" data-i18n="nav.curriculum">Curriculum</a>
+        <a href="#sss" data-i18n="nav.faq">FAQ</a>
+      </div>
+      <span class="lang-switch-wrap" data-lang-switch></span>
+      <a class="btn btn-primary btn-sm" href="../app.html" data-i18n="nav.signin">Sign in</a>
+    </nav>
+  </header>
+
+  <main id="main">
+
+    <!-- ============================ HERO ============================ -->
+    <section class="hero">
+      <div class="wrap">
+        <div class="hero-grid">
+          <div>
+            <p class="kicker reveal" data-i18n-html="idx.kicker"><b>●</b> 8 chapters · 54 quests · 211 tasks · English</p>
+
+            <h1 class="hero-title" id="heroTitle" data-i18n-html="idx.heroTitle"><span class="line"><span>Learn to become a</span></span><span class="line"><span>Cloud Engineer</span></span><span class="line">by <span class="mark">playing</span>.</span></h1>
+
+            <p class="reveal d1" data-i18n-html="idx.lead1">Watch a video, take notes, forget it in three days. The familiar loop. Something else happens here: <strong>you type the command yourself.</strong></p>
+            <p class="reveal d2" data-i18n="idx.lead2">It's your first day at a startup called Meridian. The only engineer holding the infrastructure up has quit, and you're their replacement. The investor demo is six weeks away.</p>
+
+            <div class="hero-cta reveal d3">
+              <a class="btn btn-primary" href="../app.html" data-i18n="idx.ctaStart">Start — it's free</a>
+              <a class="btn btn-ghost" href="../quiz.html" data-i18n="page.home.quizTitle">Is this job for me?</a>
+            </div>
+
+            <p class="hero-fine reveal d3" data-i18n-html="idx.heroFine">Your first task is typing <code>pwd</code>. If you've never opened a terminal, you're in the right place.</p>
+          </div>
+
+          <!-- Ürünü anlatmak yerine göstermek: gerçek quest, gerçek akış. -->
+          <div class="term reveal d1" aria-hidden="true">
+            <div class="term-bar">
+              <i></i><i></i><i></i>
+              <span>cloudquest — quest c1q1 · cold boot</span>
+            </div>
+            <div class="term-body" id="termBody"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ TICKER ============================ -->
+    <div class="ticker" aria-hidden="true">
+      <div class="ticker-track" id="tk1"></div>
+      <div class="ticker-track" id="tk2"></div>
+    </div>
+
+    <!-- ============================ RAKAMLAR ============================ -->
+    <section aria-labelledby="rakam-h">
+      <div class="wrap">
+        <h2 class="sr-only" id="rakam-h" data-i18n="idx.figuresH">CloudQuest in numbers</h2>
+        <div class="figures reveal" data-i18n-html="idx.figures"><span>8 <em>chapters</em></span><span>54 <em>quests</em></span><span>211 <em>hands-on tasks</em></span><span>6 <em>advanced labs</em></span></div>
+        <p class="figures-note reveal d1" data-i18n="idx.figuresNote">None of it was generated automatically. All 211 tasks were written by hand and are tested on every build — a task whose own solution doesn't pass its check can't ship.</p>
+      </div>
+    </section>
+
+    <div class="rule"></div>
+
+    <!-- ============================ ADALET ============================ -->
+    <section id="adalet" aria-labelledby="adalet-h">
+      <div class="wrap">
+        <p class="sec-head"><span class="n">01</span> <span data-i18n="idx.sec1">Fairness</span></p>
+        <div class="proof">
+          <div>
+            <h2 class="title reveal" id="adalet-h" data-i18n-html="idx.fairTitle">If you thought it through,<br />it's right.</h2>
+            <p class="lead reveal d1" data-i18n-html="idx.fairP1">Most platforms compare your command as text. Put the flags in a different order, add a <code>sudo</code> — it says "wrong". You're not learning; you're memorizing what the editor wrote.</p>
+            <p class="lead reveal d1" data-i18n="idx.fairP2">CloudQuest actually parses your command: it splits it into segments, tokenizes quote-aware, and checks your intent. The four lines beside this are all from the same task.</p>
+          </div>
+
+          <div class="proof-box reveal d2">
+            <div class="proof-task" data-i18n-html="idx.proofTask"><span>Task</span> Make deploy.sh executable.</div>
+            <div class="proof-row">
+              <code>chmod +x deploy.sh</code>
+              <span class="proof-yes" data-i18n="idx.pass">PASSES</span>
+            </div>
+            <div class="proof-row">
+              <code>chmod deploy.sh +x</code>
+              <span class="proof-why" data-i18n="idx.whyOrder">different order</span>
+              <span class="proof-yes" data-i18n="idx.pass">PASSES</span>
+            </div>
+            <div class="proof-row">
+              <code>sudo chmod -v +x deploy.sh</code>
+              <span class="proof-why" data-i18n="idx.whySudo">sudo + an extra flag</span>
+              <span class="proof-yes" data-i18n="idx.pass">PASSES</span>
+            </div>
+            <div class="proof-row">
+              <code>chmod deploy.sh</code>
+              <span class="proof-why" data-i18n="idx.whyNoPerm">no permission granted</span>
+              <span class="proof-no" data-i18n="idx.fail">FAILS</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="rule"></div>
+
+    <!-- ============================ NEDEN ============================ -->
+    <section id="neden" aria-labelledby="neden-h">
+      <div class="wrap">
+        <p class="sec-head"><span class="n">02</span> <span data-i18n="nav.why">Why</span></p>
+        <h2 class="title reveal" id="neden-h" data-i18n-html="idx.whyTitle">Not a course.<br />A training ground.</h2>
+
+        <div class="claims">
+          <article class="claim reveal">
+            <div class="claim-n">A</div>
+            <h3 data-i18n="idx.claimA.h">Nova won't leave you</h3>
+            <div data-i18n-html="idx.claimA.b"><p>There's a mentor telling you what to type at every step <em>and why you're typing it</em>. Get it wrong three times and the right command arrives free — so you don't get stuck and quit.</p><p>Nobody says "go look it up" and leaves you on your own.</p></div>
+          </article>
+
+          <article class="claim reveal">
+            <div class="claim-n">B</div>
+            <h3 data-i18n="idx.claimB.h">Your progress is real</h3>
+            <div data-i18n-html="idx.claimB.b"><p>Verification happens on the server. You can't grant yourself a level from the browser console, and the answer key is never sent to the browser at all.</p><p>Which means the badge you earn actually means something. Even to yourself.</p></div>
+          </article>
+
+          <article class="claim reveal">
+            <div class="claim-n">C</div>
+            <h3 data-i18n="idx.claimC.h">The story carries you</h3>
+            <div data-i18n-html="idx.claimC.b"><p>Every chapter is an act: the launch, the funding round, the scaling crisis, the 3 a.m. on-call, the security audit. From rookie to Platform Lead.</p><p>The learning is centre stage and the drama is behind it — not the other way round.</p></div>
+          </article>
+
+          <article class="claim reveal">
+            <div class="claim-n">D</div>
+            <h3 data-i18n="idx.claimD.h">You can see where you got stuck</h3>
+            <div data-i18n-html="idx.claimD.b"><p>Every attempt is recorded. How many times you missed on which topic, and which chapter slowed you down, sits in your profile.</p><p>You don't have to guess what to revise.</p></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <div class="rule"></div>
+
+    <!-- ============================ MÜFREDAT ============================ -->
+    <section id="mufredat" aria-labelledby="mufredat-h">
+      <div class="wrap">
+        <p class="sec-head"><span class="n">03</span> <span data-i18n="nav.curriculum">Curriculum</span></p>
+        <h2 class="title reveal" id="mufredat-h" data-i18n="idx.sylTitle">From the terminal to Kubernetes.</h2>
+        <p class="lead reveal d1" data-i18n="idx.sylLead">Eight chapters that unlock in order. Each stands on the one before it. No skipping — because what you skip catches up with you three chapters later.</p>
+
+        <div class="syllabus reveal d1">
+          <div class="syl-row">
+            <span class="syl-n">01</span>
+            <span class="syl-t"><a href="/ogren/terminal-ve-linux">Terminal &amp; Linux</a></span>
+            <span class="syl-d" data-i18n="idx.syl1">The shell, files, permissions, processes, packages and services.</span>
+          </div>
+          <div class="syl-row">
+            <span class="syl-n">02</span>
+            <span class="syl-t">Networking &amp; Git</span>
+            <span class="syl-d" data-i18n="idx.syl2">How packets flow, how you reach a server, how code gets versioned.</span>
+          </div>
+          <div class="syl-row">
+            <span class="syl-n">03</span>
+            <span class="syl-t">AWS Core</span>
+            <span class="syl-d" data-i18n="idx.syl3">IAM, EC2, VPC, S3 — the core of the cloud.</span>
+          </div>
+          <div class="syl-row">
+            <span class="syl-n">04</span>
+            <span class="syl-t">Infrastructure as Code</span>
+            <span class="syl-d" data-i18n="idx.syl4">Describe your infrastructure in Terraform; stop clicking in the console.</span>
+          </div>
+          <div class="syl-row">
+            <span class="syl-n">05</span>
+            <span class="syl-t">Containers</span>
+            <span class="syl-d" data-i18n="idx.syl5">Package, ship and scale with Docker.</span>
+          </div>
+          <div class="syl-row">
+            <span class="syl-n">06</span>
+            <span class="syl-t">CI/CD</span>
+            <span class="syl-d" data-i18n="idx.syl6">An automatic build → test → deploy pipeline.</span>
+          </div>
+          <div class="syl-row">
+            <span class="syl-n">07</span>
+            <span class="syl-t">Observability</span>
+            <span class="syl-d" data-i18n="idx.syl7">Logs, metrics, alarms. The system talks; you learn to listen.</span>
+          </div>
+          <div class="syl-row">
+            <span class="syl-n">08</span>
+            <span class="syl-t">Security &amp; Cost</span>
+            <span class="syl-d" data-i18n="idx.syl8">Least privilege, secret management, and the art of not blowing up the bill.</span>
+          </div>
+        </div>
+
+        <p class="labs-line reveal d1" style="margin-top:22px">
+          <span data-i18n="idx.startHere">Starting from zero? The order is here:</span>
+          <b><a href="/yol-haritasi" data-i18n="idx.roadmapLink">the 6-month roadmap</a></b>
+        </p>
+        <p class="labs-line reveal d1">
+          <span data-i18n="idx.writtenForm">The chapters in written form:</span> <b><a href="/ogren" data-i18n="void.lessons">the lesson pages</a></b> ·
+          <b><a href="/komut" data-i18n="void.commands">the command reference</a></b>
+        </p>
+        <p class="labs-line reveal d1">
+          <span data-i18n="idx.sixLabs">Plus six advanced labs:</span>
+          <b>Network Ops · Scripting · Docker Deep Dive · Terraform Pro · Ansible · Kubernetes</b>
+        </p>
+      </div>
+    </section>
+
+    <div class="rule"></div>
+
+    <!-- ============================ BU NE DEĞİL ============================ -->
+    <section aria-labelledby="degil-h">
+      <div class="wrap">
+        <p class="sec-head"><span class="n">04</span> <span data-i18n="idx.sec4">Expectations</span></p>
+        <h2 class="title reveal" id="degil-h" data-i18n="idx.honestTitle">What it is, and what it isn't.</h2>
+        <p class="lead reveal d1" data-i18n="idx.honestLead">Overselling helps nobody. We'd rather you knew now what you'll have in your hands at the end.</p>
+
+        <div class="honest reveal d1" style="margin-top:36px">
+          <div>
+            <h3 data-i18n="idx.isTitle">This is</h3>
+            <ul class="yes" data-i18n-html="idx.isList"><li><b>+</b> Muscle memory for the commands. A shell you can type in without thinking.</li><li><b>+</b> A map of cloud concepts: what connects to what.</li><li><b>+</b> The place where the fear of the terminal ends.</li><li><b>+</b> Solid ground to start a real project from.</li></ul>
+          </div>
+          <div>
+            <h3 data-i18n="idx.isNotTitle">This is not</h3>
+            <ul class="no" data-i18n-html="idx.isNotList"><li><b>—</b> Certification exam prep (AWS SAA and the like) — different scope.</li><li><b>—</b> A real AWS environment. The commands run in a simulated terminal.</li><li><b>—</b> A job guarantee. Nobody can offer one; anyone who does isn't telling the truth.</li><li><b>—</b> A weekend crash course. This takes 4-6 months.</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="rule"></div>
+
+    <!-- ============================ SSS ============================ -->
+    <section id="sss" aria-labelledby="sss-h">
+      <div class="wrap">
+        <p class="sec-head"><span class="n">05</span> <span data-i18n="idx.sec5">Questions</span></p>
+        <h2 class="title reveal" id="sss-h" data-i18n="idx.faqTitle">Frequently asked.</h2>
+
+        <div class="faq reveal d1" style="margin-top:32px">
+          <details>
+            <summary data-i18n="idx.faq1.q">I've never used a terminal — can I still start?</summary>
+            <div class="faq-a" data-i18n-html="idx.faq1.a">Yes — that's exactly what it was designed for. The first task is typing <code>pwd</code>. Nova explains what to type and why at every step, and after three wrong tries shows you the right command for free. If you like, take the <a href="../tutorial.html">Terminal 101</a> tour before you go in.</div>
+          </details>
+          <details>
+            <summary data-i18n="idx.faq2.q">Do I need a real AWS account? Will I have to pay?</summary>
+            <div class="faq-a" data-i18n="idx.faq2.a">No. You type the commands in CloudQuest's own terminal; no credit card or cloud account is required. We do recommend trying what you learn on a real AWS Free Tier account, but it isn't mandatory.</div>
+          </details>
+          <details>
+            <summary data-i18n="idx.faq3.q">How long until I'm a Cloud Engineer?</summary>
+            <div class="faq-a" data-i18n="idx.faq3.a">The curriculum is built around a 6-month programme: 8 chapters, 54 quests, 211 hands-on tasks. For someone putting in a few hours a week, 4-6 months is a reasonable range. Let's be honest: this game builds your muscle memory, and you'll need real projects alongside it to be interview-ready.</div>
+          </details>
+          <details>
+            <summary data-i18n="idx.faq4.q">Can I lose my progress?</summary>
+            <div class="faq-a" data-i18n="idx.faq4.a">No. Your progress lives on the server and syncs across all your devices with your account. Verification also happens on the server — nobody can grant themselves a level from the console, so a badge you earned was genuinely earned.</div>
+          </details>
+          <details>
+            <summary data-i18n="idx.faq5.q">What does it cover?</summary>
+            <div class="faq-a" data-i18n-html="idx.faq5.a">8 chapters: Terminal &amp; Linux, Networking &amp; Git, AWS Core, Infrastructure as Code, Containers, CI/CD, Observability, and Security &amp; Cost. Plus 6 advanced labs: Network Ops, Scripting, Docker Deep Dive, Terraform Pro, Ansible and Kubernetes.</div>
+          </details>
+          <details>
+            <summary data-i18n="idx.faq6.q">Is it paid?</summary>
+            <div class="faq-a" data-i18n="idx.faq6.a">It's free for now. You do need an account — so your progress can follow you between devices and be verified.</div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <div class="rule"></div>
+
+    <!-- ============================ FİNAL ============================ -->
+    <section class="final" aria-labelledby="final-h">
+      <div class="wrap">
+        <h2 class="reveal" id="final-h" data-i18n-html="idx.finalTitle">Your first command<br />is waiting.</h2>
+        <p class="reveal d1" data-i18n-html="idx.finalBody">No install, no card. Create an account, open the terminal, type <code>pwd</code>. The rest follows on its own.</p>
+        <a class="btn btn-primary reveal d2" href="../app.html" data-i18n="idx.ctaStart">Start — it's free</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <span>☁ CloudQuest</span>
+      <nav class="footer-links" aria-label="Footer menu" data-i18n-attr="aria-label:nav.footer">
+        <a href="/yol-haritasi" data-i18n="nav.roadmap">Roadmap</a>
+        <a href="/ogren" data-i18n="nav.learn">Learn</a>
+        <a href="/komut" data-i18n="void.commands">the command reference</a>
+        <a href="../app.html" data-i18n="nav.signin">Sign in</a>
+        <a href="../tutorial.html">Terminal 101</a>
+        <a href="../quiz.html" data-i18n="idx.fitTest">Fit test</a>
+        <a href="#sss" data-i18n="nav.faq">FAQ</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="../js/stars.js"></script>
+  <script src="../js/landing.js"></script>
+</body>
+</html>

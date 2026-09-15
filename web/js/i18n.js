@@ -45,6 +45,11 @@ var I18N = (function () {
     try { q = known(new URLSearchParams(location.search).get("lang")); } catch (e) {}
     if (q) { storage("set", q); return q; }
 
+    /* /en/... altındaki sayfalar derleme anında İngilizce üretilir. Orada
+       adres belgeyi bağlar: Türkçe tercihi kayıtlı bir ziyaretçi bu bağlantıya
+       tıkladığında İngilizce bir sayfaya bakıp düğmede "TR" seçili görmesin. */
+    if (/^\/en(\/|$)/.test(location.pathname)) return "en";
+
     var saved = known(storage("get"));
     if (saved) return saved;
 
@@ -127,11 +132,22 @@ var I18N = (function () {
     document.documentElement.setAttribute("lang", lang);
   }
 
-  /** Dili değiştir ve sayfayı o dilde yeniden aç. */
+  /**
+   * Dili değiştir ve sayfayı o dilde yeniden aç.
+   *
+   * /en/... derleme anında üretilmiş İngilizce bir dosyadır; orada Türkçeye
+   * dönmek DOM'u geri çevirmekle olmaz, Türkçe dosyaya gitmekle olur.
+   * Bu yüzden önek atılıyor. Diğer sayfalarda çeviri zaten tarayıcıda
+   * yapıldığından adres aynı kalır, yalnız ?lang değişir.
+   */
   function setLang(next) {
     if (!known(next) || next === lang) return;
     storage("set", next);
+
     var url = new URL(location.href);
+    if (next === SOURCE && /^\/en(\/|$)/.test(url.pathname)) {
+      url.pathname = url.pathname.replace(/^\/en/, "") || "/";
+    }
     url.searchParams.set("lang", next);
     location.href = url.toString();
   }

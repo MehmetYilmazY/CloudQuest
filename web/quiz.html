@@ -3,11 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cloud Engineering bana uygun mu? — CloudQuest</title>
-  <meta name="description" content="10 soruda dürüst bir uyum testi. Cloud engineering sana göre mi, yoksa başka bir rol mü daha iyi oturur?" />
+  <title data-i18n="title.quiz">Cloud Engineering bana uygun mu? — CloudQuest</title>
+  <meta name="description" content="10 soruda dürüst bir uyum testi. Cloud engineering sana göre mi, yoksa başka bir rol mü daha iyi oturur?" data-i18n-attr="content:meta.quiz.desc" />
   <meta name="color-scheme" content="dark" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E%F0%9F%A7%AA%3C/text%3E%3C/svg%3E" />
   <link rel="stylesheet" href="css/style.css" />
+  <!-- i18n, diger scriptlerden ONCE: dogru dil bundle'ini secer. -->
+  <script src="js/strings.generated.js"></script>
+  <script src="js/i18n.js"></script>
 </head>
 <body class="quiz-body">
   <canvas id="stars" aria-hidden="true"></canvas>
@@ -18,7 +21,8 @@
 
   <header class="q-header">
     <a class="t-back" href="index.html">← CloudQuest</a>
-    <div class="q-title-bar">🧪 Bu iş bana uygun mu? <span class="q-sub">10 soru · dürüst sonuç</span></div>
+    <div class="q-title-bar"><span data-i18n="page.quiz.title">🧪 Bu iş bana uygun mu?</span> <span class="q-sub" data-i18n="page.quiz.sub">10 soru · dürüst sonuç</span></div>
+    <span class="lang-switch-wrap" data-lang-switch></span>
     <div class="q-counter" id="q-counter">1 / 10</div>
   </header>
 
