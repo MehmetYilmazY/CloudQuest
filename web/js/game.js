@@ -8,6 +8,10 @@
 (function () {
   "use strict";
 
+  /* Cevirilere kisayol: bu dosyada yuzlerce yerde geciyor.
+     Anahtarlar data/i18n/ui.*.json icinde. */
+  const T = I18N.t;
+
   const MAX_WRONG_BEFORE_ANSWER = 3;
   const ANSWER_COST = 25;              // Tab/hint ile cevabı görmenin kredi bedeli
   const START_CREDITS = 60;            // başlangıç bakiyesi (~2 cevaplık tampon)
@@ -43,13 +47,13 @@
      burada bir sayı değiştirmek kaydı değiştirmez. Denge değişirse iki
      yeri birden güncelle (Katman 2'de tek TS modülüne inecek). */
   function rankFor(level) {
-    if (level >= 12) return "Principal Cloud Wizard 🧙";
-    if (level >= 10) return "Cloud Architect 🏛️";
-    if (level >= 8)  return "Senior Cloud Engineer";
-    if (level >= 5)  return "Cloud Engineer";
-    if (level >= 3)  return "Junior Cloud Engineer";
-    if (level >= 2)  return "Associate ☁️";
-    return "Intern ☁️";
+    if (level >= 12) return T("rank.wizard");
+    if (level >= 10) return T("rank.architect");
+    if (level >= 8)  return T("rank.senior");
+    if (level >= 5)  return T("rank.engineer");
+    if (level >= 3)  return T("rank.junior");
+    if (level >= 2)  return T("rank.associate");
+    return T("rank.intern");
   }
   function xpToNext(level) { return level * 120; }
 
@@ -123,25 +127,25 @@
   function showAward(award, progress) {
     if (!award) return;
     if (award.xp)      print("   +" + award.xp + " XP", "xp");
-    if (award.credits) print("   +" + award.credits + " cloud credits 💠", "credit");
+    if (award.credits) print(T("term.awardcredits", { n: award.credits }), "credit");
 
     if (progress) Auth.applyServerProgress(progress);
 
     if (award.leveledUp) {
       blank();
-      print("   ⭐ LEVEL UP!  →  Level " + player.level, "levelup");
-      print("   Yeni rank: " + player.rank, "levelup");
+      print(T("term.levelup", { level: player.level }), "levelup");
+      print(T("term.newrank", { rank: player.rank }), "levelup");
       blank();
       if (typeof FX !== "undefined") FX.levelUp(player.level, player.rank);
     }
-    if (award.badge) print("   🏅 Yeni rozet: " + award.badge, "levelup");
+    if (award.badge) print(T("term.newbadge", { badge: award.badge }), "levelup");
     updateHud();
   }
 
   /** Sunucu hatalarını tek yerden, kullanıcının anlayacağı dille bas. */
   function serverError(e, what) {
-    print("   ⚠ " + (what || "İşlem tamamlanamadı") + ": " + (e && e.message ? e.message : e), "err");
-    print("   İlerlemen sunucuda tutuluyor; bağlantı gelince tekrar dene.", "muted");
+    print("   ⚠ " + (what || T("err.generic")) + ": " + (e && e.message ? e.message : e), "err");
+    print(T("err.serverhint"), "muted");
   }
 
   /* ---------------- Quest yardımcıları ---------------- */
@@ -197,43 +201,43 @@
 
   /* ---------------- Menü komutları ---------------- */
   function showHelp() {
-    rule(); print("   KOMUTLAR", "title"); blank();
+    rule(); print(T("help.title"), "title"); blank();
     [
-      ["quests", "quest günlüğünü göster"],
-      ["quest <id>", "bir questi başlat (örn: quest c1q1)"],
-      ["map", "bölüm / ilerleme haritası"],
-      ["home", "ana sayfaya (hub) dön"],
-      ["guide", "başlangıç rehberi (6 dk, rozetli)"],
-      ["labs", "gelecek modüller (yakında)"],
-      ["lab <id>", "bir modülün detayı (örn: lab net)"],
-      ["status  (me)", "karakter panelin"],
-      ["profile", "profil sayfanı aç"],
-      ["shop", "credit dükkânı"],
-      ["buy <n>", "shop'tan ürün al"],
-      ["roadmap", "6 aylık çalışma programı"],
-      ["clear", "ekranı temizle"],
-      ["reset", "ilerlemeni sıfırla (onaylı)"],
-      ["logout", "hesaptan çık"],
-      ["help  (?)", "bu liste"]
-    ].forEach(function (r) { print("   " + pad(r[0], 16) + r[1], "help-row"); });
+      ["quests", "help.quests"],
+      ["quest <id>", "help.quest"],
+      ["map", "help.map"],
+      ["home", "help.home"],
+      ["guide", "help.guide"],
+      ["labs", "help.labs"],
+      ["lab <id>", "help.lab"],
+      ["status  (me)", "help.status"],
+      ["profile", "help.profile"],
+      ["shop", "help.shop"],
+      ["buy <n>", "help.buy"],
+      ["roadmap", "help.roadmap"],
+      ["clear", "help.clear"],
+      ["reset", "help.reset"],
+      ["logout", "help.logout"],
+      ["help  (?)", "help.help"]
+    ].forEach(function (r) { print("   " + pad(r[0], 16) + T(r[1]), "help-row"); });
     blank();
-    print("   Quest içindeyken: hint / Tab (cevabı göster — " + ANSWER_COST + " 💠, onay ister) · task · abandon", "muted");
+    print(T("help.inquest", { cost: ANSWER_COST }), "muted");
     rule();
   }
 
   function showQuests() {
-    rule(); print("   📜 QUEST GÜNLÜĞÜ", "title"); blank();
+    rule(); print(T("quests.title"), "title"); blank();
     QUESTS.forEach(function (q) {
       var st = questStatus(q);
       if (st === "done") print("   ✅ [" + q.id + "] " + q.title + "  (ch" + q.chapter + ")", "muted");
       else if (st === "available") print("   ▶  [" + q.id + "] " + q.title + "  (ch" + q.chapter + ")  +" + q.xp + " XP", "avail");
-      else print("   🔒 [" + q.id + "] " + q.title + "  (önce: " + q.requires.join(", ") + ")", "locked");
+      else print("   🔒 [" + q.id + "] " + q.title + "  (" + T("common.first") + " " + q.requires.join(", ") + ")", "locked");
     });
-    blank(); print("   Başlatmak için:  quest <id>     (örn: quest " + firstAvailableId() + ")", "hintline"); rule();
+    blank(); print(T("quests.howto", { id: firstAvailableId() }), "hintline"); rule();
   }
 
   function showMap() {
-    rule(); print("   🗺️  CLOUDQUEST HARİTASI", "title"); blank();
+    rule(); print(T("map.title"), "title"); blank();
     CHAPTERS.forEach(function (ch) {
       var qs = QUESTS.filter(function (q) { return q.chapter === ch.n; });
       var total = qs.length;
@@ -244,107 +248,102 @@
       print("        " + ch.desc, "muted");
     });
     blank();
-    print("   🔮 GELECEK MODÜLLER (yakında)", "hintline");
+    print(T("map.upcoming"), "hintline");
     MODULES.forEach(function (m) {
       var tag = m.status === "active" ? "✅" : "🔒";
       print("   " + tag + "  " + m.icon + " " + pad(m.title, 22) + "[" + m.id + "]", "locked");
     });
-    print("   Detay: labs  ·  lab <id>", "muted");
+    print(T("map.detail"), "muted");
     rule();
   }
 
   function showLabs() {
-    rule(); print("   🔮 GELECEK MODÜLLER  (Advanced Labs — yakında)", "title"); blank();
-    print("   8 bölümlük hikâyeyi bitirdikten sonra gelecek uzmanlık modülleri.", "mentor");
-    print("   Şimdilik pasif; tek tek eklenecek. Ana ilerlemeni etkilemez.", "muted"); blank();
+    rule(); print(T("labs.title"), "title"); blank();
+    print(T("labs.intro1"), "mentor");
+    print(T("labs.intro2"), "muted"); blank();
     MODULES.forEach(function (m) {
-      var tag = m.status === "active" ? "✅ hazır" : "🔒 yakında";
+      var tag = m.status === "active" ? T("tag.ready") : T("tag.soon");
       print("   " + m.icon + "  " + pad("[" + m.id + "]", 13) + pad(m.title, 20) + tag, m.status === "active" ? "avail" : "locked");
       print("        " + m.desc, "muted");
     });
     blank();
-    print("   Bir modüle bakmak için:  lab <id>     (örn: lab net)", "hintline"); rule();
+    print(T("labs.howto"), "hintline"); rule();
   }
   function showLab(id) {
     var m = MODULES.find(function (x) { return x.id === (id || "").toLowerCase(); });
-    if (!m) { print("   ❌ Böyle bir modül yok: " + id + "   ('labs' ile listeye bak)", "err"); return; }
-    rule(); print("   " + m.icon + "  MODÜL: " + m.title + "   [" + m.id + "]", "questhead");
+    if (!m) { print(T("lab.notfound", { id: id }), "err"); return; }
+    rule(); print("   " + m.icon + "  " + T("lab.module") + " " + m.title + "   [" + m.id + "]", "questhead");
     print("   " + m.desc, "teach"); blank();
     if (m.status === "active" && m.quests && m.quests.length) {
-      blank(); print("   📋 LAB GÖREVLERİ", "title");
+      blank(); print(T("lab.tasks"), "title");
       m.quests.forEach(function (q) {
         var st = questStatus(q);
         if (st === "done") print("   ✅ [" + q.id + "] " + q.title, "muted");
         else if (st === "available") print("   ▶  [" + q.id + "] " + q.title + "   +" + q.xp + " XP", "avail");
-        else print("   🔒 [" + q.id + "] " + q.title + "   (önce: " + q.requires.join(", ") + ")", "locked");
+        else print("   🔒 [" + q.id + "] " + q.title + "   (" + T("common.first") + " " + q.requires.join(", ") + ")", "locked");
       });
       var nxt = m.quests.filter(function (q) { return questStatus(q) === "available"; })[0];
       blank();
-      if (nxt) print("   Başlamak için:  quest " + nxt.id, "hintline");
-      else print("   🎉 Bu lab'ı tamamladın!", "levelup");
+      if (nxt) print(T("lab.start", { id: nxt.id }), "hintline");
+      else print(T("lab.done"), "levelup");
     } else {
-      print("   Kapsayacağı konular:", "muted");
+      print(T("lab.topics"), "muted");
       m.topics.forEach(function (t) { print("     • " + t, "help-row"); });
       blank();
-      print("   🔒 Bu modül henüz PASİF (placeholder).", "locked");
-      print("   [Nova]: Yerini ayırdım. Hazır olunca 'bunu ekleyelim' de, tane tane işleyelim.", "mentor");
+      print(T("lab.inactive"), "locked");
+      print(T("lab.novanote"), "mentor");
     }
     rule();
   }
 
   function showStatus() {
     rule(); print("   👤 " + player.name, "title");
-    print("   Rank    : " + player.rank, "cyan");
-    print("   Level   : " + player.level + "   XP: " + player.xp + "/" + xpToNext(player.level), "xp");
-    print("   Credits : " + player.credits + " 💠", "cyan");
-    print("   Badges  : " + (player.badges.length ? player.badges.join(", ") : "(henüz yok)"), "credit");
-    print("   Quest   : " + storyDone() + " / " + QUESTS.length + " tamamlandı", "muted");
-    print("   (detaylı profil için: profile)", "hintline");
+    print("   " + pad(T("status.rank"), 8) + ": " + player.rank, "cyan");
+    print("   " + pad(T("status.level"), 8) + ": " + player.level + "   XP: " + player.xp + "/" + xpToNext(player.level), "xp");
+    print("   " + pad(T("status.credits"), 8) + ": " + player.credits + " 💠", "cyan");
+    print("   " + pad(T("status.badges"), 8) + ": " + (player.badges.length ? player.badges.join(", ") : T("status.nobadge")), "credit");
+    print("   " + pad(T("status.quests"), 8) + ": " + T("status.questcount", { done: storyDone(), total: QUESTS.length }), "muted");
+    print(T("status.more"), "hintline");
     rule();
   }
 
   function showShop() {
-    rule(); print("   🛒 CLOUD SHOP   (credits ile al)", "title");
-    print("   Bakiyen: " + player.credits + " 💠", "cyan"); blank();
+    rule(); print(T("shop.title"), "title");
+    print(T("shop.balance", { n: player.credits }), "cyan"); blank();
     SHOP.forEach(function (item) {
       print("   " + item.id + ") " + item.icon + "  " + pad(item.name, 22) + item.cost + " 💠  — " + item.desc, "avail");
     });
-    blank(); print("   Satın almak: buy <n>   (örn: buy 1)", "hintline"); rule();
+    blank(); print(T("shop.howto"), "hintline"); rule();
   }
   function buy(nRaw) {
     var n = parseInt(nRaw, 10);
     var item = SHOP.find(function (i) { return i.id === n; });
-    if (!item) { print("   ❌ Geçersiz seçim. 'shop' ile ürünleri gör.", "err"); return; }
+    if (!item) { print(T("shop.badpick"), "err"); return; }
     // Aşağıdaki iki kontrol sadece hızlı geri bildirim için; bağlayıcı olan
     // sunucudaki kontrol (fiyatı ve etkiyi de sunucu okur).
-    if (player.credits < item.cost) { print("   ❌ Yetersiz credit (" + item.cost + " gerekli).", "err"); return; }
-    if (item.effect.badge && player.badges.indexOf(item.effect.badge) !== -1) { print("   Bu ünvana zaten sahipsin.", "hintline"); return; }
+    if (player.credits < item.cost) { print(T("shop.nocredit", { n: item.cost }), "err"); return; }
+    if (item.effect.badge && player.badges.indexOf(item.effect.badge) !== -1) { print(T("shop.owned"), "hintline"); return; }
 
     CQApi.purchase(item.id).then(function (res) {
-      print("   🛍️  Satın alındı: " + item.name, "credit");
+      print(T("shop.bought", { name: item.name }), "credit");
       showAward(res.award, res.progress);
-      if (item.effect.freeHints) print("   🧠 " + item.effect.freeHints + " ücretsiz ipucu eklendi.", "hintline");
+      if (item.effect.freeHints) print(T("shop.freehints", { n: item.effect.freeHints }), "hintline");
       updateHud();
     }).catch(function (e) {
-      if (e.status === 402) { print("   ❌ Yetersiz credit.", "err"); return; }
-      if (e.status === 409) { print("   Bu ünvana zaten sahipsin.", "hintline"); return; }
-      serverError(e, "Satın alma tamamlanamadı");
+      if (e.status === 402) { print(T("shop.nocredit2"), "err"); return; }
+      if (e.status === 409) { print(T("shop.owned"), "hintline"); return; }
+      serverError(e, T("err.purchase"));
     });
   }
 
   function showRoadmap() {
-    rule(); print("   📖 6 AYLIK YOL HARİTASI  (özet)", "title"); blank();
-    [
-      ["Ay 1", "Foundations — Linux, terminal, Git, ağın temeli   → Ch 1–2"],
-      ["Ay 2", "Cloud Core — AWS: IAM, EC2, VPC, S3, RDS           → Ch 3"],
-      ["Ay 3", "IaC — Terraform ile altyapıyı kodla                → Ch 4"],
-      ["Ay 4", "Containers — Docker + Kubernetes                   → Ch 5"],
-      ["Ay 5", "Otomasyon — CI/CD, GitHub Actions, observability   → Ch 6–7"],
-      ["Ay 6", "Ustalık — Güvenlik, maliyet, AWS SAA sertifikası   → Ch 8"]
-    ].forEach(function (r) { print("   " + pad(r[0], 8) + r[1], "help-row"); });
+    rule(); print(T("roadmap.title"), "title"); blank();
+    [1, 2, 3, 4, 5, 6].forEach(function (n) {
+      print("   " + pad(T("roadmap.m" + n + ".label"), 8) + T("roadmap.m" + n + ".text"), "help-row");
+    });
     blank();
-    print("   Döngü:  Öğren (teori) → Oyna (bu oyun) → Uygula (gerçek AWS Free Tier).", "hintline");
-    print("   %20 teori, %80 elin klavyede. Public GitHub portföyü = en iyi CV.", "mentor");
+    print(T("roadmap.loop"), "hintline");
+    print(T("roadmap.ratio"), "mentor");
     rule();
   }
 
@@ -387,10 +386,10 @@
 
   function startQuest(id) {
     var q = questById(id);
-    if (!q) { print("   ❌ Böyle bir quest yok: " + id, "err"); return; }
+    if (!q) { print(T("quest.notfound", { id: id }), "err"); return; }
     var st = questStatus(q);
-    if (st === "done")   { print("   ✅ Bu quest zaten tamamlandı.", "hintline"); return; }
-    if (st === "locked") { print("   🔒 Kilitli. Önce tamamla: " + q.requires.join(", "), "err"); return; }
+    if (st === "done")   { print(T("quest.alreadydone"), "hintline"); return; }
+    if (st === "locked") { print(T("quest.locked", { list: q.requires.join(", ") }), "err"); return; }
 
     /* Quest anında açılır: adım takibi tarayıcıda. Sunucuya yalnızca
        quest bittiğinde tek bir istek gider (ödül için). */
@@ -402,18 +401,18 @@
     mode = "quest"; refreshPrompt();
     sceneQuest(q);                       // sağdaki sahneyi bu questin dünyasına kur
     clearScreen(); rule();
-    print("   ▶ QUEST: " + q.title + "   [" + q.id + "]", "questhead"); rule();
+    print("   ▶ " + T("quest.label") + " " + q.title + "   [" + q.id + "]", "questhead"); rule();
     var track = trackOfChapter(q.chapter);
     if (track && trackQuests(track)[0].id === q.id) showActIntro(track);   // perde açılışı
     showQuestBeat(q.id, "intro");
     narrate(q.brief, "mentor"); blank();
-    print("   (yardım: hint / Tab = cevap, " + ANSWER_COST + " 💠 · task = görevi tekrar · abandon = çık)", "muted"); blank();
+    print(T("quest.keys", { cost: ANSWER_COST }), "muted"); blank();
     showObjective();
   }
   function showObjective() {
     var obj = activeQuest.objectives[objIndex];
     sceneStep(objIndex, activeQuest.objectives.length, obj.task);
-    print("   ── Görev " + (objIndex + 1) + "/" + activeQuest.objectives.length + " " + "─".repeat(28), "objhead");
+    print("   ── " + T("quest.step", { n: objIndex + 1, total: activeQuest.objectives.length }) + " " + "─".repeat(28), "objhead");
     print("   🎯 " + obj.task, "task");
     print("   💡 " + obj.teach, "teach");
   }
@@ -425,9 +424,10 @@
      Ödül hâlâ sunucudan geliyor — quest bitince tek istek. */
   function handleQuestInput(cmd) {
     var lower = cmd.toLowerCase();
-    if (/^(abandon|exit|back|çık|cik)$/.test(lower)) { print("   ↩  Quest'ten çıkıldı (ilerleme kaydedilmedi).", "hintline"); backToMenu(); return; }
+    if (/^(abandon|exit|back|quit|çık|cik)$/.test(lower)) { print(T("quest.abandoned"), "hintline"); backToMenu(); return; }
     if (/^(hint|ipucu)$/.test(lower)) { revealHint(); return; }
     if (/^(task|görev|gorev|look)$/.test(lower)) { print("   🎯 " + activeQuest.objectives[objIndex].task, "task"); return; }
+    if (/^(lang|dil)$/.test(lower)) { I18N.setLang(I18N.lang === "tr" ? "en" : "tr"); return; }
     if (cmd.trim() === "") return;
 
     var obj = activeQuest.objectives[objIndex];
@@ -457,15 +457,14 @@
     if (wrongCount >= MAX_WRONG_BEFORE_ANSWER) {
       // Güvenlik ağı: cevabı ücretsiz göster. Metin bundle'da olmadığı için
       // sunucudan çekiliyor — nadir bir çağrı, gecikmesi hissedilmiyor.
-      print("   ✖ Tam olmadı. Yeni başlayan modunda yardım: doğru komut ↓", "err");
+      print(T("wrong.safetynet"), "err");
       wrongCount = 0;
       fetchHint(activeQuest, objIndex, true, function (hint) {
-        print("   💬 İpucu — şunu yaz:  " + hint, "hintline");
+        print(T("hint.type", { hint: hint }), "hintline");
       });
       return;
     }
-    print("   ✖ Tam olmadı. Tekrar dene — " + (MAX_WRONG_BEFORE_ANSWER - wrongCount) +
-          " denemede daha bilemezsen cevabı ücretsiz gösteririm.", "err");
+    print(T("wrong.retry", { left: MAX_WRONG_BEFORE_ANSWER - wrongCount }), "err");
   }
 
   /* İpucu metnini sunucudan çeker. `free` true ise bedel alınmaz
@@ -475,22 +474,22 @@
       if (mode !== "quest" || activeQuest !== quest) return;
       if (res.paidWith === "free") {
         Auth.applyServerProgress({ freeHints: res.freeHints });
-        print("   🧠 Ücretsiz ipucu hakkı kullanıldı (kalan: " + res.freeHints + ").", "hintline");
+        print(T("hint.usedfree", { left: res.freeHints }), "hintline");
       } else if (res.paidWith === "credits") {
         Auth.applyServerProgress({ credits: res.credits });
-        print("   💠 -" + ANSWER_COST + " kredi (kalan: " + res.credits + ").", "credit");
+        print(T("hint.paid", { cost: ANSWER_COST, left: res.credits }), "credit");
       }
       updateHud();
       onGot(res.hint);
     }).catch(function (e) {
-      if (e.status === 402) { print("   ❌ Yetersiz kredi.", "err"); return; }
-      serverError(e, "İpucu alınamadı");
+      if (e.status === 402) { print(T("shop.nocredit2"), "err"); return; }
+      serverError(e, T("err.hint"));
     });
   }
   /** Elle istenen ipucu: ücreti sunucu tahsil eder, cevabı sunucu verir. */
   function revealHint() {
     payForAnswer(function (hint) {
-      print("   💬 İpucu — şunu yaz:  " + hint, "hintline");
+      print(T("hint.type", { hint: hint }), "hintline");
     });
   }
 
@@ -507,8 +506,8 @@
       if (res.alreadyCompleted) return;
       showAward(res.award, res.progress);
     }).catch(function (e) {
-      serverError(e, "Ödül kaydedilemedi");
-      print("   Quest'i bitirdin ama XP kaydedilmedi. Bağlantı gelince tekrar dene.", "hintline");
+      serverError(e, T("err.award"));
+      print(T("err.awardhint"), "hintline");
     });
     rule();
     var track = trackOfChapter(q.chapter);
@@ -516,12 +515,12 @@
     if (isLabQuest(q)) {
       var mod = moduleOfQuest(q.id);
       var nextLab = mod && mod.quests.filter(function (x) { return questStatus(x) === "available"; })[0];
-      if (nextLab) print("   ➡  Sıradaki: quest " + nextLab.id, "hintline");
-      else print("   🎉 " + (mod ? mod.icon + " " + mod.title : "Lab") + " tamamlandı! İyi iş.", "levelup");
+      if (nextLab) print(T("quest.next", { id: nextLab.id }), "hintline");
+      else print(T("lab.finished", { name: mod ? mod.icon + " " + mod.title : "Lab" }), "levelup");
     } else if (storyDone() === QUESTS.length) {
-      blank(); print("   🎉 TÜM QUESTLER TAMAM! Job-ready Cloud Engineer'sın. 🎉", "levelup");
+      blank(); print(T("quest.allDone"), "levelup");
     } else {
-      print("   ➡  Sıradaki: quest " + firstAvailableId(), "hintline");
+      print(T("quest.next", { id: firstAvailableId() }), "hintline");
     }
     backToMenu();
   }
@@ -540,24 +539,22 @@
       "  \\____||_| \\___/  \\__,_|\\__,_|\\__\\_\\\\__,_|\\___||___/\\__|"
     ].forEach(function (l) { print(l, "banner"); });
     print("          >> Cloud Engineering RPG  ::  live terminal <<", "tagline");
+    print(T("banner.langtip"), "muted");
     rule();
   }
   function terminalBoot() {
     clearScreen(); showBanner();
     var isNew = player.completed.length === 0 && player.level === 1 && player.xp === 0;
-    print("   Hoş geldin, " + player.name + "!  (" + player.rank + ")", "ok");
+    print(T("boot.welcome", { name: player.name, rank: player.rank }), "ok");
     blank();
     if (isNew) {
-      if (STORY && STORY.prologue) showStoryBeat("prologue", STORY.startup + " — Prolog", STORY.prologue);
-      narrate([
-        "[Nova]: Takılırsan `hint` yaz — 3 yanlıştan sonra doğru komutu gösteririm.",
-        "Başlamak için: `quests` (görevler) → `quest c1q1`."
-      ], "mentor");
-      blank(); print("   Komut listesi için: help", "hintline");
+      if (STORY && STORY.prologue) showStoryBeat("prologue", STORY.startup + T("boot.prologue"), STORY.prologue);
+      narrate([T("boot.tip1"), T("boot.tip2")], "mentor");
+      blank(); print(T("boot.helptip"), "hintline");
     } else {
-      print("   Kaldığın yerden devam: " + storyDone() + "/" + QUESTS.length + " quest tamam.", "muted");
-      if (storyDone() < QUESTS.length) print("   ➡  Sıradaki: quest " + firstAvailableId(), "hintline");
-      else print("   🎉 Tüm questleri bitirdin! `map` ile zaferini gör.", "levelup");
+      print(T("boot.resume", { done: storyDone(), total: QUESTS.length }), "muted");
+      if (storyDone() < QUESTS.length) print(T("quest.next", { id: firstAvailableId() }), "hintline");
+      else print(T("boot.alldone"), "levelup");
     }
   }
 
@@ -572,13 +569,13 @@
       case "help": case "?": showHelp(); break;
       case "quests": case "quest-log": showQuests(); break;
       case "quest": case "start":
-        if (arg) startQuest(arg.toLowerCase()); else print("   Kullanım: quest <id>   (bkz: quests)", "hintline"); break;
+        if (arg) startQuest(arg.toLowerCase()); else print(T("usage.quest"), "hintline"); break;
       case "map": showMap(); break;
       case "home": case "anasayfa": backToHome(); break;
       case "guide": case "rehber": openGuide(); break;
       case "labs": case "modules": showLabs(); break;
       case "lab": case "module":
-        if (arg) showLab(arg); else print("   Kullanım: lab <id>   (bkz: labs)", "hintline"); break;
+        if (arg) showLab(arg); else print(T("usage.lab"), "hintline"); break;
       case "status": case "me": showStatus(); break;
       case "profile": openProfile(); break;
       case "shop": showShop(); break;
@@ -587,7 +584,8 @@
       case "clear": case "cls": clearScreen(); showBanner(); break;
       case "reset": doReset(); break;
       case "logout": case "signout": doLogout(); break;
-      default: print("   Bilinmeyen komut: '" + verb + "'.  'help' yaz.", "err");
+      case "lang": case "dil": I18N.setLang(arg ? arg.toLowerCase() : (I18N.lang === "tr" ? "en" : "tr")); break;
+      default: print(T("cmd.unknown", { verb: verb }), "err");
     }
   }
 
@@ -624,20 +622,19 @@
     var useFree = player.freeHints > 0;
 
     if (!useFree && player.credits < ANSWER_COST) {
-      print("   ❌ Yetersiz kredi. Cevabı görmek " + ANSWER_COST + " 💠 tutuyor (bakiyen: " + player.credits + " 💠).", "err");
-      print("   Ücretsiz yol: 3 kez yanlış denersen doğru komutu bedava gösteririm.", "hintline");
+      print(T("answer.nocredit", { cost: ANSWER_COST, balance: player.credits }), "err");
+      print(T("answer.freeway"), "hintline");
       return;
     }
 
     cqConfirm({
       icon: "question",
-      title: "Cevabı göstereyim mi?",
+      title: T("answer.confirmTitle"),
       html: useFree
-        ? "🧠 <b>Ücretsiz ipucu hakkın</b> kullanılacak.<br>Kalan hak: <b>" + player.freeHints + "</b>"
-        : "Bedeli: <b>" + ANSWER_COST + " 💠</b> · Bakiyen: <b>" + player.credits + " 💠</b>" +
-          "<br><span style='opacity:.7'>3 kez yanlış denersen ücretsiz gösteririm.</span>",
-      confirmText: useFree ? "Hakkımı kullan" : "Evet, " + ANSWER_COST + " 💠 öde",
-      cancelText: "Kendim deneyeceğim"
+        ? T("answer.confirmFree", { left: player.freeHints })
+        : T("answer.confirmPaid", { cost: ANSWER_COST, balance: player.credits }),
+      confirmText: useFree ? T("answer.useFree") : T("answer.payBtn", { cost: ANSWER_COST }),
+      cancelText: T("answer.cancelBtn")
     }).then(function (ok) {
       inputEl.focus();
       if (!ok) return;
@@ -668,11 +665,11 @@
 
     var done = storyDone(), total = QUESTS.length;
     var stats = [
-      ["Level", player.level],
+      [T("status.level"), player.level],
       ["XP", player.xp + "/" + xpToNext(player.level)],
-      ["Credits", player.credits + " 💠"],
-      ["Quests", done + " / " + total],
-      ["Rozet", player.badges.length]
+      [T("status.credits"), player.credits + " 💠"],
+      [T("status.quests"), done + " / " + total],
+      [T("profile.badgeCount"), player.badges.length]
     ];
     $("profile-stats").innerHTML = stats.map(function (s) {
       return "<div class='stat-tile'><div class='stat-val'>" + s[1] + "</div><div class='stat-key'>" + s[0] + "</div></div>";
@@ -680,11 +677,11 @@
 
     var readyPct = Math.round((done / total) * 100);
     $("ready-fill").style.width = readyPct + "%";
-    $("ready-text").textContent = "%" + readyPct + (readyPct === 100 ? " — Job-ready! 🚀" : "");
+    $("ready-text").textContent = T("common.pct", { n: readyPct }) + (readyPct === 100 ? T("profile.jobReady") : "");
 
     $("badge-grid").innerHTML = player.badges.length
       ? player.badges.map(function (b) { return "<span class='badge-chip'>" + esc(b) + "</span>"; }).join("")
-      : "<span class='muted-inline'>Henüz rozet yok — quest bitir!</span>";
+      : "<span class='muted-inline'>" + T("profile.noBadges") + "</span>";
 
     // Modül (track) ilerlemeleri
     var trackStats = TRACKS.map(function (tr) {
@@ -701,13 +698,13 @@
     $("modules-row").innerHTML = trackStats.map(function (s) {
       var state = s.complete ? "done" : (s === cur ? "current" : "locked");
       return "<span class='mod-chip mod-" + state + "'>" + s.tr.icon + " " + esc(s.tr.title) +
-               "<span class='mod-chip-pct'>" + (s.complete ? "✓" : "%" + s.pct) + "</span>" +
+               "<span class='mod-chip-pct'>" + (s.complete ? "✓" : T("common.pct", { n: s.pct })) + "</span>" +
              "</span>";
     }).join("");
 
     // Şu anki modülün eğitimleri + yüzdesi
     $("cur-module-name").textContent = cur.tr.title;
-    $("cur-module-pct").textContent = "%" + cur.pct + " (" + cur.done + "/" + cur.total + ")";
+    $("cur-module-pct").textContent = T("common.pct", { n: cur.pct }) + " (" + cur.done + "/" + cur.total + ")";
     $("cur-module-fill").style.width = cur.pct + "%";
     $("trainings").innerHTML = cur.quests.map(function (q) {
       var st = questStatus(q);
@@ -746,8 +743,8 @@
         CQApi.milestone("guide").then(function (res) {
           if (res.alreadyOwned) return;
           showAward(res.award, res.progress);
-          cqToast("success", "Rozet kazandın: " + badge + "  (+40 XP)");
-        }).catch(function (e) { serverError(e, "Rozet verilemedi"); });
+          cqToast("success", T("toast.badgeEarned", { badge: badge }));
+        }).catch(function (e) { serverError(e, T("err.badge")); });
       }
     });
     box.querySelector("#guide-close").onclick = closeGuide;
@@ -764,29 +761,29 @@
   /* ---- Paylaşılabilir başarı kartı ---- */
   function openShareModal() {
     var box = $("share-preview");
-    box.innerHTML = "<div class='share-loading'>Kart hazırlanıyor…</div>";
+    box.innerHTML = "<div class='share-loading'>" + T("share.building") + "</div>";
     $("share-modal").classList.remove("hidden");
     ShareCard.build(player).then(function (cv) {
       box.innerHTML = "";
       cv.classList.add("share-canvas");
       box.appendChild(cv);
     }).catch(function (e) {
-      box.innerHTML = "<div class='share-loading'>Kart oluşturulamadı: " + esc(e.message || e) + "</div>";
+      box.innerHTML = "<div class='share-loading'>" + T("share.failed") + " " + esc(e.message || e) + "</div>";
     });
   }
   function closeShareModal() { $("share-modal").classList.add("hidden"); }
 
   function doLogout() {
     cqConfirm({
-      icon: "question", title: "Çıkış yapılsın mı?",
-      html: "İlerlemen kayıtlı — tekrar giriş yapınca kaldığın yerden devam edersin.",
-      confirmText: "Çıkış yap", cancelText: "Kal"
+      icon: "question", title: T("logout.title"),
+      html: T("logout.body"),
+      confirmText: T("logout.confirm"), cancelText: T("logout.cancel")
     }).then(function (ok) {
       if (!ok) return;
       save();
       // Bekleyen yazmalar buluta gitsin, sonra oturumu kapat.
       Auth.logout().then(function () {
-        cqToast("success", "Çıkış yapıldı");
+        cqToast("success", T("toast.loggedOut"));
         setTimeout(function () { location.reload(); }, 650);
       });
     });
@@ -794,23 +791,23 @@
 
   function doReset() {
     cqConfirm({
-      icon: "warning", title: "İlerlemeyi sıfırla?",
-      html: "Level, XP, credits, tamamlanan questler ve rozetler <b>silinecek</b>.<br>Hesabın ve avatarın kalır.",
-      confirmText: "Evet, sıfırla", cancelText: "Vazgeç"
+      icon: "warning", title: T("reset.title"),
+      html: T("reset.body"),
+      confirmText: T("reset.confirm"), cancelText: T("reset.cancel")
     }).then(function (ok) {
-      if (!ok) { print("   İptal edildi. İlerlemen duruyor.", "hintline"); return; }
+      if (!ok) { print(T("reset.cancelled"), "hintline"); return; }
       // Sıfırlama da sunucuda: reset_progress() hem profili hem quest_progress'i temizler.
       CQApi.reset().then(function (res) {
         Auth.applyServerProgress(res.progress);
         player.story = [];                  // sinematikler kozmetik; istemci yazabilir
         save(); updateHud();
         terminalBooted = false;             // terminale dönünce welcome yeniden gösterilsin
-        print("   ♻ İlerleme sıfırlandı. Temiz başlangıç!", "levelup");
-        cqToast("success", "İlerleme sıfırlandı");
+        print(T("reset.done"), "levelup");
+        cqToast("success", T("toast.resetOk"));
         backToHome();
       }).catch(function (e) {
-        serverError(e, "Sıfırlanamadı");
-        cqToast("error", "Sıfırlama başarısız");
+        serverError(e, T("err.reset"));
+        cqToast("error", T("toast.resetFail"));
       });
     });
   }
@@ -853,7 +850,7 @@
       $("login-err").textContent = "";
       var btn = $("form-login").querySelector("button[type=submit]");
       var email = $("login-email").value, pass = $("login-pass").value;
-      busy(btn, true, "bağlanılıyor…");
+      busy(btn, true, T("auth.connecting"));
       Auth.login(email, pass).then(function (r) {
         busy(btn, false);
         if (!r.ok) {
@@ -873,13 +870,13 @@
       var name = $("reg-name").value.trim() || "engineer";
       var email = $("reg-email").value, pass = $("reg-pass").value;
       var profile = newProfile(name, regAvatar);
-      busy(btn, true, "hesap açılıyor…");
+      busy(btn, true, T("auth.creating"));
       Auth.register({ email: email, password: pass, profile: profile }).then(function (r) {
         busy(btn, false);
         if (r.ok) { stampOk(enterAppFromAuth); return; }
         if (r.needsConfirmation) {         // e-posta doğrulaması bekleniyor
           $("reg-err").textContent = "";
-          cqInfo("📬 E-postanı doğrula", r.error);
+          cqInfo(T("auth.verifyEmail"), r.error);
           switchAuthTab("login");
           $("login-email").value = email;
           return;
@@ -896,7 +893,7 @@
       Auth.resetPassword(email).then(function (r) {
         if (!r.ok) { $("login-err").textContent = r.error; stamp(r.code, "form-login"); return; }
         $("login-err").textContent = "";
-        cqInfo("📬 Sıfırlama linki gönderildi", email + " adresine şifre sıfırlama linki yolladık.");
+        cqInfo(T("auth.resetSentTitle"), T("auth.resetSentBody", { email: email }));
       });
     });
 
@@ -1042,12 +1039,12 @@
     $("share-close").onclick = closeShareModal;
     $("share-modal").addEventListener("click", function (e) { if (e.target === $("share-modal")) closeShareModal(); });
     $("share-download").onclick = function () {
-      ShareCard.download(player).then(function () { cqToast("success", "Kart indirildi"); });
+      ShareCard.download(player).then(function () { cqToast("success", T("toast.cardSaved")); });
     };
     $("share-copy").onclick = function () {
       ShareCard.copy(player).then(function (ok) {
-        cqToast(ok ? "success" : "info", ok ? "Panoya kopyalandı" : "Tarayıcın desteklemiyor — PNG indir");
-      }).catch(function () { cqToast("info", "Kopyalanamadı — PNG indir"); });
+        cqToast(ok ? "success" : "info", ok ? T("toast.copied") : T("toast.copyUnsupported"));
+      }).catch(function () { cqToast("info", T("toast.copyFailed")); });
     };
     // home
     $("guide-banner").onclick = openGuide;
@@ -1092,8 +1089,8 @@
     $("home-hero-name").textContent = player.name;
 
     var done = storyDone(), total = QUESTS.length;
-    $("story-ring-pct").textContent = "%" + Math.round((done / total) * 100);
-    $("story-continue").textContent = done === 0 ? "▶ Başla" : (done === total ? "✓ Tekrar Oyna" : "▶ Devam Et");
+    $("story-ring-pct").textContent = T("common.pct", { n: Math.round((done / total) * 100) });
+    $("story-continue").textContent = done === 0 ? T("home.start") : (done === total ? T("home.replay") : T("home.continue"));
 
     $("story-chips").innerHTML = CHAPTERS.map(function (ch) {
       var qs = QUESTS.filter(function (q) { return q.chapter === ch.n; });
@@ -1108,7 +1105,7 @@
                "<div class='lab-icon'>" + m.icon + "</div>" +
                "<div class='lab-title'>" + esc(m.title) + "</div>" +
                "<div class='lab-desc'>" + esc(m.desc) + "</div>" +
-               "<div class='lab-tag'>" + (soon ? "🔒 yakında" : "✅ hazır") + "</div>" +
+               "<div class='lab-tag'>" + (soon ? T("tag.soon") : T("tag.ready")) + "</div>" +
              "</button>";
     }).join("");
   }
@@ -1154,7 +1151,7 @@
   function selectLab(id) {
     var m = MODULES.find(function (x) { return x.id === id; });
     if (!m) return;
-    if (m.status !== "active") { cqToast("info", m.icon + " " + m.title + " — yakında!"); return; }
+    if (m.status !== "active") { cqToast("info", T("toast.labSoon", { name: m.icon + " " + m.title })); return; }
     goToTerminal();
     submit("lab " + m.id);
   }
@@ -1189,7 +1186,7 @@
     var s = cqSwal();
     if (!s) { alert(title + "\n\n" + String(html).replace(/<[^>]+>/g, "")); return Promise.resolve(); }
     return s.fire({ icon: "info", title: title, html: html, backdrop: "rgba(3, 6, 12, 0.72)",
-                    confirmButtonText: "Tamam" });
+                    confirmButtonText: T("dlg.ok") });
   }
   function cqConfirm(opts) {
     var s = cqSwal();
@@ -1205,7 +1202,7 @@
           backdrop: "rgba(3, 6, 12, 0.72)",
           showCancelButton: true, focusCancel: true, reverseButtons: true,
           allowEnterKey: false,
-          confirmButtonText: opts.confirmText || "Evet", cancelButtonText: opts.cancelText || "Vazgeç"
+          confirmButtonText: opts.confirmText || T("dlg.yes"), cancelButtonText: opts.cancelText || T("dlg.cancel")
         }).then(function (r) { resolve(!!r.isConfirmed); });
       }, 0);
     });
@@ -1258,12 +1255,12 @@
     runLoader(function () {
       ready.then(function (r) {
         if (!r.ok && r.reason === "not-configured") { showSetupNeeded(); return; }
-        if (!r.ok && r.reason === "sdk-missing")    { showSetupNeeded("Supabase SDK yüklenemedi (js/lib/supabase.min.js)."); return; }
+        if (!r.ok && r.reason === "sdk-missing")    { showSetupNeeded(T("setup.sdkMissing")); return; }
         if (Auth.currentEmail()) bootSession();     // oturum açıksa doğrudan gir
         else {
           showAuth();
           if (!r.ok && r.reason === "network") {
-            $("login-err").textContent = "Sunucuya ulaşılamadı. İnternet bağlantını kontrol et.";
+            $("login-err").textContent = T("auth.noServer");
             // Açılışta bağlantı yoksa damga hemen değil, kart oturduktan sonra insin.
             setTimeout(function () { stamp("network"); }, 420);
           }
@@ -1282,13 +1279,9 @@
     var box = document.createElement("div");
     box.className = "auth-setup";
     box.innerHTML =
-      "<p><b>Sunucu yapılandırılmamış.</b></p>" +
-      "<p>Gerçek hesaplar için Supabase bağlantısı gerekiyor:</p>" +
-      "<ol><li><code>web/js/config.js</code> dosyasını aç</li>" +
-      "<li>Supabase panelindeki <b>Project URL</b> ve <b>anon key</b> değerlerini yapıştır</li>" +
-      "<li>Sayfayı yenile</li></ol>" +
+      T("setup.body") +
       (extra ? "<p class='setup-extra'>" + esc(extra) + "</p>" : "") +
-      "<p class='setup-extra'>Ayrıntı: <code>docs/SETUP-SUPABASE.md</code></p>";
+      T("setup.more");
     document.querySelector(".auth-card").appendChild(box);
   }
 

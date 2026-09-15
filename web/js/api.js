@@ -30,9 +30,9 @@ var CQApi = (function () {
 
   function call(action, payload) {
     var url = endpoint();
-    if (!url) return Promise.reject(new Error("Sunucu yapılandırılmamış (config.js)."));
+    if (!url) return Promise.reject(new Error(I18N.t("api.notConfigured")));
     return accessToken().then(function (token) {
-      if (!token) throw new Error("Oturum bulunamadı, tekrar giriş yap.");
+      if (!token) throw new Error(I18N.t("api.noSession"));
       return send(url, token, action, payload);
     });
   }
@@ -41,7 +41,9 @@ var CQApi = (function () {
     var controller = new AbortController();
     var timer = setTimeout(function () { controller.abort(); }, TIMEOUT_MS);
 
-    var body = Object.assign({ action: action }, payload || {});
+    /* Dil sunucuya da gider: hata mesajlarını ve ileride ipucu metnini
+       oyuncunun okuduğu dilde döndürebilsin. */
+    var body = Object.assign({ action: action, lang: I18N.lang }, payload || {});
     return fetch(url, {
       method: "POST",
       headers: {
@@ -58,9 +60,8 @@ var CQApi = (function () {
             // 404 = fonksiyon o isimle yayında değil. En sık yapılan hata bu
             // olduğu için mesajı tahmine bırakmıyoruz.
             var msg = res.status === 404
-              ? "Oyun sunucusu bulunamadı. `game` fonksiyonu deploy edilmemiş " +
-                "(npx supabase functions deploy game)."
-              : (data.error || ("Sunucu hatası (" + res.status + ")"));
+              ? I18N.t("api.notDeployed")
+              : (data.error || I18N.t("api.serverError", { status: res.status }));
             var err = new Error(msg);
             err.status = res.status;
             err.data = data;
@@ -70,7 +71,7 @@ var CQApi = (function () {
         });
       })
       .catch(function (e) {
-        if (e.name === "AbortError") throw new Error("Sunucu yanıt vermedi (zaman aşımı).");
+        if (e.name === "AbortError") throw new Error(I18N.t("api.timeout"));
         throw e;
       })
       .finally(function () { clearTimeout(timer); });

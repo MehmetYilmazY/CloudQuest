@@ -16,7 +16,9 @@
     "ci": "npm run validate && npm test && npm run build:check && npm run check:links",
     "content": "node --experimental-strip-types scripts/content.ts",
     "check:links": "node --experimental-strip-types scripts/check-links.ts",
-    "deploy": "npm run build && npx supabase functions deploy game"
+    "deploy": "npm run build && npx supabase functions deploy game",
+    "i18n": "node --experimental-strip-types scripts/i18n.ts",
+    "i18n:sync": "node --experimental-strip-types scripts/i18n.ts --sync"
   },
   "devDependencies": {
     "@types/node": "^22.15.3",

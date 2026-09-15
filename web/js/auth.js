@@ -96,7 +96,7 @@ const Auth = (function () {
       // Trigger'ın yetişmediği nadir durumda kısa bir kez daha bakarız.
       await new Promise(function (r) { setTimeout(r, 400); });
       const retry = await c.from("profiles").select("*").eq("id", _user.id).maybeSingle();
-      if (retry.error || !retry.data) throw new Error("Profil bulunamadı. Şemayı kurdun mu? (supabase/schema.sql)");
+      if (retry.error || !retry.data) throw new Error(I18N.t("auth.noProfile"));
       _cache = rowToProfile(retry.data);
       return _cache;
     }
@@ -181,12 +181,12 @@ const Auth = (function () {
 
   /* ---------- kayıt / giriş / çıkış ---------- */
   async function register(opts) {
-    if (!isConfigured()) return { ok: false, error: "Sunucu yapılandırılmamış (js/config.js).", code: "config" };
+    if (!isConfigured()) return { ok: false, error: I18N.t("auth.notConfigured"), code: "config" };
     const email = String(opts.email || "").trim().toLowerCase();
     const password = String(opts.password || "");
     const name = String((opts.profile && opts.profile.name) || "engineer").slice(0, 24);
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return { ok: false, error: "Geçerli bir e-posta gir.", code: "bad-email" };
-    if (password.length < 6) return { ok: false, error: "Şifre en az 6 karakter olmalı.", code: "weak-password" };
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return { ok: false, error: I18N.t("auth.badEmail"), code: "bad-email" };
+    if (password.length < 6) return { ok: false, error: I18N.t("auth.weakPassword"), code: "weak-password" };
 
     const c = client();
     try {
@@ -199,7 +199,7 @@ const Auth = (function () {
       // E-posta doğrulaması açıksa oturum gelmez.
       if (!data.session) {
         return { ok: false, needsConfirmation: true, code: "unconfirmed",
-                 error: "Hesabın oluşturuldu! " + email + " adresine doğrulama linki gönderdik — onayladıktan sonra giriş yap." };
+                 error: I18N.t("auth.confirmSent", { email: email }) };
       }
       _user = { id: data.user.id, email: data.user.email };
       await loadProfile();
@@ -238,9 +238,9 @@ const Auth = (function () {
   }
 
   async function resetPassword(emailRaw) {
-    if (!isConfigured()) return { ok: false, error: "Sunucu yapılandırılmamış.", code: "config" };
+    if (!isConfigured()) return { ok: false, error: I18N.t("auth.notConfiguredShort"), code: "config" };
     const email = String(emailRaw || "").trim().toLowerCase();
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return { ok: false, error: "Önce geçerli bir e-posta gir.", code: "bad-email" };
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return { ok: false, error: I18N.t("auth.emailFirst"), code: "bad-email" };
     try {
       const { error } = await client().auth.resetPasswordForEmail(email, { redirectTo: location.href.split("#")[0] });
       if (error) return { ok: false, error: trError(error.message), code: errCode(error.message) };
@@ -291,16 +291,11 @@ const Auth = (function () {
     return "unknown";
   }
 
+  /* Hata kodunu kullanıcının dilinde bir cümleye çevirir. Bilinmeyen kod
+     ham mesajla döner: gizlemek yerine göstermek, hata ayıklamayı kolaylaştırır. */
   function trError(msg) {
-    switch (errCode(msg)) {
-      case "network":       return "Sunucuya ulaşılamadı. İnternet bağlantını (veya Supabase ayarlarını) kontrol et.";
-      case "credentials":   return "E-posta ya da şifre hatalı.";
-      case "unconfirmed":   return "E-postanı henüz doğrulamadın. Gelen kutunu kontrol et.";
-      case "duplicate":     return "Bu e-posta zaten kayıtlı. Giriş yap.";
-      case "ratelimit":     return "Çok fazla deneme. Biraz bekleyip tekrar dene.";
-      case "weak-password": return "Şifre en az 6 karakter olmalı.";
-      default:              return String(msg || "");
-    }
+    const code = errCode(msg);
+    return code === "unknown" ? String(msg || "") : I18N.t("autherr." + code);
   }
 
   // Sekme kapanırken bekleyen yazmayı kurtar.

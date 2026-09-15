@@ -22,6 +22,21 @@ var CQScene = (function () {
   var head = { title: "", step: 0, total: 0, task: "" };
   var pathHit = false;              // yol satırı bu turda parladı mı
 
+  /* Sahne METİNLERİ çeviriden geçer. Anahtar Türkçe metnin kendisi:
+     bu dosyada yüzlerce kısa etiket var ve karşılığı olmayan (dinamik)
+     değerler olduğu gibi geçiyor — bkz. i18n.js/phrase. Yalnızca ÇİZİM
+     anlarında çağırılır, böylece sahne mantığı tek dilde kalır. */
+  var P = I18N.phrase;
+
+  /* Değişken taşıyan sahne başlıkları. Kalıbın kendisi anahtar:
+     "📁 {path} içindesin" → "📁 You're inside {path}". Kelime sırası
+     dile göre değiştiği için parça parça birleştirmek yetmiyor. */
+  function Pf(tpl, vars) {
+    return P(tpl).replace(/\{(\w+)\}/g, function (m, k) {
+      return vars[k] != null ? vars[k] : m;
+    });
+  }
+
   /* =======================================================================
      Küçük yardımcılar
      ======================================================================= */
@@ -528,7 +543,7 @@ var CQScene = (function () {
 
     // Tanımadığım komutta bile eski açıklama ekranda kalmasın: en azından ne
     // olduğunu söyle (yanlış bilgi vermekten iyisi dürüst bir satır).
-    if (!n) n = EXPLAIN[v] || (quiet ? null : ["✔ " + v + " çalıştı", "Doğru komut — bu adımın sahnede görsel bir karşılığı yok."]);
+    if (!n) n = EXPLAIN[v] || (quiet ? null : [I18N.t("scene.ranTitle", { cmd: v }), I18N.t("scene.ranText")]);
     if (n) note(raw, n[0], n[1]);
     render();
   }
@@ -539,7 +554,7 @@ var CQScene = (function () {
   function doPwd() {
     if (!needFs()) return ["📍 pwd", "\"Neredeyim?\" — kabuk bulunduğun klasörün tam yolunu yazar."];
     pathHit = true;
-    return ["📍 " + fullPath(), "\"Neredeyim?\" — kabuk sana tam yolu söyler. Kaybolunca ilk komut budur."];
+    return [Pf("📍 {path}", { path: fullPath() }), "\"Neredeyim?\" — kabuk sana tam yolu söyler. Kaybolunca ilk komut budur."];
   }
   function doLs(t, a) {
     if (!needFs()) return ["📂 Liste", "Bulunduğun yerde ne var — her şeyden önce bunu sor."];
@@ -549,7 +564,7 @@ var CQScene = (function () {
     node.open = true; openTo(segs);
     node.ch.forEach(function (c) { c.hit = true; });
     var det = t.indexOf("-l") !== -1 || t.indexOf("-la") !== -1 || t.indexOf("-al") !== -1;
-    return ["📂 " + pathStr(segs) + " → " + node.ch.length + " öğe",
+    return [Pf("📂 {path} → {n} öğe", { path: pathStr(segs), n: node.ch.length }),
             det ? "-l uzun liste: izinler, sahip, boyut, tarih. Sağdaki ağaçta içerik açıldı."
                 : "Klasörün içi sağda açıldı. Klasörler önce, dosyalar sonra."];
   }
@@ -557,10 +572,10 @@ var CQScene = (function () {
     if (!needFs()) return ["📁 cd", "Klasör değiştirme komutu — dosya sahnesinde yolu değiştirir."];
     var segs = segsOf(arg);
     var node = nodeAt(segs);
-    if (!node || !node.d) return ["🚫 " + arg + " bulunamadı",
+    if (!node || !node.d) return [Pf("🚫 {name} bulunamadı", { name: arg }),
                                   "Olmayan klasöre girilemez. 'ls' ile ne olduğuna bak, sonra tekrar dene."];
     S.cwd = segs; openTo(segs); node.hit = true; pathHit = true;
-    return ["📁 " + pathStr(segs) + " içindesin",
+    return [Pf("📁 {path} içindesin", { path: pathStr(segs) }),
             arg === ".." ? "'..' bir üst klasör demek — merdivende bir basamak yukarı."
                          : "Yol değişti: yukarıdaki 📍 satırı artık burayı gösteriyor."];
   }
@@ -570,7 +585,7 @@ var CQScene = (function () {
         set("log", "on", "canlı akıyor");
         return ["🪵 Log akışı açıldı", "tail -f dosyaya düşen her yeni satırı anında ekrana verir. Canlı hata avı böyle yapılır."];
       }
-      return ["📖 " + (a[a.length - 1] || "dosya") + " okundu", "Dosyanın içine bakmak: log'da cevap genelde son satırlardadır."];
+      return [Pf("📖 {name} okundu", { name: a[a.length - 1] || P("dosya") }), "Dosyanın içine bakmak: log'da cevap genelde son satırlardadır."];
     }
     var name = a[a.length - 1];
     var segs = segsOf(name || "");
@@ -579,7 +594,7 @@ var CQScene = (function () {
     var txt = how === "follow" ? "Akış canlı: dosyaya yeni satır düştükçe ekrana damlar. Ctrl+C ile çıkarsın."
             : how === "tail"   ? "Log dosyaları uzundur; hata genelde SONDA olur. Bu yüzden tail."
             : "Dosyanın içeriğini okudun — sağda 👁 işareti okuduğun dosyaları gösterir.";
-    return ["📖 " + (name || "dosya") + " okundu", txt];
+    return [Pf("📖 {name} okundu", { name: name || P("dosya") }), txt];
   }
   function doGrep(a) {
     var pat = a[0] || "?", fileName = a[1] || "";
@@ -587,19 +602,19 @@ var CQScene = (function () {
       var node = fileName ? nodeAt(segsOf(fileName)) : null;
       if (node) node.hit = true; else if (S.root) hitTree(S.root);
     }
-    return ["🔍 '" + cut(pat, 18) + "' aranıyor" + (fileName ? " → " + fileName : ""),
+    return [Pf("🔍 '{pat}' aranıyor", { pat: cut(pat, 18) }) + (fileName ? " → " + fileName : ""),
             "grep = binlerce satır arasından sadece işine yarayanı süzer. Aramanın kalbi."];
   }
   function doFind(t) {
     if (needFs() && S.root) hitTree(S.root);
     var name = flag(t, "-name") || flag(t, "-iname");
-    return ["🔎 Ağaç taranıyor" + (name ? " · " + name : ""),
+    return [P("🔎 Ağaç taranıyor") + (name ? " · " + name : ""),
             "find bütün alt klasörlere iner. 'Bu dosya nerede?' sorusunun cevabı."];
   }
   function doCount(a) {
     var name = a[a.length - 1] || "";
     if (needFs() && name) { var nd = nodeAt(segsOf(name)); if (nd) nd.hit = true; }
-    return ["🔢 Sayım" + (name ? " · " + name : ""), "wc -l satır sayar: 'kaç kere oldu?' sorusuna sayı ile cevap."];
+    return [P("🔢 Sayım") + (name ? " · " + name : ""), "wc -l satır sayar: 'kaç kere oldu?' sorusuna sayı ile cevap."];
   }
   function doMkdir(a) {
     if (!needFs()) {                               // pano sahnesinde: bilinen klasörler satırı açar
@@ -608,7 +623,7 @@ var CQScene = (function () {
         set("wf", "on", "klasör hazır");
         return ["📁 .github/workflows oluştu", "GitHub bu klasördeki YAML dosyalarını otomatik pipeline olarak çalıştırır."];
       }
-      return ["📁 " + (a[0] || "klasör") + " oluştu", "-p ara klasörleri de yaratır: tek komutla derin yol kurulur."];
+      return [Pf("📁 {name} oluştu", { name: a[0] || P("klasör") }), "-p ara klasörleri de yaratır: tek komutla derin yol kurulur."];
     }
     var made = [];
     a.forEach(function (p) {
@@ -617,7 +632,7 @@ var CQScene = (function () {
       ensureDir(segs); openTo(segs); made.push(pathStr(segs));
     });
     if (!made.length) return ["📁 Zaten var", "Aynı isimde klasör varsa mkdir yeni bir şey yapmaz."];
-    return ["📁 " + made.join(", ") + " oluştu", "Sağdaki ağaçta yeni klasör belirdi — düzen böyle kurulur."];
+    return [Pf("📁 {name} oluştu", { name: made.join(", ") }), "Sağdaki ağaçta yeni klasör belirdi — düzen böyle kurulur."];
   }
   function doTouch(a) {
     if (!needFs()) return ["📄 Dosya", "Boş dosya oluşturma komutu."];
@@ -629,7 +644,7 @@ var CQScene = (function () {
       par.ch.push(file(segs[segs.length - 1], { fresh: true, hit: true }));
       par.open = true; made.push(segs[segs.length - 1]);
     });
-    return made.length ? ["📄 " + made.join(", ") + " oluştu", "Boş dosya doğdu; içini sonra doldururuz."]
+    return made.length ? [Pf("📄 {name} oluştu", { name: made.join(", ") }), "Boş dosya doğdu; içini sonra doldururuz."]
                        : ["📄 Zaten var", "Dosya varsa touch sadece tarihini günceller."];
   }
   function doMove(a, isMove) {
@@ -637,7 +652,7 @@ var CQScene = (function () {
     if (a.length < 2) return ["⚠️ Eksik argüman", "İki şey gerekir: kaynak ve hedef. Örn: cp a.txt yedek/"];
     var srcStr = a[0], dstStr = a[a.length - 1];
     var sSegs = segsOf(srcStr), src = nodeAt(sSegs);
-    if (!src) return ["🚫 " + srcStr + " yok", "Kaynak bulunamadı — 'ls' ile doğru ismi teyit et."];
+    if (!src) return [Pf("🚫 {name} yok", { name: srcStr }), "Kaynak bulunamadı — 'ls' ile doğru ismi teyit et."];
 
     var dSegs = segsOf(dstStr), dNode = nodeAt(dSegs), parent, newName = src.n;
     if (dNode && dNode.d) { parent = dNode; }
@@ -672,14 +687,15 @@ var CQScene = (function () {
       }, 520);
     });
     if (!gone.length) return ["🚫 Bulunamadı", "Silinecek dosya yok — isim doğru mu?"];
-    return ["🗑️ " + gone.join(", ") + " silindi", "rm sorusuz siler, çöp kutusu yoktur. Prod'da iki kez oku."];
+    return [Pf("🗑️ {name} silindi", { name: gone.join(", ") }), "rm sorusuz siler, çöp kutusu yoktur. Prod'da iki kez oku."];
   }
   function doChmod(t, a) {
     if (!needFs()) return ["🔓 İzin", "Dosya izinlerini değiştirme komutu."];
     var name = a[a.length - 1], segs = segsOf(name || ""), node = name ? nodeAt(segs) : null;
     var exec = t.some(function (x) { return /\+x|7|75|755|775/.test(x); });
     if (node) { node.hit = true; if (exec) node.x = true; }
-    return [(exec ? "⚡ " : "🔐 ") + (name || "dosya") + (exec ? " artık çalıştırılabilir" : " izinleri değişti"),
+    return [(exec ? Pf("⚡ {name} artık çalıştırılabilir", { name: name || P("dosya") })
+                  : Pf("🔐 {name} izinleri değişti", { name: name || P("dosya") })),
             exec ? "x = execute. Bu bit olmadan script sadece metin dosyasıdır; artık ⚡ ikonuyla duruyor."
                  : "rwx: oku / yaz / çalıştır — sahip, grup, diğerleri için ayrı ayrı."];
   }
@@ -687,7 +703,7 @@ var CQScene = (function () {
     var node = needFs() ? nodeAt(segsOf(name)) : null;
     if (node) { node.hit = true; node.run = true; }
     if (S.kind === "ci") set("p.build", "on", "script çalıştı");
-    return ["▶️ " + name + " çalıştı",
+    return [Pf("▶️ {name} çalıştı", { name: name }),
             node && !node.x ? "Çalıştırma izni yoksa kabuk 'Permission denied' der — önce chmod +x."
                             : "./ = 'buradaki dosyayı çalıştır'. Deploy script'leri böyle tetiklenir."];
   }
@@ -698,8 +714,8 @@ var CQScene = (function () {
     return ["🧠 Süreç listesi", "Her çalışan program bir PID'dir. Askıda kalan işi burada yakalarsın."];
   }
   function doKill(pid) {
-    set("proc", "off", "pid " + (pid || "?") + " · sonlandırıldı");
-    return ["⛔ " + (pid || "süreç") + " sonlandırıldı", "kill sinyal yollar. Hayalet süreç böyle temizlenir."];
+    set("proc", "off", Pf("pid {pid} · sonlandırıldı", { pid: pid || "?" }));
+    return [Pf("⛔ {pid} sonlandırıldı", { pid: pid || P("süreç") }), "kill sinyal yollar. Hayalet süreç böyle temizlenir."];
   }
   function doDisk() {
     set("disk", "warn", "%78 dolu · 4.2G boş");
@@ -710,7 +726,7 @@ var CQScene = (function () {
     if (/^(install|update|upgrade|remove)$/.test(name)) name = "paket";
     var i = item("pkg");
     if (i) { i.label = name; set("pkg", "on", "kuruldu"); } else add("SİSTEM", it("pkg:" + name, "📦", name, "kuruldu", "on"));
-    return ["📦 " + name + " kuruldu", "Paket yöneticisi bağımlılıkları da getirir; tek tek indirmezsin."];
+    return [Pf("📦 {name} kuruldu", { name: name }), "Paket yöneticisi bağımlılıkları da getirir; tek tek indirmezsin."];
   }
   function doService(a) {
     var op = (a[0] || "status").toLowerCase(), svc = a[1] || "servis";
@@ -721,27 +737,27 @@ var CQScene = (function () {
     }
     if (op === "start" || op === "restart" || op === "enable") {
       set(key, "on", op === "enable" ? "açılışta başlar" : "çalışıyor");
-      return ["⚙️ " + svc + " çalışıyor", "Daemon = arka planda sürekli duran hizmet. Web sunucusu böyle ayağa kalkar."];
+      return [Pf("⚙️ {svc} çalışıyor", { svc: svc }), "Daemon = arka planda sürekli duran hizmet. Web sunucusu böyle ayağa kalkar."];
     }
     if (op === "stop" || op === "disable") {
       set(key, "off", "durdu");
-      return ["⛔ " + svc + " durduruldu", "Servisi kapatmak da yönetimin parçası — bakım pencereleri böyle açılır."];
+      return [Pf("⛔ {svc} durduruldu", { svc: svc }), "Servisi kapatmak da yönetimin parçası — bakım pencereleri böyle açılır."];
     }
     hit(key);
-    return ["🔎 " + svc + " durumu", "status: çalışıyor mu, ne zamandır ayakta, son log satırları ne?"];
+    return [Pf("🔎 {svc} durumu", { svc: svc }), "status: çalışıyor mu, ne zamandır ayakta, son log satırları ne?"];
   }
   function doEnv(t) {
     var pair = t.slice(1).filter(function (x) { return x.indexOf("=") !== -1; })[0] || "";
     var k = pair.split("=")[0], val = pair.split("=")[1] || "";
     if (k) add("SİSTEM", it("env:" + k, "🔑", k, val, "on"));
-    return [k ? "🔑 " + k + "=" + val + " ayarlandı" : "🔑 Ortam değişkenleri",
+    return [k ? Pf("🔑 {pair} ayarlandı", { pair: k + "=" + val }) : P("🔑 Ortam değişkenleri"),
             "Ortam değişkeni = uygulamaya 'hangi ortamdasın' demenin yolu. Şifreler de böyle geçilir, kodda değil."];
   }
 
   /* ---------------- ağ ---------------- */
   function doPing(hostName) {
     set("api", "warn", "ICMP yanıt · 24 ms");
-    return ["📡 " + (hostName || "hedef") + " yanıt verdi (24 ms)",
+    return [Pf("📡 {host} yanıt verdi (24 ms)", { host: hostName || P("hedef") }),
             "ping = 'orada mısın?'. Yanıt varsa makine ayakta; yoksa sorun ağda ya da makinede."];
   }
   function doDns(hostName) {
@@ -760,12 +776,12 @@ var CQScene = (function () {
       return ["❤️ /health → 200 OK", "Sağlık ucu: load balancer da tam bunu sorar. 200 dönmezse trafiği kesmez."];
     }
     set("api", "on", "HTTP 200 · yanıt var");
-    return ["🌍 " + cut(url || "istek", 26) + " → 200 OK",
+    return [cut(url || P("istek"), 26) === "" ? P("🌍 200 OK") : "🌍 " + cut(url || P("istek"), 26) + " → 200 OK",
             "curl HTTP konuşur: sadece 'ayakta mı' değil, 'doğru cevap veriyor mu' sorusunu sorar."];
   }
   function doTrace(hostName) {
     ["you", "dns", "api"].forEach(hit);
-    return ["🛰️ Yol: gw → firewall → " + (hostName || "hedef"),
+    return [Pf("🛰️ Yol: gw → firewall → {host}", { host: hostName || P("hedef") }),
             "traceroute paketin geçtiği durakları sayar. Nerede takıldığını gösterir."];
   }
   function doPorts() {
@@ -781,7 +797,7 @@ var CQScene = (function () {
   function doSsh(target) {
     set("api", "on", "kabuk açık");
     if (target) { S.host = target.indexOf("@") !== -1 ? target : "engineer@" + target; S.ctx = "uzak kabuk · ssh"; }
-    return ["🔐 " + (target || "sunucu") + " içindesin",
+    return [Pf("🔐 {target} içindesin", { target: target || P("sunucu") }),
             "Artık komutlar UZAK makinede çalışıyor. Yukarıdaki host adı değişti — dikkat, prod olabilir."];
   }
   function doScp(a) {
@@ -807,12 +823,12 @@ var CQScene = (function () {
         if (newBr) {
           S.branches.forEach(function (b) { b.cur = false; });
           S.branches.push({ name: newBr, commits: br ? br.commits : 0, cur: true, pushed: false });
-          S.ctx = "dal: " + newBr;
-          n = ["🌿 " + newBr + " dalı açıldı", "Yeni dal = güvenli çalışma alanı. main bozulmaz, denemen serbest."];
+          S.ctx = Pf("dal: {name}", { name: newBr });
+          n = [Pf("🌿 {name} dalı açıldı", { name: newBr }), "Yeni dal = güvenli çalışma alanı. main bozulmaz, denemen serbest."];
         } else {
           var found = S.branches.filter(function (b) { return b.name === nameArg; })[0];
-          if (found) { S.branches.forEach(function (b) { b.cur = false; }); found.cur = true; S.ctx = "dal: " + found.name; }
-          n = ["➤ " + (nameArg || "dal") + " dalına geçildi", "Dal değiştirmek çalışma dosyalarını o dalın hâline çevirir."];
+          if (found) { S.branches.forEach(function (b) { b.cur = false; }); found.cur = true; S.ctx = Pf("dal: {name}", { name: found.name }); }
+          n = [Pf("➤ {name} dalına geçildi", { name: nameArg || P("dal") }), "Dal değiştirmek çalışma dosyalarını o dalın hâline çevirir."];
         }
         syncBranches(); break;
       case "add":
@@ -821,11 +837,11 @@ var CQScene = (function () {
       case "commit":
         if (br) br.commits++;
         set("wt", "idle", "temiz"); syncBranches();
-        n = ["💾 Commit atıldı" + (flag(t, "-m") ? ": " + cut(flag(t, "-m"), 22) : ""),
+        n = [P("💾 Commit atıldı") + (flag(t, "-m") ? ": " + cut(flag(t, "-m"), 22) : ""),
              "Commit bir fotoğraf: mesajı gelecekteki sana yazılır. Dalda bir ● daha var."]; break;
       case "push":
         if (br) br.pushed = true; syncBranches();
-        n = ["☁️ " + (br ? br.name : "dal") + " uzak sunucuya gitti",
+        n = [Pf("☁️ {name} uzak sunucuya gitti", { name: br ? br.name : P("dal") }),
              "push yerel commit'leri GitHub'a yükler. Artık takım da görüyor — ve CI çalışır."]; break;
       case "pull":
         var main = S.branches.filter(function (b) { return b.name === "main"; })[0] || br;
@@ -834,7 +850,7 @@ var CQScene = (function () {
       case "merge":
         var other = a[1] || "dal";
         if (br) br.commits++; syncBranches();
-        n = ["🔀 " + other + " → " + (br ? br.name : "dal") + " birleştirildi",
+        n = [Pf("🔀 {from} → {to} birleştirildi", { from: other, to: br ? br.name : P("dal") }),
              "Merge iki tarihi birleştirir. Aynı satıra iki kişi dokunduysa çakışmayı sen çözersin."]; break;
       case "status": hit("wt"); n = ["🔎 Durum", "Neyi değiştirdim, neyi henüz commit etmedim? Şüphede kalınca bu."]; break;
       case "diff":   hit("wt"); n = ["📝 Satır satır fark", "diff tam olarak hangi satırın değiştiğini gösterir."]; break;
@@ -981,7 +997,7 @@ var CQScene = (function () {
         add("YÖNETİLEN KAYNAK", it("r:web",  "🖥️", "aws_instance.web", "çalışıyor", "on"));
         add("YÖNETİLEN KAYNAK", it("r:sg",   "🛡️", "aws_security_group.web", "aktif", "on"));
         add("YÖNETİLEN KAYNAK", it("r:buck", "🪣", "aws_s3_bucket.assets", "hazır", "on"));
-        return ["🚀 Altyapı ayağa kalktı" + (vars ? " · " + cut(vars, 16) : ""),
+        return [P("🚀 Altyapı ayağa kalktı") + (vars ? " · " + cut(vars, 16) : ""),
                 "Tıklamayla değil kodla kurdun: aynı dosya yarın aynı altyapıyı bir daha kurar."];
       case "destroy":
         var g = group("YÖNETİLEN KAYNAK"); if (g) g.items = [];
@@ -992,7 +1008,7 @@ var CQScene = (function () {
       case "get":      hit("f.main"); return ["📚 Modüller indirildi", "Modül = tekrar kullanılabilir altyapı paketi. Kopyala-yapıştır bitiyor."];
       case "graph":    return ["🕸️ Bağımlılık grafiği", "Neyin neye bağlı olduğunu çizer: subnet olmadan sunucu doğmaz."];
       case "workspace":
-        if (sub === "new" || sub === "select") { S.ctx = "workspace: " + (a[2] || "prod"); return ["🗂️ Workspace: " + (a[2] || "prod"), "Aynı kodla ayrı ortamlar (dev/prod) — state dosyaları ayrı tutulur."]; }
+        if (sub === "new" || sub === "select") { S.ctx = "workspace: " + (a[2] || "prod"); return [Pf("🗂️ Workspace: {name}", { name: a[2] || "prod" }), "Aynı kodla ayrı ortamlar (dev/prod) — state dosyaları ayrı tutulur."]; }
         return ["🗂️ Workspace listesi", "Ortamlar arası geçiş burada."];
       case "import":
         add("YÖNETİLEN KAYNAK", it("r:legacy", "🧲", cut(a[1] || "legacy", 20), "içeri alındı", "warn"));
@@ -1021,7 +1037,7 @@ var CQScene = (function () {
       case "run":
         var p = t.filter(function (x) { return /^\d+:\d+$/.test(x); })[0];
         set("cont", "on", (p || "çalışıyor"));
-        return ["🚢 Konteyner çalışıyor" + (p ? " · " + p : ""), "-p 8080:80 = dışarıdaki 8080, içerideki 80'e bağlanır. Port eşlemesi budur."];
+        return [P("🚢 Konteyner çalışıyor") + (p ? " · " + p : ""), "-p 8080:80 = dışarıdaki 8080, içerideki 80'e bağlanır. Port eşlemesi budur."];
       case "ps":     hit("cont"); return ["🔎 Çalışan konteynerler", "Ayakta olanları görürsün; -a durmuş olanları da getirir."];
       case "compose": set("cont", "on", "compose · çok servis"); return ["🎼 Compose ile hepsi kalktı", "Uygulama + veritabanı + cache tek dosyadan. Tek komutla ayağa kalkar."];
       case "exec":   hit("cont"); return ["🔧 Konteynerin içindesin", "Kabuk aç, log'a bak, dosyayı gör. Hata ayıklamanın en doğrudan yolu."];
@@ -1048,13 +1064,13 @@ var CQScene = (function () {
     if (op === "create" && /deployment/.test(what)) { set("dep", "on", cut(flag(t, "--image") || "myapp:1.0", 18)); set("pods", "on", "1 replika"); return ["🚀 Deployment oluştu", "Deployment 'kaç kopya, hangi imaj' der; k8s bu hâli sürekli korur."]; }
     if (op === "create" && /configmap/.test(what))  { add("KUBERNETES", it("cm", "🗂️", "configmap", cut(flag(t, "--from-literal") || "ENV=prod", 16), "on")); return ["🗂️ ConfigMap oluştu", "Ayarı imajdan ayırırsın: aynı imaj dev'de ve prod'da farklı davranır."]; }
     if (op === "expose")                    { set("svc", "on", (flag(t, "--type") || "ClusterIP") + " · " + (flag(t, "--port") || "80")); return ["🌐 Service açıldı", "Pod'lar gelip gider, IP'leri değişir. Service sabit adrestir."]; }
-    if (op === "scale")                     { var r = flag(t, "--replicas") || "3"; set("pods", "on", "▣".repeat(Math.min(parseInt(r, 10) || 1, 8)) + " " + r + " replika"); return ["📐 " + r + " replikaya çıkıldı", "Yatay ölçekleme: tek makineyi büyütmek yerine kopya sayısını artırırsın."]; }
+    if (op === "scale")                     { var r = flag(t, "--replicas") || "3"; set("pods", "on", "▣".repeat(Math.min(parseInt(r, 10) || 1, 8)) + " " + Pf("{n} replika", { n: r })); return [Pf("📐 {n} replikaya çıkıldı", { n: r }), "Yatay ölçekleme: tek makineyi büyütmek yerine kopya sayısını artırırsın."]; }
     if (op === "rollout")                   { set("dep", "warn", "önceki sürüme dönüldü"); return ["↩️ Sürüm geri alındı", "Bozuk deploy'u saniyeler içinde geri alırsın — k8s eski ReplicaSet'i saklar."]; }
     if (op === "logs")                      { set("log", "on", "pod log'u"); return ["🪵 Pod log'ları", "Konteyner çıktısı doğrudan buraya akar."]; }
     if (op === "apply")                     { set("dep", "on", "manifest uygulandı"); set("p.deploy", "on", "cluster'a gitti"); return ["📜 Manifest uygulandı", "Bildirimsel yönetim: 'şu hâlde olsun' dersin, k8s o hâle getirir."]; }
     if (op === "port-forward")              { set("graf", "on", "localhost:3000"); return ["🔌 Port yönlendirildi", "Cluster içindeki paneli kendi makinende açarsın — dışa açmadan."]; }
     if (op === "describe")                  { hit("pods"); return ["🔬 Pod detayı ve olaylar", "Pod neden başlamıyor? Cevap 'Events' bölümünün son satırlarındadır."]; }
-    if (op === "autoscale")                 { add("KUBERNETES", it("hpa", "📐", "autoscale", (flag(t, "--min") || "2") + "–" + (flag(t, "--max") || "10") + " kopya", "on"));
+    if (op === "autoscale")                 { add("KUBERNETES", it("hpa", "📐", "autoscale", Pf("{range} kopya", { range: (flag(t, "--min") || "2") + "–" + (flag(t, "--max") || "10") }), "on"));
                                               return ["📐 Otomatik ölçekleme kuruldu", "Yük artınca kopya sayısı kendi artar, düşünce geri iner. Gece uyanmazsın."]; }
     if (op === "get" && /hpa/.test(what))   { hit("hpa"); return ["📈 Ölçekleyici durumu", "Şu an kaç kopya var, hedef CPU'nun neresindeyiz?"]; }
     if (op === "create" && /namespace/.test(what)) { add("KUBERNETES", it("ns", "🏷️", "namespace", cut(a[2] || "prod", 12), "on"));
@@ -1082,7 +1098,7 @@ var CQScene = (function () {
      ÇİZİM
      ======================================================================= */
   function note(cmd, title, text) {
-    S.note = { cmd: cmd, title: title, text: text };
+    S.note = { cmd: cmd, title: P(title), text: P(text) };
   }
 
   function pathHtml() {
@@ -1110,7 +1126,7 @@ var CQScene = (function () {
     var html = '<div class="' + cls.join(" ") + '" style="--d:' + depth + '">' +
                  '<span class="sc-ico">' + icon + "</span>" +
                  '<span class="sc-nm">' + esc(node.n) + (node.d ? "/" : "") + "</span>" +
-                 badge + (isCwd ? '<span class="sc-here">buradasın</span>' : "") +
+                 badge + (isCwd ? '<span class="sc-here">' + esc(P("buradasın")) + "</span>" : "") +
                "</div>";
     if (node.d && node.open) {
       node.ch.slice().sort(sortDirFirst).forEach(function (c) {
@@ -1123,15 +1139,15 @@ var CQScene = (function () {
   function boardHtml() {
     return (S.groups || []).filter(function (g) { return g.items.length; }).map(function (g) {
       return '<div class="sc-group' + (g.chain ? " chain" : "") + '">' +
-               '<div class="sc-glabel">' + esc(g.label) + "</div>" +
+               '<div class="sc-glabel">' + esc(P(g.label)) + "</div>" +
                g.items.map(function (i) {
                  var cls = ["sc-item", "st-" + i.state];
                  if (i.hit) cls.push("hit");
                  if (i.fresh) cls.push("fresh");
                  return '<div class="' + cls.join(" ") + '">' +
                           '<span class="sc-ico">' + i.icon + "</span>" +
-                          '<span class="sc-lb">' + esc(i.label) + "</span>" +
-                          '<span class="sc-meta">' + esc(i.meta) + "</span>" +
+                          '<span class="sc-lb">' + esc(P(i.label)) + "</span>" +
+                          '<span class="sc-meta">' + esc(P(i.meta)) + "</span>" +
                         "</div>";
                }).join("") +
              "</div>";
@@ -1157,7 +1173,7 @@ var CQScene = (function () {
     el.head.innerHTML =
       '<div class="sc-host"><span class="sc-hico">' + (S.icon || "🖥️") + "</span>" +
         "<b>" + esc(S.host) + "</b></div>" +
-      '<div class="sc-ctx">' + esc(S.ctx || "") + "</div>" +
+      '<div class="sc-ctx">' + esc(P(S.ctx || "")) + "</div>" +
       (S.cwd ? pathHtml() : "") +
       (head.title ? '<div class="sc-quest">' + esc(cut(head.title, 30)) +
                     (head.total ? '<span class="sc-stepn">' + (head.step + 1) + "/" + head.total + "</span>" : "") +
@@ -1172,7 +1188,7 @@ var CQScene = (function () {
       ? '<div class="sc-ncmd">$ ' + esc(cut(n.cmd, 34)) + "</div>" +
         '<div class="sc-ntitle">' + esc(n.title) + "</div>" +
         '<div class="sc-ntext">' + esc(n.text) + "</div>"
-      : '<div class="sc-ntext sc-idle">Komut yazdıkça burada ne olduğunu göstereceğim.</div>';
+      : '<div class="sc-ntext sc-idle">' + esc(I18N.t("scene.idle")) + "</div>";
 
     clearFlags();
   }
@@ -1183,7 +1199,8 @@ var CQScene = (function () {
   function mount(node) {
     box = node;
     box.innerHTML =
-      '<div class="sc-title">🗺️ SAHNE<span class="sc-sub">ne yaptığını gör</span></div>' +
+      '<div class="sc-title">🗺️ ' + esc(I18N.t("scene.title")) +
+        '<span class="sc-sub">' + esc(I18N.t("scene.subtitle")) + "</span></div>" +
       '<div class="sc-head" id="sc-head"></div>' +
       '<div class="sc-body" id="sc-body"></div>' +
       '<div class="sc-note" id="sc-note" aria-live="polite"></div>';
@@ -1195,8 +1212,7 @@ var CQScene = (function () {
   function hub(stats) {
     S = hubScene(stats);
     head = { title: "", step: 0, total: 0, task: "" };
-    S.note = { cmd: "", title: "🎬 Sahne hazır",
-               text: "Bir quest başlat: yazdığın her komutun etkisini burada göreceksin." };
+    S.note = { cmd: "", title: I18N.t("scene.readyTitle"), text: I18N.t("scene.readyText") };
     render();
   }
 
@@ -1205,8 +1221,7 @@ var CQScene = (function () {
     S = (BUILD[kind] || fsScene)();
     if (kind === "git") syncBranches();
     head = { title: q.title, step: 0, total: (q.objectives || []).length, task: "" };
-    S.note = { cmd: "", title: "▶️ " + cut(q.title, 26),
-               text: "Aşağıdaki hedefi terminale yaz — sonucu burada canlanacak." };
+    S.note = { cmd: "", title: "▶️ " + cut(q.title, 26), text: I18N.t("scene.questText") };
     render();
   }
 

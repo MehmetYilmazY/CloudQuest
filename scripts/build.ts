@@ -23,6 +23,10 @@ import { fileURLToPath } from "node:url";
 import { stripTypeScriptTypes } from "node:module";
 import { validateCurriculum } from "../shared/curriculum.validate.ts";
 import { buildContent } from "./content.ts";
+import {
+  ALL_LANGS, SOURCE_LANG, TARGET_LANGS, curriculumMapPath, readLocaleMap,
+  localizeCurriculum, curriculumEntries, coverage, uiMapPath, type Lang,
+} from "./i18n.ts";
 import type { Curriculum, Quest, Objective } from "../shared/curriculum.schema.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -169,17 +173,48 @@ console.log(
 
 if (VALIDATE_ONLY) process.exit(0);
 
-const publicJson = JSON.stringify(toPublic(data), null, 1);
+/* --- diller -------------------------------------------------------------
+   Türkçe kaynaktır; diğer diller data/i18n/curriculum.<lang>.json'daki
+   metin haritasıyla üretilir. Eksik çeviri Türkçe kalır (bkz. i18n.ts),
+   ama kapsam raporu burada basılır ki eksik gözden kaçmasın. */
+const entries = curriculumEntries(data);
+const localized: Record<Lang, Curriculum> = { [SOURCE_LANG]: data } as Record<Lang, Curriculum>;
+
+console.log("");
+console.log(dim("  çeviri kapsamı"));
+
+for (const lang of TARGET_LANGS) {
+  const map = readLocaleMap(curriculumMapPath(lang));
+  const cov = coverage(entries, map);
+  const pct = Math.round((cov.done / cov.total) * 100);
+  const line = `  ${lang}: ${cov.done}/${cov.total} metin (%${pct})`;
+  console.log(cov.missing.length ? line + ` — ${cov.missing.length} eksik, Türkçe kalacak` : dim(line));
+  localized[lang] = localizeCurriculum(data, map);
+}
+
+const bundlesJson = ALL_LANGS
+  .map((lang) => ` "${lang}": ${JSON.stringify(toPublic(localized[lang]), null, 1)}`)
+  .join(",\n");
+
 const publicBundle = `/* ======================================================================
-   AUTO-GENERATED from data/curriculum.json — DO NOT EDIT.
+   AUTO-GENERATED from data/curriculum.json (+ data/i18n/*) — DO NOT EDIT.
    Uret: npm run build
 
    Komut kontrolu TARAYICIDA yapilir (anlik geri bildirim), bu yuzden
    'expect' spec'leri ve 'success' ciktilari burada. 'hint' (dogru komutun
    metni) BURADA DEGIL — sunucudan istenir. Odulu de sunucu verir
    (supabase/functions/game).
+
+   Her dil icin AYRI bir tam kopya uretilir. Calisma zamaninda birlestirme
+   yok: oyun hangi dilde acilirsa acilsin tek bir nesneyi okur, boylece
+   "yari cevrilmis obje" gibi bir ara durum hic olusmaz. Yapinin tek
+   kaynagi yine data/curriculum.json — kopyalari bu script uretir.
    ====================================================================== */
-const CQ_DATA = ${publicJson};
+const CQ_BUNDLES = {
+${bundlesJson}
+};
+const CQ_LANG = (typeof I18N !== "undefined" && CQ_BUNDLES[I18N.lang]) ? I18N.lang : "${SOURCE_LANG}";
+const CQ_DATA = CQ_BUNDLES[CQ_LANG];
 const CHAPTERS = CQ_DATA.chapters;
 const TRACKS   = CQ_DATA.tracks;
 const QUESTS   = CQ_DATA.quests;
@@ -191,7 +226,51 @@ const STORY    = CQ_DATA.story;
 // Sunucu bundle'ı: TAM müfredat (cevaplar dahil). Sadece Edge Function okur.
 const secretBundle = JSON.stringify(data, null, 1) + "\n";
 
+/* --- arayüz metinleri ----------------------------------------------------
+   Sözlükler JSON'da yaşıyor (çevirmen için okunur, diff'i temiz), tarayıcıya
+   tek bir <script> olarak gidiyor. İki ayrı kap var çünkü iki ayrı sözleşme:
+
+     CQ_STRINGS  anahtar -> metin   (t(), anahtar Türkçe metne bağlı değil)
+     CQ_PHRASES  metin   -> metin   (phrase(), kaynak metnin kendisi anahtar)
+
+   Eksik anahtar hata değil: t() kaynak dile, phrase() verilen metne düşer.
+   Yine de sayısını basıyoruz ki bir dosya unutulursa gözden kaçmasın. */
+function readJsonMap(path: string): Record<string, string> {
+  if (!existsSync(path)) return {};
+  const raw = JSON.parse(readFileSync(path, "utf8")) as Record<string, unknown>;
+  const out: Record<string, string> = {};
+  for (const [k, v] of Object.entries(raw)) {
+    if (k.startsWith("_")) continue;
+    if (typeof v === "string") out[k] = v;
+  }
+  return out;
+}
+
+const uiMaps = Object.fromEntries(ALL_LANGS.map((l) => [l, readJsonMap(uiMapPath(l))]));
+const phraseMaps = Object.fromEntries(
+  ALL_LANGS.map((l) => [l, readJsonMap(join(ROOT, "data", "i18n", `phrases.${l}.json`))])
+);
+
+const sourceUiKeys = Object.keys(uiMaps[SOURCE_LANG]);
+for (const lang of TARGET_LANGS) {
+  const missing = sourceUiKeys.filter((k) => !uiMaps[lang][k]);
+  const line = `  ${lang}: ${sourceUiKeys.length - missing.length}/${sourceUiKeys.length} arayüz metni`;
+  console.log(missing.length ? line + ` — ${missing.length} eksik: ${missing.slice(0, 5).join(", ")}` : dim(line));
+}
+
+const stringsBundle = `/* ======================================================================
+   AUTO-GENERATED from data/i18n/ui.*.json + phrases.*.json — DO NOT EDIT.
+   Uret: npm run build
+
+   CQ_STRINGS: anahtar -> metin    (I18N.t ile okunur)
+   CQ_PHRASES: Turkce metin -> ceviri (I18N.phrase ile okunur; sahne paneli)
+   ====================================================================== */
+const CQ_STRINGS = ${JSON.stringify(uiMaps, null, 1)};
+const CQ_PHRASES = ${JSON.stringify(phraseMaps, null, 1)};
+`;
+
 console.log("");
+writeIfNeeded(join(ROOT, "web", "js", "strings.generated.js"), stringsBundle, "web/js/strings.generated.js (arayuz metinleri)");
 writeIfNeeded(PUBLIC_DST, publicBundle, "web/js/content.generated.js (public)");
 writeIfNeeded(SECRET_DST, secretBundle, "supabase/functions/_shared/curriculum.json (secret)");
 writeIfNeeded(join(ROOT, "web", "js", "parser.js"), browserParser(), "web/js/parser.js (uretilmis)");
